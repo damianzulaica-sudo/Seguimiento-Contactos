@@ -1,0 +1,2907 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matriz de seguimiento de contacto</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;font-size:13px;background:#f4f6f9;color:#222}
+h1{font-size:18px;font-weight:600;color:#1a2e4a;padding:18px 24px 0}
+.top-nav{display:flex;gap:0;padding:12px 24px 0;border-bottom:2px solid #dde;margin-bottom:0}
+.top-tab{padding:8px 18px;font-size:12px;font-weight:600;color:#666;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;border-radius:6px 6px 0 0}
+.top-tab.active{color:#1a2e4a;border-bottom-color:#1a2e4a;background:#fff}
+.top-tab:hover:not(.active){color:#333;background:#f0f3f8}
+.page{display:none;padding-top:0}
+.page.active{display:block}
+.controls{display:flex;align-items:center;gap:12px;padding:12px 24px 16px;flex-wrap:wrap}
+.controls label{font-size:12px;color:#555}
+select,input[type=text],input[type=number]{border:1px solid #ccd;border-radius:5px;padding:5px 9px;font-size:12px;background:#fff}
+.badge-mes{background:#1a2e4a;color:#fff;border-radius:5px;padding:4px 12px;font-size:12px;font-weight:600}
+.btn{border:1px solid #ccd;border-radius:5px;padding:5px 12px;font-size:12px;background:#fff;cursor:pointer}
+.btn:hover{background:#eef}
+.btn-nav{padding:4px 10px;font-size:14px}
+.stats-bar{display:flex;gap:12px;padding:0 24px 14px;flex-wrap:wrap}
+.stat{background:#fff;border:1px solid #dde;border-radius:10px;padding:10px 18px;min-width:130px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.stat-n{font-size:20px;font-weight:700;color:#1a2e4a}
+.stat-l{font-size:11px;color:#666;margin-top:1px}
+.stat.warn .stat-n{color:#c0392b}
+.stat.ok .stat-n{color:#1a7a3f}
+.owner-section{margin:0 24px 16px;border-radius:12px;overflow:hidden;border:1px solid #dde;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.owner-header{background:linear-gradient(135deg,#1a2e4a 0%,#2a4a72 100%);color:#fff;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.owner-header h2{font-size:13px;font-weight:700;letter-spacing:.3px;margin:0}
+.owner-meta{font-size:11px;opacity:.8}
+.owner-body{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+thead th{background:#f4f6fa;font-size:11px;font-weight:600;color:#555;text-align:center;padding:6px 4px;border-bottom:2px solid #dde;border-right:1px solid #eee;white-space:nowrap}
+thead th.col-cliente{text-align:left;padding-left:10px;min-width:220px}
+thead th.col-tenencia{min-width:110px}
+thead th.col-frec{min-width:100px}
+thead th.col-grupo{min-width:130px;text-align:left;padding-left:8px}
+thead th.col-actividad{min-width:120px;text-align:left;padding-left:8px}
+thead th.day-col{min-width:28px;width:28px;font-size:10px}
+tbody tr{border-bottom:1px solid #f2f4f8}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f5f8ff}
+td{padding:5px 4px;text-align:center;border-right:1px solid #f0f0f0;vertical-align:middle}
+td.col-cliente{text-align:left;padding-left:10px;font-size:12px;color:#1a2e4a;font-weight:500}
+td.col-tenencia{font-size:11px;color:#333;font-weight:600;text-align:right;padding-right:8px}
+td.col-frec{font-size:10px;min-width:100px}
+td.col-grupo{text-align:left;padding-left:8px;vertical-align:middle}
+td.col-actividad{text-align:left;padding-left:8px;vertical-align:middle;font-size:10px;color:#555;line-height:1.4}
+td.day-col{padding:4px 2px;position:relative;vertical-align:middle;border-right:1px solid #f0f0f0}
+td.day-col[style]{border-right:none}
+.frec-select{font-size:10px;border:1px solid #bbc;border-radius:6px;padding:2px 4px;background:#fff;color:#333}
+input.day-chk{display:none}
+label.day-lbl{display:flex;align-items:center;justify-content:center;width:22px;height:22px;margin:auto;border:1px solid #ccd;border-radius:4px;cursor:pointer;font-size:14px;color:transparent;background:#fff;transition:background .1s;position:relative;z-index:1}
+label.day-lbl:hover{background:#eef6ff;border-color:#5588cc}
+input.day-chk:checked + label.day-lbl{background:#1a7a3f;border-color:#1a7a3f;color:#fff}
+input.day-chk.gira-chk:checked + label.day-lbl{background:#7c3aed;border-color:#7c3aed;color:#fff}
+label.day-lbl.gira-lbl{border-color:#d8c0ee}
+.alert-row td{background:#fff8e1}
+.alert-row td.day-col[style]{background:revert}
+.alert-icon{color:#e67e22;font-size:12px;font-weight:700;margin-left:3px;vertical-align:middle}
+/* pending cards */
+.pending-panel{margin:0 24px 14px}
+.pending-panel-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.pending-panel-header h3{font-size:12px;font-weight:700;color:#92400e;margin:0}
+.pending-cards{display:flex;flex-wrap:wrap;gap:8px}
+.pending-card{background:#fff;border:1.5px solid #f59e0b;border-radius:10px;padding:8px 12px;min-width:200px;max-width:280px;flex:1;cursor:pointer;transition:box-shadow .15s,transform .15s;position:relative;overflow:hidden}
+.pending-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#ef4444)}
+.pending-card:hover{box-shadow:0 4px 12px rgba(245,158,11,.25);transform:translateY(-1px)}
+.pending-card-name{font-size:11px;font-weight:700;color:#1a2e4a;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pending-card-dueno{font-size:10px;color:#888;margin-bottom:6px}
+.pending-card-sems{display:flex;flex-wrap:wrap;gap:3px}
+.pending-card-sem{font-size:9px;font-weight:600;background:#fef3c7;color:#92400e;border:1px solid #f59e0b;border-radius:4px;padding:1px 6px}
+.pending-list{list-style:none;display:flex;flex-direction:column;gap:4px}
+.pending-list li{font-size:11px;color:#856404}
+.pending-list li span{font-weight:600}
+.legend{display:flex;gap:16px;align-items:center;padding:4px 24px 16px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#555}
+.legend-box{width:14px;height:14px;border-radius:3px;border:1px solid #ccc}
+.legend-box.checked{background:#1a7a3f;border-color:#1a7a3f}
+.legend-box.pending-box{background:#fff8e1;border-color:#f0c040}
+.nombre-link{cursor:pointer;color:#1a2e4a;font-weight:600;border-bottom:1px dashed #8ab;transition:color .15s}
+.nombre-link:hover{color:#2a6ab5;border-bottom-color:#2a6ab5}
+.has-nota-dot{display:inline-block;width:6px;height:6px;background:#2a6ab5;border-radius:50%;margin-left:4px;vertical-align:middle}
+.has-hist-dot{display:inline-block;width:6px;height:6px;background:#1a7a3f;border-radius:50%;margin-left:2px;vertical-align:middle}
+.has-alerta-dot{display:inline-block;width:6px;height:6px;background:#e67e22;border-radius:50%;margin-left:2px;vertical-align:middle}
+/* tenencia editable en tabla */
+.tenencia-val{cursor:pointer;border-bottom:1px dashed #bbc;color:#333;font-weight:600}
+.tenencia-val:hover{color:#2a6ab5}
+.tenencia-edit{width:90px;font-size:11px;border:1px solid #5588cc;border-radius:4px;padding:2px 5px;text-align:right}
+
+/* ===== MODAL ===== */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,20,50,.45);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;width:min(720px,96vw);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.22)}
+.modal-header{background:#1a2e4a;color:#fff;padding:14px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.modal-header-info{flex:1;min-width:0}
+.modal-title{font-size:14px;font-weight:700;margin-bottom:3px;word-break:break-word}
+.modal-sub{font-size:11px;opacity:.75;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.modal-close{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;opacity:.7;padding:0;line-height:1;flex-shrink:0}
+.modal-close:hover{opacity:1}
+.modal-body{flex:1;overflow-y:auto;padding:0}
+.modal-tabs{display:flex;border-bottom:1px solid #dde;background:#f7f9fc;padding:0 20px;overflow-x:auto}
+.modal-tab{padding:10px 14px;font-size:12px;font-weight:600;color:#666;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s;white-space:nowrap}
+.modal-tab.active{color:#1a2e4a;border-bottom-color:#1a2e4a}
+.modal-tab:hover:not(.active){color:#333}
+.tab-panel{display:none;padding:20px}
+.tab-panel.active{display:block}
+/* tenencia edit in modal */
+.tenencia-edit-row{display:flex;align-items:center;gap:8px}
+.tenencia-edit-row input{width:140px;font-size:12px;border:1px solid #ccd;border-radius:6px;padding:5px 8px}
+.tenencia-edit-row button{font-size:11px;border:1px solid #ccd;border-radius:5px;padding:4px 10px;cursor:pointer;background:#fff}
+.tenencia-edit-row button.save{background:#1a2e4a;color:#fff;border-color:#1a2e4a}
+.tenencia-edit-row .base-lbl{font-size:10px;color:#aaa}
+/* historial */
+.hist-empty{text-align:center;color:#aaa;padding:32px 0;font-size:12px}
+.hist-entry{border:1px solid #e8edf5;border-radius:8px;padding:12px 14px;margin-bottom:10px;position:relative;background:#fafbfd}
+.hist-entry-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.hist-date{font-size:11px;font-weight:700;color:#1a2e4a}
+.hist-canal{font-size:10px;background:#e8edf5;color:#2a4a8a;padding:2px 8px;border-radius:10px;font-weight:600}
+.hist-user{font-size:10px;color:#888}
+.hist-text{font-size:12px;color:#333;line-height:1.5;white-space:pre-wrap}
+.hist-del{position:absolute;top:8px;right:10px;background:none;border:none;color:#ccc;cursor:pointer;font-size:14px}
+.hist-del:hover{color:#c0392b}
+.new-contact-form{border-top:1px solid #eee;padding:16px 20px;background:#f7f9fc}
+.form-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.form-row label{font-size:11px;font-weight:600;color:#444;display:flex;flex-direction:column;gap:4px}
+.form-row input,.form-row select,.form-row textarea{border:1px solid #ccd;border-radius:6px;padding:6px 9px;font-size:12px;font-family:Arial,sans-serif;background:#fff}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{outline:none;border-color:#5588cc}
+.form-row textarea{width:100%;resize:vertical;min-height:60px}
+.btn-add{background:#1a2e4a;color:#fff;border:none;border-radius:6px;padding:7px 18px;font-size:12px;font-weight:600;cursor:pointer}
+.btn-add:hover{background:#2a4a7a}
+.nota-area{width:100%;border:1px solid #ccd;border-radius:8px;padding:10px;font-size:12px;font-family:Arial,sans-serif;min-height:120px;resize:vertical;line-height:1.6}
+.nota-area:focus{outline:none;border-color:#5588cc}
+.nota-hint{font-size:10px;color:#aaa;margin-top:6px}
+.btn-save-nota{background:#1a2e4a;color:#fff;border:none;border-radius:6px;padding:7px 18px;font-size:12px;font-weight:600;cursor:pointer;margin-top:10px}
+.btn-save-nota:hover{background:#2a4a7a}
+.nota-saved{color:#1a7a3f;font-size:11px;margin-left:10px;display:none}
+/* alertas */
+.alerta-item{border-radius:8px;padding:11px 14px;margin-bottom:9px;position:relative;border:1px solid #e8edf5;border-left-width:4px;border-left-style:solid}
+.alerta-item.prio-alta{border-left-color:#c0392b;background:#fff8f8}
+.alerta-item.prio-media{border-left-color:#e67e22;background:#fffaf5}
+.alerta-item.prio-baja{border-left-color:#2a6ab5;background:#f5f8ff}
+.alerta-item.vencida{opacity:.65}
+.alerta-item.hoy{box-shadow:0 0 0 2px #e67e22}
+.alerta-header{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.alerta-fecha-lbl{font-size:11px;font-weight:700;color:#333}
+.alerta-prio{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.alerta-prio.alta{background:#fde;color:#c0392b}
+.alerta-prio.media{background:#fef0e0;color:#a05000}
+.alerta-prio.baja{background:#e8edf8;color:#2a4a9a}
+.alerta-tag{font-size:10px;padding:2px 7px;border-radius:10px;background:#e8f8e8;color:#1a7a3f;font-weight:600}
+.alerta-tag.vencida-tag{background:#fde;color:#c0392b}
+.alerta-tag.hoy-tag{background:#fff0d0;color:#a05000}
+.alerta-msg{font-size:12px;color:#333;line-height:1.5}
+.alerta-del{position:absolute;top:8px;right:10px;background:none;border:none;color:#ccc;cursor:pointer;font-size:14px}
+.alerta-del:hover{color:#c0392b}
+.alerta-done{position:absolute;top:8px;right:32px;background:none;border:none;color:#ccc;cursor:pointer;font-size:14px}
+.alerta-done:hover{color:#1a7a3f}
+.alerta-empty{text-align:center;color:#aaa;padding:28px 0;font-size:12px}
+.alerta-form{border-top:1px solid #eee;padding:16px 20px;background:#f7f9fc}
+.alerta-form-title{font-size:11px;font-weight:700;color:#1a2e4a;margin-bottom:10px}
+/* banner alertas */
+.alertas-banner{margin:0 24px 12px;border-radius:8px;padding:10px 16px;border:1px solid #f5a623;background:#fff8ee;display:none}
+.alertas-banner.visible{display:block}
+.alertas-banner h3{font-size:12px;font-weight:700;color:#8a4800;margin-bottom:5px}
+.alertas-banner ul{list-style:none;display:flex;flex-direction:column;gap:3px}
+.alertas-banner li{font-size:11px;color:#7a3800;cursor:pointer;text-decoration:underline dotted}
+.alertas-banner li:hover{color:#2a6ab5}
+
+/* ===== GIRAS ===== */
+.giras-page{padding:20px 24px}
+.giras-page h2{font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:16px}
+.gira-card{background:#fff;border:1px solid #dde;border-radius:10px;margin-bottom:14px;overflow:hidden}
+.gira-card-header{background:#2a4a7a;color:#fff;padding:9px 16px;display:flex;justify-content:space-between;align-items:center}
+.gira-card-header h3{font-size:13px;font-weight:600}
+.gira-card-body{padding:14px 16px}
+.gira-meta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;color:#555}
+.gira-meta span b{color:#1a2e4a}
+.gira-clientes{font-size:11px;color:#444;line-height:1.7}
+.gira-clientes span{display:inline-block;background:#e8edf8;color:#2a4a8a;border-radius:10px;padding:1px 8px;margin:2px 3px 2px 0;font-size:10px}
+.gira-obs{font-size:11px;color:#666;font-style:italic;margin-top:6px;border-top:1px solid #f0f0f0;padding-top:6px}
+.gira-del{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:0}
+.gira-del:hover{color:#c0392b}
+.gira-form-section{background:#fff;border:1px solid #dde;border-radius:10px;padding:16px 20px;margin-bottom:20px}
+.gira-form-section h3{font-size:12px;font-weight:700;color:#1a2e4a;margin-bottom:12px}
+.form-row input[type=text],.form-row input[type=date],.form-row select{border:1px solid #ccd;border-radius:6px;padding:6px 9px;font-size:12px;background:#fff}
+.cliente-check-list{display:flex;flex-wrap:wrap;gap:6px;max-height:140px;overflow-y:auto;border:1px solid #ccd;border-radius:6px;padding:8px;background:#fff}
+.cliente-check-list label{font-size:11px;display:flex;align-items:center;gap:4px;cursor:pointer;padding:2px 4px;border-radius:4px}
+.cliente-check-list label:hover{background:#f0f3f8}
+.gira-search{width:100%;border:1px solid #ccd;border-radius:6px;padding:6px 10px;font-size:12px;margin-bottom:6px;background:#fff}
+.gira-search:focus{outline:none;border-color:#5588cc}
+.gira-prospects{font-size:11px;color:#444;line-height:1.7;margin-top:6px}
+.gira-prospects span{display:inline-block;background:#f3e8fb;color:#6a2a9a;border-radius:10px;padding:1px 8px;margin:2px 3px 2px 0;font-size:10px}
+.gira-section-label{font-size:10px;font-weight:700;color:#888;margin:6px 0 3px;text-transform:uppercase;letter-spacing:.5px}
+
+/* ===== PROSPECTS ===== */
+.prospects-page{padding:20px 24px}
+.prospects-page h2{font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:16px}
+.prospect-card{background:#fff;border:1px solid #dde;border-radius:10px;padding:14px 16px;margin-bottom:10px;position:relative}
+.prospect-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
+.prospect-nombre{font-size:13px;font-weight:700;color:#1a2e4a}
+.prospect-estado{font-size:10px;padding:2px 10px;border-radius:10px;font-weight:600}
+.prospect-estado.interesado{background:#dff2e8;color:#1a7a3f}
+.prospect-estado.en-proceso{background:#fef0e0;color:#a05000}
+.prospect-estado.primera-relacion{background:#f3e8fb;color:#6a2a9a}
+.prospect-estado.convertido{background:#e8edf8;color:#2a4a9a}
+.prospect-meta{font-size:11px;color:#666;display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.prospect-obs{font-size:11px;color:#444;white-space:pre-wrap;line-height:1.5}
+.prospect-actions{display:flex;gap:6px;margin-top:8px}
+.prospect-actions button{font-size:10px;border:1px solid #ccd;border-radius:5px;padding:3px 10px;cursor:pointer;background:#fff}
+.prospect-actions button:hover{background:#f0f3f8}
+.prospect-actions button.conv{background:#1a7a3f;color:#fff;border-color:#1a7a3f}
+.prospect-actions button.del{color:#c0392b;border-color:#f5c6c6}
+.prospect-form-section{background:#fff;border:1px solid #dde;border-radius:10px;padding:16px 20px;margin-bottom:20px}
+.prospect-form-section h3{font-size:12px;font-weight:700;color:#1a2e4a;margin-bottom:12px}
+
+/* ===== GRUPOS ===== */
+.grupos-page{padding:20px 24px}
+.grupos-page h2{font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:16px}
+.grupo-form-section{background:#fff;border:1px solid #dde;border-radius:10px;padding:16px 20px;margin-bottom:20px}
+.grupo-form-section h3{font-size:12px;font-weight:700;color:#1a2e4a;margin-bottom:12px}
+.grupo-card{background:#fff;border:1px solid #dde;border-radius:10px;margin-bottom:14px;overflow:hidden}
+.grupo-card-header{color:#fff;padding:9px 16px;display:flex;justify-content:space-between;align-items:center}
+.grupo-card-header h3{font-size:13px;font-weight:600;margin:0}
+.grupo-card-body{padding:14px 16px;background:#fff}
+.grupo-add-row{border-top:1px solid #eee;padding-top:12px;margin-top:4px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grupo-add-row input{font-size:12px;border:1px solid #bbc;border-radius:6px;padding:6px 10px;flex:1;min-width:200px}
+.grupo-add-row input:focus{outline:none;border-color:#5588cc}
+.grupo-miembros{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.grupo-miembro{display:inline-flex;align-items:center;gap:5px;background:#e8f4ee;color:#1a5a3a;border-radius:10px;padding:3px 10px;font-size:11px;font-weight:500}
+.grupo-miembro.manual{background:#fff3e0;color:#8a4400}
+.grupo-miembro button{background:none;border:none;color:#aaa;cursor:pointer;font-size:11px;padding:0;line-height:1}
+.grupo-miembro button:hover{color:#c0392b}
+.grupo-del{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:0}
+.grupo-del:hover{color:#c0392b}
+.grupo-badge{display:inline-block;background:#e8f4ee;color:#1a5a3a;border-radius:8px;padding:1px 8px;font-size:10px;font-weight:600;margin-left:4px;vertical-align:middle}
+.has-grupo-dot{display:inline-block;width:6px;height:6px;background:#7c3aed;border-radius:50%;margin-left:2px;vertical-align:middle}
+/* asignar grupo desde modal */
+.grupo-assign-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.grupo-assign-row select{flex:1;min-width:140px;font-size:12px;border:1px solid #ccd;border-radius:6px;padding:6px 8px}
+.grupo-chip{display:inline-flex;align-items:center;gap:5px;background:#e8f4ee;color:#1a5a3a;border-radius:10px;padding:3px 10px;font-size:11px;margin:3px}
+.grupo-chip button{background:none;border:none;color:#888;cursor:pointer;font-size:12px;padding:0}
+.grupo-chip button:hover{color:#c0392b}
+
+/* ===== CLIENTES MANUALES ===== */
+.manual-tag{font-size:9px;background:#fff3e0;color:#8a4400;border-radius:6px;padding:1px 5px;margin-left:4px;font-weight:600;vertical-align:middle}
+
+/* ===== AGENDA ===== */
+.agenda-page{padding:20px 24px}
+.agenda-page h2{font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:4px}
+.agenda-subtabs{display:flex;gap:0;margin-bottom:18px;border-bottom:2px solid #dde}
+.agenda-subtab{padding:8px 18px;font-size:12px;font-weight:600;color:#666;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px}
+.agenda-subtab.active{color:#1a2e4a;border-bottom-color:#1a2e4a}
+.agenda-subtab:hover:not(.active){color:#333}
+.agenda-panel{display:none}
+.agenda-panel.active{display:block}
+
+/* alertas lista */
+.agenda-filtros{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.agenda-filtros label{font-size:11px;color:#555}
+.agenda-filtros select,.agenda-filtros input{font-size:11px;border:1px solid #ccd;border-radius:5px;padding:4px 8px;background:#fff}
+.agenda-alerta-item{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;border-radius:8px;margin-bottom:8px;border:1px solid #eee;background:#fff;position:relative}
+.agenda-alerta-item.hoy{border-color:#e67e22;background:#fffaf5}
+.agenda-alerta-item.vencida{opacity:.65;background:#fdf5f5;border-color:#f5c6c6}
+.agenda-alerta-item.cumplida{opacity:.5}
+.agenda-fecha-col{min-width:72px;text-align:center;background:#f0f3f8;border-radius:6px;padding:6px 8px}
+.agenda-fecha-dia{font-size:22px;font-weight:700;color:#1a2e4a;line-height:1}
+.agenda-fecha-mes{font-size:10px;color:#888;margin-top:2px}
+.agenda-fecha-col.hoy-col{background:#fff0d0}
+.agenda-fecha-col.vencida-col{background:#fde}
+.agenda-alerta-body{flex:1;min-width:0}
+.agenda-alerta-cliente{font-size:12px;font-weight:700;color:#1a2e4a;cursor:pointer;border-bottom:1px dashed #8ab}
+.agenda-alerta-cliente:hover{color:#2a6ab5}
+.agenda-alerta-msg{font-size:12px;color:#444;margin-top:3px;line-height:1.4}
+.agenda-alerta-meta{font-size:10px;color:#aaa;margin-top:4px;display:flex;gap:10px;flex-wrap:wrap}
+.agenda-alerta-prio{font-size:10px;font-weight:600;padding:1px 8px;border-radius:8px}
+.agenda-alerta-prio.alta{background:#fde;color:#c0392b}
+.agenda-alerta-prio.media{background:#fef0e0;color:#a05000}
+.agenda-alerta-prio.baja{background:#e8edf8;color:#2a4a9a}
+.agenda-alerta-actions{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.agenda-alerta-actions button{font-size:10px;border:1px solid #dde;border-radius:5px;padding:3px 9px;cursor:pointer;background:#fff;white-space:nowrap}
+.agenda-alerta-actions button:hover{background:#f0f3f8}
+.agenda-alerta-actions button.done-btn{color:#1a7a3f;border-color:#a8d8a8}
+.agenda-day-header{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;padding:10px 0 4px;border-bottom:1px solid #eee;margin-bottom:8px}
+.agenda-day-header.hoy-lbl{color:#e67e22}
+
+/* historial unificado */
+.hist-uni-item{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-radius:8px;margin-bottom:7px;border:1px solid #eee;background:#fff}
+.hist-uni-canal{font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px;white-space:nowrap;margin-top:1px}
+.hist-uni-body{flex:1;min-width:0}
+.hist-uni-cliente{font-size:12px;font-weight:700;color:#1a2e4a;cursor:pointer;border-bottom:1px dashed #8ab}
+.hist-uni-cliente:hover{color:#2a6ab5}
+.hist-uni-meta{font-size:10px;color:#aaa;margin-top:2px}
+.hist-uni-txt{font-size:11px;color:#555;margin-top:4px;line-height:1.4;white-space:pre-wrap}
+.hist-uni-fecha{min-width:72px;text-align:center;background:#f0f3f8;border-radius:6px;padding:5px 8px}
+.hist-uni-dia{font-size:20px;font-weight:700;color:#1a2e4a;line-height:1}
+.hist-uni-mes{font-size:10px;color:#888;margin-top:2px}
+
+/* calendario tildados */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
+.cal-header-cell{text-align:center;font-size:10px;font-weight:700;color:#888;padding:4px 0}
+.cal-cell{border-radius:6px;padding:4px;min-height:64px;background:#f7f9fc;border:1px solid #eee;font-size:10px}
+.cal-cell.today{border-color:#e67e22;background:#fffaf5}
+.cal-cell.othermonth{opacity:.35}
+.cal-cell-day{font-weight:700;color:#1a2e4a;margin-bottom:3px}
+.cal-chip{background:#1a7a3f;color:#fff;border-radius:4px;padding:1px 5px;margin:1px 0;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cal-chip:hover{background:#145a2f}
+/* ===== BARRAS SEMANALES ===== */
+.col-semanas{min-width:90px;padding:3px 6px;vertical-align:middle}
+th.col-semanas{text-align:center;font-size:11px;min-width:90px}
+.week-bars{display:flex;gap:3px;align-items:center;justify-content:center}
+.week-bar{flex:1;height:14px;border-radius:3px;cursor:default;transition:opacity .15s;position:relative}
+.week-bar:hover{opacity:.75}
+.week-bar.ok{background:#1a7a3f}
+.week-bar.ok-gira{background:#7c3aed}
+.week-bar.pendiente{background:#d0d0d0}
+.week-bar.alerta{background:#e74c3c}
+.week-bar.actual{background:#f0c040}
+.week-bar.futura{background:#f0f0f0;border:1px dashed #ccc}
+
+/* ===== MAPA ===== */
+.mapa-page{position:relative;width:100%;height:calc(100vh - 42px);background:#0f1923;overflow:hidden}
+.mapa-controls{position:absolute;top:12px;left:12px;z-index:10;display:flex;gap:6px;flex-wrap:wrap}
+.mapa-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:4px 11px;font-size:11px;cursor:pointer;transition:background .15s}
+.mapa-btn:hover{background:rgba(255,255,255,.2)}
+.mapa-btn.active{background:#2563eb;border-color:#2563eb}
+.mapa-legend{position:absolute;bottom:12px;left:12px;z-index:10;background:rgba(15,25,35,.92);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 14px}
+.mapa-legend h4{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.mapa-leg-item{display:flex;align-items:center;gap:7px;font-size:10px;color:#cbd5e1;margin-bottom:4px}
+.mapa-leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.mapa-leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.mapa-info{position:absolute;top:12px;right:12px;z-index:10;background:rgba(15,25,35,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:0;width:220px;display:none}
+.mapa-info-hdr{background:rgba(255,255,255,.06);padding:9px 13px;font-size:12px;font-weight:700;color:#fff;display:flex;justify-content:space-between;align-items:center;border-radius:10px 10px 0 0}
+.mapa-info-body{padding:11px 13px}
+.mapa-info-row{font-size:11px;color:#94a3b8;margin-bottom:5px}
+.mapa-info-row span{color:#e2e8f0;font-weight:600}
+.mapa-info-mem{font-size:10px;color:#cbd5e1;padding:2px 7px;background:rgba(255,255,255,.06);border-radius:4px;margin-bottom:3px}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<body>
+
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 24px 0;flex-wrap:wrap;gap:8px">
+  <h1 style="font-size:18px;font-weight:600;color:#1a2e4a">Matriz de seguimiento de contacto</h1>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span id="sync-status" style="font-size:11px;color:#aaa">● Online</span>
+    <button onclick="syncNow()" class="btn" style="font-size:11px;background:#1a2e4a;color:#fff;border-color:#1a2e4a">⟳ Sincronizar</button>
+  </div>
+</div>
+
+<div class="top-nav">
+  <div class="top-tab active" onclick="switchPage('seguimiento')">&#128203; Seguimiento</div>
+  <div class="top-tab" onclick="switchPage('agenda')">&#128197; Agenda</div>
+  <div class="top-tab" onclick="switchPage('giras')">&#9992; Giras</div>
+  <div class="top-tab" onclick="switchPage('prospects')">&#127919; Prospects</div>
+  <div class="top-tab" onclick="switchPage('grupos')">&#128101; Grupos</div>
+  <div class="top-tab" onclick="switchPage('mapa')">&#127760; Mapa</div>
+</div>
+
+<!-- ===== PÁGINA SEGUIMIENTO ===== -->
+<div class="page active" id="page-seguimiento">
+<div class="controls">
+  <span id="mes-badge" class="badge-mes"></span>
+  <button class="btn btn-nav" id="btn-prev">&#8249;</button>
+  <button class="btn btn-nav" id="btn-next">&#8250;</button>
+  <label>Filtrar dueño: <select id="filtro-dueno"><option value="">Todos</option></select></label>
+  <label>Buscar: <input type="text" id="filtro-cliente" placeholder="Nombre..." style="width:180px"></label>
+  <button class="btn" onclick="openNuevoCliente()" style="background:#1a2e4a;color:#fff;border-color:#1a2e4a;font-weight:600">&#43; Nuevo cliente</button>
+</div>
+
+<!-- Modal nuevo cliente -->
+<div id="nuevo-cliente-overlay" style="display:none;position:fixed;inset:0;background:rgba(10,20,50,.45);z-index:2000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:14px;width:min(480px,96vw);box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden">
+    <div style="background:#1a2e4a;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:14px;font-weight:700">&#43; Nuevo cliente</span>
+      <button onclick="closeNuevoCliente()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;opacity:.7">&#10005;</button>
+    </div>
+    <div style="padding:20px">
+      <p style="font-size:11px;color:#888;margin-bottom:16px">Clientes que no están en la agenda base del Excel.</p>
+      <div class="form-row">
+        <label style="flex:1">Nombre completo
+          <input type="text" id="nc-nombre" placeholder="Ej: GARCIA JUAN MANUEL" style="width:100%">
+        </label>
+      </div>
+      <div class="form-row">
+        <label style="flex:1">Dueño / asesor
+          <input type="text" id="nc-dueno" placeholder="Nombre del asesor" style="width:100%">
+        </label>
+        <label style="flex:1">Tenencia USD
+          <input type="number" id="nc-tenencia" placeholder="0" min="0" style="width:100%">
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Frecuencia
+          <select id="nc-frec" style="width:130px">
+            <option value="">—</option>
+            <option value="Semanal">Semanal</option>
+            <option value="Quincenal">Quincenal</option>
+            <option value="Mensual">Mensual</option>
+          </select>
+        </label>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn-add" onclick="guardarNuevoCliente()">Guardar cliente</button>
+        <button onclick="closeNuevoCliente()" style="border:1px solid #ccd;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;background:#fff">Cancelar</button>
+      </div>
+      <div id="nc-error" style="color:#c0392b;font-size:11px;margin-top:8px;display:none"></div>
+    </div>
+  </div>
+</div>
+<div class="stats-bar" id="stats-bar"></div>
+<div class="legend">
+  <div class="legend-item"><div class="legend-box checked"></div> Contactado</div>
+  <div class="legend-item"><div class="legend-box" style="background:#7c3aed;border-color:#7c3aed"></div> Gira</div>
+  <div class="legend-item"><div class="legend-box" style="background:#fff;border-color:#ccc"></div> Sin contactar</div>
+  <div class="legend-item"><div class="legend-box pending-box"></div> Pendiente semanal</div>
+  <div class="legend-item"><span class="has-hist-dot" style="display:inline-block"></span> Historial</div>
+  <div class="legend-item"><span class="has-nota-dot" style="display:inline-block"></span> Observación</div>
+  <div class="legend-item"><span class="has-alerta-dot" style="display:inline-block"></span> Alerta</div>
+  <div class="legend-item"><span class="has-grupo-dot" style="display:inline-block"></span> Grupo</div>
+  <div class="legend-item" style="color:#888">· Click en nombre = ficha · Click en tenencia = editar</div>
+</div>
+<div class="alertas-banner" id="alertas-banner"><h3>&#128276; Alertas para hoy y vencidas</h3><ul id="alertas-banner-list"></ul></div>
+<div id="main-content"></div>
+
+<!-- datalists globales para actividad inline -->
+<datalist id="dl-rubros">
+  <option value="Agropecuario"><option value="Ganadería"><option value="Industrial">
+  <option value="Comercio"><option value="Servicios"><option value="Construcción">
+  <option value="Transporte"><option value="Salud"><option value="Educación">
+  <option value="Tecnología"><option value="Finanzas"><option value="Otro">
+</datalist>
+<datalist id="dl-roles">
+  <option value="Socio"><option value="Titular"><option value="Director">
+  <option value="Gerente"><option value="Accionista"><option value="Apoderado">
+  <option value="Empleado"><option value="Jubilado"><option value="Otro">
+</datalist>
+</div>
+
+<!-- ===== PÁGINA GIRAS ===== -->
+<div class="page" id="page-giras">
+<div class="giras-page">
+  <h2>&#9992; Giras</h2>
+  <div style="margin-bottom:14px">
+    <button class="btn" onclick="aplicarGirasExistentes()" style="font-size:11px;color:#7c3aed;border-color:#d8c0ee">&#9654; Aplicar giras al historial y calendario</button>
+    <span style="font-size:10px;color:#aaa;margin-left:8px">Útil para giras cargadas antes de esta función</span>
+  </div>
+  <div class="gira-form-section" id="gira-form-section">
+    <h3 id="gira-form-title">&#43; Nueva gira</h3>
+    <div class="form-row">
+      <label>Nombre / destino <input type="text" id="gira-nombre" placeholder="Ej: Rosario — julio 2025" style="width:200px"></label>
+      <label>Fecha inicio <input type="date" id="gira-desde" style="width:140px"></label>
+      <label>Fecha fin <input type="date" id="gira-hasta" style="width:140px"></label>
+      <label>Responsable <input type="text" id="gira-resp" placeholder="Nombre" style="width:130px"></label>
+    </div>
+    <div class="form-row">
+      <label style="width:100%">
+        Clientes a visitar
+        <input type="text" class="gira-search" id="gira-search-clientes" placeholder="Buscar cliente..." oninput="filtrarGiraClientes()">
+        <div class="cliente-check-list" id="gira-cliente-list"></div>
+      </label>
+    </div>
+    <div class="form-row">
+      <label style="width:100%">
+        Prospects a visitar
+        <input type="text" class="gira-search" id="gira-search-prospects" placeholder="Buscar prospect..." oninput="filtrarGiraProspects()">
+        <div class="cliente-check-list" id="gira-prospect-list" style="border-color:#d8c0ee"></div>
+      </label>
+    </div>
+    <div class="form-row">
+      <label style="width:100%">Observaciones
+        <textarea id="gira-obs" style="min-height:50px" placeholder="Objetivo, logística, etc."></textarea>
+      </label>
+    </div>
+    <button class="btn-add" id="gira-btn-save" onclick="addGira()">Guardar gira</button>
+    <button id="gira-btn-cancel" onclick="cancelEditGira()" style="display:none;margin-left:8px;border:1px solid #ccd;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;background:#fff">Cancelar</button>
+  </div>
+  <div id="giras-list"></div>
+</div>
+</div>
+
+<!-- ===== PÁGINA PROSPECTS ===== -->
+<div class="page" id="page-prospects">
+<div class="prospects-page">
+  <h2>&#127919; Prospects</h2>
+  <div class="prospect-form-section">
+    <h3>&#43; Nuevo prospect</h3>
+    <div class="form-row">
+      <label>Nombre / empresa <input type="text" id="pr-nombre" placeholder="Nombre" style="width:200px"></label>
+      <label>Estado
+        <select id="pr-estado" style="width:140px">
+          <option value="primera-relacion">Primera relación</option>
+          <option value="interesado">Interesado</option>
+          <option value="en-proceso">En proceso</option>
+          <option value="convertido">Convertido</option>
+        </select>
+      </label>
+      <label>Dueño <input type="text" id="pr-dueno" placeholder="Asesor" style="width:130px"></label>
+      <label>Origen <input type="text" id="pr-origen" placeholder="Referido, evento..." style="width:130px"></label>
+    </div>
+    <div class="form-row">
+      <label>Potencial USD <input type="number" id="pr-potencial" placeholder="0" style="width:120px" min="0"></label>
+      <label>Próx. acción <input type="date" id="pr-fecha" style="width:140px"></label>
+    </div>
+    <div class="form-row">
+      <label style="width:100%">Notas
+        <textarea id="pr-obs" style="min-height:54px" placeholder="Contexto, intereses, próximos pasos..."></textarea>
+      </label>
+    </div>
+    <button class="btn-add" onclick="addProspect()">Guardar prospect</button>
+  </div>
+  <div id="prospects-filter" style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <label style="font-size:11px;color:#555">Estado:
+      <select id="pr-filtro-estado" onchange="renderProspects()" style="font-size:11px">
+        <option value="">Todos</option>
+        <option value="primera-relacion">Primera relación</option>
+        <option value="interesado">Interesado</option>
+        <option value="en-proceso">En proceso</option>
+        <option value="convertido">Convertido</option>
+      </select>
+    </label>
+  </div>
+  <div id="prospects-list"></div>
+</div>
+</div>
+
+<!-- ===== PÁGINA GRUPOS ===== -->
+<div class="page" id="page-grupos">
+<div class="grupos-page">
+  <h2>&#128101; Grupos económicos / familiares</h2>
+
+  <!-- Vista resumen clientes con grupos -->
+  <div style="background:#fff;border:1px solid #dde;border-radius:10px;padding:14px 18px;margin-bottom:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+      <span style="font-size:12px;font-weight:700;color:#1a2e4a">Asignaciones actuales</span>
+      <input type="text" id="grp-buscar-cliente" placeholder="Buscar cliente..." oninput="renderGrupoAsignaciones()" style="font-size:11px;border:1px solid #ccd;border-radius:6px;padding:4px 10px;width:180px">
+    </div>
+    <div id="grp-asignaciones" style="max-height:280px;overflow-y:auto"></div>
+  </div>
+
+  <!-- Nuevo grupo -->
+  <div class="grupo-form-section">
+    <h3>&#43; Nuevo grupo</h3>
+    <div class="form-row">
+      <label>Nombre del grupo <input type="text" id="grp-nombre" placeholder="Ej: Cerealistas Moldes, Grupo García Carrara..." style="width:260px"></label>
+      <label>Tipo
+        <select id="grp-tipo" style="width:160px">
+          <option value="empresa">Empresa / holding</option>
+          <option value="familia">Familia</option>
+          <option value="economico">Grupo económico</option>
+          <option value="agropecuaria">Agropecuaria</option>
+          <option value="pyme">Pyme</option>
+          <option value="industrial">Industrial</option>
+          <option value="otro">Otro</option>
+        </select>
+      </label>
+    </div>
+    <div class="form-row">
+      <label style="width:100%">Descripción / notas
+        <textarea id="grp-obs" style="min-height:44px" placeholder="Sector, actividad, relación entre miembros..."></textarea>
+      </label>
+    </div>
+    <button class="btn-add" onclick="addGrupo()">Crear grupo</button>
+  </div>
+
+  <!-- Agregar cliente manual -->
+  <div class="grupo-form-section">
+    <h3>&#43; Agregar cliente manual</h3>
+    <p style="font-size:11px;color:#888;margin-bottom:10px">Clientes que no están en la agenda base del Excel.</p>
+    <div class="form-row">
+      <label>Nombre <input type="text" id="mc-nombre" placeholder="Nombre completo" style="width:220px"></label>
+      <label>Dueño <input type="text" id="mc-dueno" placeholder="Asesor" style="width:140px"></label>
+      <label>Tenencia USD <input type="number" id="mc-tenencia" placeholder="0" style="width:120px" min="0"></label>
+    </div>
+    <div class="form-row">
+      <label>Frecuencia
+        <select id="mc-frec" style="width:120px">
+          <option value="">—</option><option value="Semanal">Semanal</option><option value="Quincenal">Quincenal</option><option value="Mensual">Mensual</option>
+        </select>
+      </label>
+    </div>
+    <button class="btn-add" onclick="addClienteManual()">Agregar cliente</button>
+  </div>
+
+  <div id="grupos-list"></div>
+</div>
+</div>
+
+<!-- ===== PÁGINA AGENDA ===== -->
+<div class="page" id="page-agenda">
+<div class="agenda-page">
+  <h2>&#128197; Agenda</h2>
+  <div class="agenda-subtabs">
+    <div class="agenda-subtab active" onclick="switchAgendaTab('alertas')">&#128276; Alertas</div>
+    <div class="agenda-subtab" onclick="switchAgendaTab('historial')">&#128203; Historial de contactos</div>
+    <div class="agenda-subtab" onclick="switchAgendaTab('calendario')">&#128198; Calendario de seguimiento</div>
+  </div>
+
+  <!-- ALERTAS -->
+  <div class="agenda-panel active" id="agpanel-alertas">
+    <div id="ag-pending-panel" style="margin-bottom:14px"></div>
+
+    <!-- dos columnas: nueva alerta + nueva tarea -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
+
+      <!-- NUEVA ALERTA DE CLIENTE -->
+      <div style="background:#fff;border:1px solid #dde;border-radius:10px;padding:14px 16px">
+        <div style="font-size:12px;font-weight:700;color:#1a2e4a;margin-bottom:10px">&#128276; Nueva alerta de cliente</div>
+        <div class="form-row">
+          <label style="width:100%">Cliente
+            <input type="text" id="ag-nueva-cliente" list="dl-clientes-agenda" autocomplete="off" placeholder="Escribí el nombre..." style="width:100%">
+            <datalist id="dl-clientes-agenda"></datalist>
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Fecha
+            <input type="date" id="ag-nueva-fecha" style="width:140px">
+          </label>
+          <label>Prioridad
+            <select id="ag-nueva-prio" style="width:100px">
+              <option value="alta">Alta</option>
+              <option value="media" selected>Media</option>
+              <option value="baja">Baja</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-row">
+          <label style="width:100%">Mensaje
+            <textarea id="ag-nueva-msg" placeholder="Recordatorio..." style="min-height:48px;width:100%"></textarea>
+          </label>
+        </div>
+        <button class="btn-add" onclick="crearAlertaDesdeAgenda()">Guardar alerta</button>
+        <span id="ag-nueva-ok" style="color:#1a7a3f;font-size:11px;margin-left:8px;display:none">&#10003; Guardada</span>
+      </div>
+
+      <!-- NUEVA TAREA GENERAL -->
+      <div style="background:#fff;border:1px solid #dde;border-radius:10px;padding:14px 16px">
+        <div style="font-size:12px;font-weight:700;color:#1a2e4a;margin-bottom:10px">&#9989; Nueva tarea general</div>
+        <div class="form-row">
+          <label style="width:100%">Descripción
+            <input type="text" id="tarea-desc" placeholder="Ej: Preparar informe mensual..." style="width:100%">
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Fecha límite
+            <input type="date" id="tarea-fecha" style="width:140px">
+          </label>
+          <label>Prioridad
+            <select id="tarea-prio" style="width:100px">
+              <option value="alta">Alta</option>
+              <option value="media" selected>Media</option>
+              <option value="baja">Baja</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-row">
+          <label style="width:100%">Notas
+            <textarea id="tarea-notas" placeholder="Detalles adicionales..." style="min-height:48px;width:100%"></textarea>
+          </label>
+        </div>
+        <button class="btn-add" onclick="crearTarea()">Guardar tarea</button>
+        <span id="tarea-ok" style="color:#1a7a3f;font-size:11px;margin-left:8px;display:none">&#10003; Guardada</span>
+      </div>
+    </div>
+
+    <!-- FILTROS ALERTAS DE CLIENTES -->
+    <div style="font-size:12px;font-weight:700;color:#1a2e4a;margin-bottom:8px">&#128276; Alertas de clientes</div>
+    <div class="agenda-filtros">
+      <label>Estado:
+        <select id="ag-filtro-estado" onchange="renderAgendaAlertas()">
+          <option value="">Todas</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="hoy">Hoy</option>
+          <option value="vencida">Vencidas</option>
+          <option value="cumplida">Cumplidas</option>
+        </select>
+      </label>
+      <label>Dueño:
+        <select id="ag-filtro-dueno" onchange="renderAgendaAlertas()">
+          <option value="">Todos</option>
+        </select>
+      </label>
+      <label>Prioridad:
+        <select id="ag-filtro-prio" onchange="renderAgendaAlertas()">
+          <option value="">Todas</option>
+          <option value="alta">Alta</option>
+          <option value="media">Media</option>
+          <option value="baja">Baja</option>
+        </select>
+      </label>
+    </div>
+    <div id="agenda-alertas-list" style="margin-bottom:24px"></div>
+
+    <!-- TAREAS GENERALES -->
+    <div style="font-size:12px;font-weight:700;color:#1a2e4a;margin-bottom:8px">&#9989; Tareas generales</div>
+    <div class="agenda-filtros">
+      <label>Estado:
+        <select id="tarea-filtro-estado" onchange="renderTareas()">
+          <option value="">Todas</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="hoy">Hoy</option>
+          <option value="vencida">Vencidas</option>
+          <option value="cumplida">Cumplidas</option>
+        </select>
+      </label>
+      <label>Prioridad:
+        <select id="tarea-filtro-prio" onchange="renderTareas()">
+          <option value="">Todas</option>
+          <option value="alta">Alta</option>
+          <option value="media">Media</option>
+          <option value="baja">Baja</option>
+        </select>
+      </label>
+    </div>
+    <div id="tareas-list"></div>
+  </div>
+
+  <!-- HISTORIAL UNIFICADO -->
+  <div class="agenda-panel" id="agpanel-historial">
+    <div class="agenda-filtros">
+      <label>Dueño:
+        <select id="ag-hist-dueno" onchange="renderAgendaHistorial()">
+          <option value="">Todos</option>
+        </select>
+      </label>
+      <label>Canal:
+        <select id="ag-hist-canal" onchange="renderAgendaHistorial()">
+          <option value="">Todos</option>
+          <option value="Llamada">Llamada</option>
+          <option value="WhatsApp">WhatsApp</option>
+          <option value="Email">Email</option>
+          <option value="Reunión">Reunión</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </label>
+      <label>Buscar:
+        <input type="text" id="ag-hist-buscar" placeholder="Cliente o comentario..." style="width:180px" oninput="renderAgendaHistorial()">
+      </label>
+    </div>
+    <div id="agenda-historial-list"></div>
+  </div>
+
+  <!-- CALENDARIO TILDADOS -->
+  <div class="agenda-panel" id="agpanel-calendario">
+    <div class="agenda-filtros" style="margin-bottom:0">
+      <span id="ag-cal-badge" class="badge-mes"></span>
+      <button class="btn btn-nav" onclick="agCalPrev()">&#8249;</button>
+      <button class="btn btn-nav" onclick="agCalNext()">&#8250;</button>
+      <label>Dueño:
+        <select id="ag-cal-dueno" onchange="renderAgendaCalendario()">
+          <option value="">Todos</option>
+        </select>
+      </label>
+    </div>
+    <div class="cal-grid" id="agenda-cal-headers"></div>
+    <div class="cal-grid" id="agenda-cal-grid"></div>
+  </div>
+</div>
+</div>
+
+<!-- ===== PÁGINA MAPA ===== -->
+<div class="page" id="page-mapa">
+<div class="mapa-page">
+  <div class="mapa-controls">
+    <button class="mapa-btn active" id="mapa-btn-all" onclick="mapaFilter('all')">Todos</button>
+    <button class="mapa-btn" id="mapa-btn-agropecuaria" onclick="mapaFilter('agropecuaria')">Agropecuaria</button>
+    <button class="mapa-btn" id="mapa-btn-pyme" onclick="mapaFilter('pyme')">Pyme</button>
+    <button class="mapa-btn" id="mapa-btn-empresa" onclick="mapaFilter('empresa')">Empresa</button>
+    <button class="mapa-btn" id="mapa-btn-economico" onclick="mapaFilter('economico')">Económico</button>
+    <button class="mapa-btn" onclick="mapaReset()">⟳ Centrar</button>
+  </div>
+  <div class="mapa-legend">
+    <h4>Referencias</h4>
+    <div class="mapa-leg-item"><div class="mapa-leg-sq" style="background:#22c55e"></div> Agropecuaria</div>
+    <div class="mapa-leg-item"><div class="mapa-leg-sq" style="background:#f59e0b"></div> Pyme</div>
+    <div class="mapa-leg-item"><div class="mapa-leg-sq" style="background:#3b82f6"></div> Empresa</div>
+    <div class="mapa-leg-item"><div class="mapa-leg-sq" style="background:#8b5cf6"></div> Económico</div>
+    <div style="border-top:1px solid rgba(255,255,255,.1);margin:6px 0"></div>
+    <div class="mapa-leg-item"><div class="mapa-leg-dot" style="background:#94a3b8"></div> PF — Persona</div>
+    <div class="mapa-leg-item"><div class="mapa-leg-dot" style="background:#fbbf24;border-radius:2px"></div> PJ — Empresa</div>
+  </div>
+  <div class="mapa-info" id="mapa-info">
+    <div class="mapa-info-hdr">
+      <span id="mapa-info-title"></span>
+      <button onclick="document.getElementById('mapa-info').style.display='none'" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:14px">✕</button>
+    </div>
+    <div class="mapa-info-body" id="mapa-info-body"></div>
+  </div>
+  <svg id="mapa-svg" style="width:100%;height:100%"></svg>
+</div>
+</div>
+
+<!-- ===== MODAL CLIENTE ===== -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-sub" id="modal-sub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    </div>
+    <div class="modal-tabs">
+      <div class="modal-tab active" onclick="switchTab('historial')">&#128203; Historial</div>
+      <div class="modal-tab" onclick="switchTab('alertas')">&#128276; Alertas</div>
+      <div class="modal-tab" onclick="switchTab('actividad')">&#127981; Actividad</div>
+      <div class="modal-tab" onclick="switchTab('grupos')">&#128101; Grupos</div>
+      <div class="modal-tab" onclick="switchTab('tenencia')">&#128181; Tenencia</div>
+      <div class="modal-tab" onclick="switchTab('editar')">&#9998; Editar</div>
+      <div class="modal-tab" onclick="switchTab('nota')">&#128196; Observación</div>
+    </div>
+    <div class="modal-body">
+      <div class="tab-panel active" id="tab-historial"><div id="hist-list"></div></div>
+      <div class="tab-panel" id="tab-alertas"><div id="alerta-list"></div></div>
+      <div class="tab-panel" id="tab-actividad">
+        <p style="font-size:11px;color:#888;margin-bottom:16px">Rubro y rol del cliente. Elegí de la lista o escribí una categoría nueva.</p>
+
+        <datalist id="dl-rubros">
+          <option value="Agropecuario"><option value="Ganadería"><option value="Industrial">
+          <option value="Comercio"><option value="Servicios"><option value="Construcción">
+          <option value="Transporte"><option value="Salud"><option value="Educación">
+          <option value="Tecnología"><option value="Finanzas"><option value="Otro">
+        </datalist>
+        <datalist id="dl-roles">
+          <option value="Socio"><option value="Titular"><option value="Director">
+          <option value="Gerente"><option value="Accionista"><option value="Apoderado">
+          <option value="Empleado"><option value="Jubilado"><option value="Otro">
+        </datalist>
+
+        <div class="form-row">
+          <label>Tipo de persona
+            <select id="act-tipo" style="width:160px">
+              <option value="">— Sin definir —</option>
+              <option value="PF">Persona Física (PF)</option>
+              <option value="PJ">Persona Jurídica (PJ)</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-row">
+          <label style="flex:1">Rubro / sector
+            <input type="text" id="act-rubro" list="dl-rubros" placeholder="Elegí o escribí un rubro..." autocomplete="off" style="width:100%">
+          </label>
+          <label style="flex:1">Rol / vínculo
+            <input type="text" id="act-cargo" list="dl-roles" placeholder="Elegí o escribí un rol..." autocomplete="off" style="width:100%">
+          </label>
+        </div>
+        <button class="btn-add" onclick="saveActividad()">Guardar</button>
+        <span id="act-saved-msg" style="color:#1a7a3f;font-size:11px;margin-left:10px;display:none">&#10003; Guardado</span>
+      </div>
+      <div class="tab-panel" id="tab-grupos">
+        <p style="font-size:11px;color:#888;margin-bottom:12px">Asigná este cliente a uno o más grupos económicos o familiares.</p>
+        <div id="modal-grupos-chips" style="margin-bottom:12px;min-height:28px"></div>
+        <div class="grupo-assign-row">
+          <select id="modal-grupo-sel"><option value="">— Seleccionar grupo existente —</option></select>
+          <button class="btn-add" style="padding:6px 14px" onclick="asignarGrupoDesdeModal()">Agregar</button>
+        </div>
+        <details style="margin-top:16px;border:1px solid #dde;border-radius:8px;overflow:hidden">
+          <summary style="padding:9px 14px;font-size:11px;font-weight:700;color:#1a2e4a;cursor:pointer;background:#f7f9fc;list-style:none">&#43; Crear grupo nuevo desde acá</summary>
+          <div style="padding:14px;border-top:1px solid #eee">
+            <div class="form-row">
+              <label>Nombre del grupo
+                <input type="text" id="modal-grp-nombre" placeholder="Ej: Cerealistas Moldes" style="width:200px">
+              </label>
+              <label>Tipo
+                <select id="modal-grp-tipo" style="width:150px">
+                  <option value="empresa">Empresa / holding</option>
+                  <option value="familia">Familia</option>
+                  <option value="economico">Grupo económico</option>
+                  <option value="agropecuaria">Agropecuaria</option>
+                  <option value="pyme">Pyme</option>
+                  <option value="industrial">Industrial</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </label>
+            </div>
+            <div class="form-row">
+              <label style="width:100%">Descripción (opcional)
+                <textarea id="modal-grp-obs" placeholder="Sector, actividad..." style="min-height:40px"></textarea>
+              </label>
+            </div>
+            <button class="btn-add" onclick="crearYAsignarGrupo()">Crear y asignar a este cliente</button>
+          </div>
+        </details>
+        <div style="margin-top:12px;font-size:11px;color:#aaa">También podés gestionar todos los grupos desde la pestaña <b>Grupos</b>.</div>
+      </div>
+      <div class="tab-panel" id="tab-tenencia">
+        <p style="font-size:11px;color:#888;margin-bottom:14px">Podés ajustar la tenencia que se muestra. El valor base viene del Excel original.</p>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;font-weight:600;color:#444;margin-bottom:6px">Tenencia actual (USD)</div>
+          <div class="tenencia-edit-row">
+            <input type="number" id="ten-input" min="0" step="0.01" placeholder="0.00">
+            <button class="save" onclick="saveTenencia()">Guardar</button>
+            <button onclick="resetTenencia()">Restaurar base</button>
+          </div>
+          <div class="base-lbl" id="ten-base-lbl" style="margin-top:6px"></div>
+        </div>
+        <div style="font-size:11px;color:#666;border-top:1px solid #eee;padding-top:10px">El cambio se guarda en el navegador y se refleja en la tabla principal.</div>
+      </div>
+      <div class="tab-panel" id="tab-editar">
+        <p style="font-size:11px;color:#888;margin-bottom:16px">Editá los datos del cliente. Los cambios se guardan en el navegador y no modifican el Excel original.</p>
+        <div class="form-row">
+          <label style="flex:1">Dueño / asesor
+            <input type="text" id="edit-dueno" list="dl-duenos" autocomplete="off" style="width:100%">
+            <datalist id="dl-duenos"></datalist>
+          </label>
+          <label style="flex:1">Frecuencia
+            <select id="edit-frec" style="width:100%">
+              <option value="">—</option>
+              <option value="Semanal">Semanal</option>
+              <option value="Quincenal">Quincenal</option>
+              <option value="Mensual">Mensual</option>
+            </select>
+          </label>
+        </div>
+        <button class="btn-add" onclick="saveEditCliente()">Guardar cambios</button>
+        <span id="edit-saved-msg" style="color:#1a7a3f;font-size:11px;margin-left:10px;display:none">&#10003; Guardado</span>
+        <div style="margin-top:16px;font-size:11px;color:#aaa;border-top:1px solid #eee;padding-top:12px">
+          El dueño base del Excel era: <span id="edit-dueno-base" style="font-weight:600;color:#555"></span>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-nota">
+        <p style="font-size:11px;color:#888;margin-bottom:10px">Esta nota es solo tuya — no aparece en la tabla.</p>
+        <textarea class="nota-area" id="modal-nota" placeholder="Ej: Prefiere que lo llamen por la mañana..."></textarea>
+        <div class="nota-hint">Guardado al presionar el botón.</div>
+        <div style="display:flex;align-items:center">
+          <button class="btn-save-nota" onclick="saveModalNota()">Guardar observación</button>
+          <span class="nota-saved" id="nota-saved-msg">&#10003; Guardado</span>
+        </div>
+      </div>
+    </div>
+    <div class="new-contact-form" id="new-contact-form">
+      <div style="font-size:11px;font-weight:700;color:#1a2e4a;margin-bottom:10px">&#43; Registrar contacto</div>
+      <div class="form-row">
+        <label>Fecha <input type="date" id="frm-fecha" style="width:130px"></label>
+        <label>Canal
+          <select id="frm-canal" style="width:110px">
+            <option>Llamada</option><option>WhatsApp</option><option>Email</option><option>Reunión</option><option>Otro</option>
+          </select>
+        </label>
+        <label>Registrado por <input type="text" id="frm-usuario" placeholder="Tu nombre" style="width:130px"></label>
+      </div>
+      <div class="form-row">
+        <label style="width:100%">Comentario <textarea id="frm-comentario" placeholder="¿De qué trataron? ¿Qué quedó pendiente?"></textarea></label>
+      </div>
+      <button class="btn-add" onclick="addHistEntry()">Guardar contacto</button>
+    </div>
+    <div class="alerta-form" id="alerta-form" style="display:none">
+      <div class="alerta-form-title">&#43; Nueva alerta</div>
+      <div class="form-row">
+        <label>Fecha <input type="date" id="alt-fecha" style="width:140px"></label>
+        <label>Prioridad
+          <select id="alt-prio" style="width:100px">
+            <option value="alta">Alta</option><option value="media" selected>Media</option><option value="baja">Baja</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-row">
+        <label style="width:100%">Mensaje <textarea id="alt-msg" placeholder="Recordatorio..." style="min-height:54px"></textarea></label>
+      </div>
+      <button class="btn-add" onclick="addAlerta()">Guardar alerta</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const RAW = [{"nombre":"SERRA LUIS ALBERTO","tenencia":809247.02,"pct":"12,71%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"PETIT FOURS  SA","tenencia":148404.68,"pct":"2,33%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"MACARIO LUIS ALBERTO","tenencia":108502.0,"pct":"1,70%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"NICOLAU JAVIER NESTOR  931826","tenencia":104685.13,"pct":"1,64%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"SERRA CLARA","tenencia":93976.13,"pct":"1,48%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"SANDRONI MARIA ISABEL","tenencia":93579.87,"pct":"1,47%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"SERRA PALOMA","tenencia":93492.3,"pct":"1,47%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"MILESY BERNARDO  931819","tenencia":25841.76,"pct":"0,41%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"BOZZER ELSO ALEJANDRO  932041","tenencia":16043.69,"pct":"0,25%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"PASCUAL MARIA FERNANDA  - 944744","tenencia":13602.08,"pct":"0,21%","dueno":"All Bankers","frecuencia":""},{"nombre":"REALE DANIELA","tenencia":4686.97,"pct":"0,07%","dueno":"All Bankers","frecuencia":""},{"nombre":"ROZADILLA BLAS OMAR  - 944988","tenencia":23314.69,"pct":"0,37%","dueno":"Blas Rozadilla","frecuencia":""},{"nombre":"MUGICA DIAZ PATRICIO MATIAS  - 946330","tenencia":3898.41,"pct":"0,06%","dueno":"Blas Rozadilla","frecuencia":""},{"nombre":"ACQUARONE FERNANDO OSCAR","tenencia":356017.92,"pct":"5,59%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MERONI NORA ELENA","tenencia":229951.24,"pct":"3,61%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MANCIONI JORGE ALBERTO","tenencia":210585.63,"pct":"3,31%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MANCIONI MARIA FLORENCIA","tenencia":71691.77,"pct":"1,13%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ACQUARONE IGNACIO FERNANDO","tenencia":69193.12,"pct":"1,09%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"FRUMENTO ANA MARIA  - 944634","tenencia":52803.54,"pct":"0,83%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"RIART JOSE LUIS","tenencia":49515.35,"pct":"0,78%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"LOBERTTI ALEJANDRO DAVID","tenencia":37814.9,"pct":"0,59%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ALBAJARI KAISER MARTIN ERNESTO  - 944388","tenencia":33796.86,"pct":"0,53%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"DOMINGUEZ CINTIA VERONICA","tenencia":23671.36,"pct":"0,37%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"DEL PAPA ANA LEA  931905","tenencia":14866.63,"pct":"0,23%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"PEREYRA MARIA SOL","tenencia":13283.8,"pct":"0,21%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"REPIZO JAVIER ALEJANDRO","tenencia":13041.9,"pct":"0,20%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"CROSA FERNANDO","tenencia":12228.51,"pct":"0,19%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"CADIROLA GISELA","tenencia":7965.91,"pct":"0,13%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"BEVILACQUA GUSTAVO OMAR","tenencia":5530.94,"pct":"0,09%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ACCORINTI BELLORINI MARIA DELFINA","tenencia":2689.95,"pct":"0,04%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"VENA GIULIANO  931837","tenencia":1901.77,"pct":"0,03%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MANCIONI JOAQUIN","tenencia":1819.18,"pct":"0,03%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ROMON DIEGO CARLOS","tenencia":880.47,"pct":"0,01%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"FIDEICOMISO PARQUE INDUSTRIAL VACA MUERTA","tenencia":12.88,"pct":"0,00%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"PASTOR ISABEL ADELA","tenencia":0.0,"pct":"0,00%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"NIEDFELD PATRICIA BERNARDA","tenencia":0.0,"pct":"0,00%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"BERLINGIERI MARIA LAURA","tenencia":3379.62,"pct":"0,05%","dueno":"Elisa Sanchez","frecuencia":""},{"nombre":"LINERA MARIA BELEN  - 946710","tenencia":1213.88,"pct":"0,02%","dueno":"Emilia Linera","frecuencia":""},{"nombre":"ULLOA OMAR WENCESLAO  931972","tenencia":100710.86,"pct":"1,58%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"CELAA ALEJANDRA","tenencia":67025.91,"pct":"1,05%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"GERLERO FLAVIO ADRIAN","tenencia":5871.15,"pct":"0,09%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"ACOPIAR SA","tenencia":585.77,"pct":"0,01%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"PROAGRO SRL","tenencia":0.0,"pct":"0,00%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"AGROTECNOLOGIA Y SERVICIOS SA","tenencia":0.0,"pct":"0,00%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"CARIDE MAURICIO ALBERTO  931887","tenencia":3264.34,"pct":"0,05%","dueno":"Ezequiel Rapetti","frecuencia":""},{"nombre":"MELO ANIBAL HORACIO","tenencia":108723.7,"pct":"1,71%","dueno":"Guadalupe Guardiol","frecuencia":""},{"nombre":"PROCESS SRL","tenencia":257183.83,"pct":"4,04%","dueno":"Ignacio Diaz Hermelo","frecuencia":""},{"nombre":"RIENZI IGNACIO BENJAMIN","tenencia":952.52,"pct":"0,01%","dueno":"Ignacio Rienzi","frecuencia":""},{"nombre":"ALOE SALVADOR CRISTIAN  931727","tenencia":0.0,"pct":"0,00%","dueno":"Jorge Culasso","frecuencia":""},{"nombre":"INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -","tenencia":837153.6,"pct":"13,15%","dueno":"Juan Cruz Varesi","frecuencia":"Semanal"},{"nombre":"GALEAZZI EDUARDO RICHARD","tenencia":59552.3,"pct":"0,94%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"NICOLINO ENRRE LUIS E HIJO SRL","tenencia":37151.94,"pct":"0,58%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"VARESI JUAN CRUZ","tenencia":30095.99,"pct":"0,47%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"NIERO TOMAS  931792","tenencia":10437.09,"pct":"0,16%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"PIERELLA SRL","tenencia":7196.28,"pct":"0,11%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"PRIMON EZEQUIEL FEDERICO  931937","tenencia":6769.48,"pct":"0,11%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"CORSI ALEJANDRO HUMBERTO  932078","tenencia":6577.41,"pct":"0,10%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"D Y M CANTARINI SS","tenencia":1182.34,"pct":"0,02%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"FIORNOVELLI MARIA LUJAN","tenencia":54.82,"pct":"0,00%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"SCARAFONI PABLO ANDRES  - 1821","tenencia":373278.28,"pct":"5,86%","dueno":"Juan Politti","frecuencia":""},{"nombre":"ALICER SRL","tenencia":0.0,"pct":"","dueno":"Leo Sancho","frecuencia":""},{"nombre":"AGROIDEAS SA","tenencia":1323.64,"pct":"0,02%","dueno":"Leonardo Sancho","frecuencia":""},{"nombre":"AG TRUCKS SRL","tenencia":0.0,"pct":"0,00%","dueno":"Leonardo Sancho","frecuencia":""},{"nombre":"AGROPECUARIA SAN ANTONIO SA","tenencia":0.0,"pct":"0,00%","dueno":"Leonardo Sancho","frecuencia":""},{"nombre":"ROLDAN JULIO ALEJANDRO  931847","tenencia":44995.41,"pct":"0,71%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"FUHR DIEGO MATIAS  932091","tenencia":11991.38,"pct":"0,19%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"VILLEGAS CESAR HERNAN  931941","tenencia":11973.64,"pct":"0,19%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"LORENZO MARIANO ANDRES  932105","tenencia":9427.29,"pct":"0,15%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"LOPEZ FEDERICO NICOLAS  931974","tenencia":2693.4,"pct":"0,04%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"FERIAS DEL NORTE SACIA","tenencia":38843.39,"pct":"0,61%","dueno":"Martin Artero","frecuencia":""},{"nombre":"SCILINGO HNOS SA","tenencia":12760.57,"pct":"0,20%","dueno":"Martin Artero","frecuencia":""},{"nombre":"SELLART IGNACIO","tenencia":841.68,"pct":"0,01%","dueno":"Martin Artero","frecuencia":""},{"nombre":"MENZIO SRL","tenencia":0.0,"pct":"0,00%","dueno":"Martin Artero","frecuencia":""},{"nombre":"SIEMBRAS ASOCIADAS REGION NUCLEO SA","tenencia":0.0,"pct":"0,00%","dueno":"Martin Artero","frecuencia":""},{"nombre":"FRATTINI MARIA JULIA","tenencia":61868.14,"pct":"0,97%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"FAITELLA FERNANDES ANDREA CAROLINA","tenencia":23061.15,"pct":"0,36%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"PRODUCIR INTEGRAL SA","tenencia":18622.25,"pct":"0,29%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"DESIGN QUALITY AND DEVELOPMENT SAS","tenencia":1721.56,"pct":"0,03%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"BENAVIDEZ LOLA","tenencia":1596.03,"pct":"0,03%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"ABUELO JULIO SA","tenencia":316.97,"pct":"0,00%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"SYNERGIA IT GROUP SRL","tenencia":110.85,"pct":"0,00%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"PI GROUP SRL","tenencia":0.0,"pct":"0,00%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"GARCIA CARRARA EMILIO MANUEL  - 947142","tenencia":718497.28,"pct":"11,28%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"GARCIA CARRARA JOSEFINA INES","tenencia":217126.93,"pct":"3,41%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"GARCIA CARRARA EMILIO MANUEL","tenencia":187571.57,"pct":"2,95%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"LAS COLONIAS DISTRIBUCIONES SA","tenencia":39482.04,"pct":"0,62%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"PAMPINFIER    SA","tenencia":0.0,"pct":"0,00%","dueno":"Melisa Flores","frecuencia":""},{"nombre":"COOPAR","tenencia":79618.25,"pct":"1,25%","dueno":"Miguel Fenner","frecuencia":""},{"nombre":"LA CAMBICHA SA","tenencia":41424.0,"pct":"0,65%","dueno":"Miguel Fenner","frecuencia":""},{"nombre":"CASADO JUAN MANUEL  931989","tenencia":19450.18,"pct":"0,31%","dueno":"Miguel Fenner","frecuencia":""},{"nombre":"BERTICHE GUSTAVO  932051","tenencia":82083.48,"pct":"1,29%","dueno":"Pablo Mas","frecuencia":""},{"nombre":"RIGHI RAQUEL MARTA  931825","tenencia":30052.36,"pct":"0,47%","dueno":"Pablo Mas","frecuencia":""},{"nombre":"PRATTA GRACIELA SUSANA  - 946153","tenencia":11594.06,"pct":"0,18%","dueno":"Pablo Mas","frecuencia":""},{"nombre":"BURANI ANDRES OSCAR  931908","tenencia":11191.44,"pct":"0,18%","dueno":"Raquel Quintana","frecuencia":""},{"nombre":"VEIGA JUAN MANUEL  931970","tenencia":20186.81,"pct":"0,32%","dueno":"Sergio Zeballos","frecuencia":""},{"nombre":"ZEBALLOS SERGIO GABRIEL  931933","tenencia":0.0,"pct":"","dueno":"Sergio Zeballos","frecuencia":""}];
+
+const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const FREC_OPTS=['','Semanal','Quincenal','Mensual'];
+const CANAL_COLORS={'Llamada':'#dff2e8','WhatsApp':'#e8f8e8','Email':'#e8edf8','Reunión':'#f3e8f8','Otro':'#f5f5f5'};
+const CANAL_TEXT={'Llamada':'#1a7a3f','WhatsApp':'#1a6a1f','Email':'#2a4a9a','Reunión':'#6a2a9a','Otro':'#555'};
+
+const _now=new Date();
+let state={year:_now.getFullYear(),month:_now.getMonth()};
+let checks={},frecOverride={},notas={},historial={},alertas={},tenenciaOverride={},duenoOverride={},giras=[],prospects=[],grupos=[],clientesManuales=[],actividades={},tareas=[];
+// actividades[nombre] = {rubro, cargo, empresa}
+// clientesManuales: [{id, nombre, dueno, tenencia, frecuencia}]
+// grupoMiembros: {grupoId: [nombre, ...]}  stored separately for easy lookup
+let grupoMiembros={};  // grupoId -> [nombre]
+
+
+// Pre-load PF/PJ classifications if actividades not yet saved
+const ACTIVIDADES_DEFAULT = {"SERRA LUIS ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "PETIT FOURS  SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "MACARIO LUIS ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "NICOLAU JAVIER NESTOR  931826": {"tipo": "PF", "rubro": "", "cargo": ""}, "SERRA CLARA": {"tipo": "PF", "rubro": "", "cargo": ""}, "SANDRONI MARIA ISABEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "SERRA PALOMA": {"tipo": "PF", "rubro": "", "cargo": ""}, "MILESY BERNARDO  931819": {"tipo": "PF", "rubro": "", "cargo": ""}, "BOZZER ELSO ALEJANDRO  932041": {"tipo": "PF", "rubro": "", "cargo": ""}, "PASCUAL MARIA FERNANDA  - 944744": {"tipo": "PF", "rubro": "", "cargo": ""}, "REALE DANIELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ROZADILLA BLAS OMAR  - 944988": {"tipo": "PF", "rubro": "", "cargo": ""}, "MUGICA DIAZ PATRICIO MATIAS  - 946330": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACQUARONE FERNANDO OSCAR": {"tipo": "PF", "rubro": "", "cargo": ""}, "MERONI NORA ELENA": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI JORGE ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI MARIA FLORENCIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACQUARONE IGNACIO FERNANDO": {"tipo": "PF", "rubro": "", "cargo": ""}, "FRUMENTO ANA MARIA  - 944634": {"tipo": "PF", "rubro": "", "cargo": ""}, "RIART JOSE LUIS": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOBERTTI ALEJANDRO DAVID": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALBAJARI KAISER MARTIN ERNESTO  - 944388": {"tipo": "PF", "rubro": "", "cargo": ""}, "DOMINGUEZ CINTIA VERONICA": {"tipo": "PF", "rubro": "", "cargo": ""}, "DEL PAPA ANA LEA  931905": {"tipo": "PF", "rubro": "", "cargo": ""}, "PEREYRA MARIA SOL": {"tipo": "PF", "rubro": "", "cargo": ""}, "REPIZO JAVIER ALEJANDRO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CROSA FERNANDO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CADIROLA GISELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "BEVILACQUA GUSTAVO OMAR": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACCORINTI BELLORINI MARIA DELFINA": {"tipo": "PF", "rubro": "", "cargo": ""}, "VENA GIULIANO  931837": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI JOAQUIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ROMON DIEGO CARLOS": {"tipo": "PF", "rubro": "", "cargo": ""}, "FIDEICOMISO PARQUE INDUSTRIAL VACA MUERTA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PASTOR ISABEL ADELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "NIEDFELD PATRICIA BERNARDA": {"tipo": "PF", "rubro": "", "cargo": ""}, "BERLINGIERI MARIA LAURA": {"tipo": "PF", "rubro": "", "cargo": ""}, "LINERA MARIA BELEN  - 946710": {"tipo": "PF", "rubro": "", "cargo": ""}, "ULLOA OMAR WENCESLAO  931972": {"tipo": "PF", "rubro": "", "cargo": ""}, "CELAA ALEJANDRA": {"tipo": "PF", "rubro": "", "cargo": ""}, "GERLERO FLAVIO ADRIAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACOPIAR SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PROAGRO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROTECNOLOGIA Y SERVICIOS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CARIDE MAURICIO ALBERTO  931887": {"tipo": "PF", "rubro": "", "cargo": ""}, "MELO ANIBAL HORACIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "PROCESS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "RIENZI IGNACIO BENJAMIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALOE SALVADOR CRISTIAN  931727": {"tipo": "PF", "rubro": "", "cargo": ""}, "INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GALEAZZI EDUARDO RICHARD": {"tipo": "PF", "rubro": "", "cargo": ""}, "NICOLINO ENRRE LUIS E HIJO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "VARESI JUAN CRUZ": {"tipo": "PF", "rubro": "", "cargo": ""}, "NIERO TOMAS  931792": {"tipo": "PF", "rubro": "", "cargo": ""}, "PIERELLA SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PRIMON EZEQUIEL FEDERICO  931937": {"tipo": "PF", "rubro": "", "cargo": ""}, "CORSI ALEJANDRO HUMBERTO  932078": {"tipo": "PF", "rubro": "", "cargo": ""}, "D Y M CANTARINI SS": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FIORNOVELLI MARIA LUJAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "SCARAFONI PABLO ANDRES  - 1821": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALICER SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROIDEAS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AG TRUCKS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROPECUARIA SAN ANTONIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "ROLDAN JULIO ALEJANDRO  931847": {"tipo": "PF", "rubro": "", "cargo": ""}, "FUHR DIEGO MATIAS  932091": {"tipo": "PF", "rubro": "", "cargo": ""}, "VILLEGAS CESAR HERNAN  931941": {"tipo": "PF", "rubro": "", "cargo": ""}, "LORENZO MARIANO ANDRES  932105": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOPEZ FEDERICO NICOLAS  931974": {"tipo": "PF", "rubro": "", "cargo": ""}, "FERIAS DEL NORTE SACIA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SCILINGO HNOS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SELLART IGNACIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "MENZIO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SIEMBRAS ASOCIADAS REGION NUCLEO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FRATTINI MARIA JULIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "FAITELLA FERNANDES ANDREA CAROLINA": {"tipo": "PF", "rubro": "", "cargo": ""}, "PRODUCIR INTEGRAL SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "DESIGN QUALITY AND DEVELOPMENT SAS": {"tipo": "PJ", "rubro": "", "cargo": ""}, "BENAVIDEZ LOLA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ABUELO JULIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SYNERGIA IT GROUP SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PI GROUP SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GARCIA CARRARA EMILIO MANUEL  - 947142": {"tipo": "PF", "rubro": "", "cargo": ""}, "GARCIA CARRARA JOSEFINA INES": {"tipo": "PF", "rubro": "", "cargo": ""}, "GARCIA CARRARA EMILIO MANUEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "LAS COLONIAS DISTRIBUCIONES SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PAMPINFIER    SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "COOPAR": {"tipo": "PJ", "rubro": "", "cargo": ""}, "LA CAMBICHA SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CASADO JUAN MANUEL  931989": {"tipo": "PF", "rubro": "", "cargo": ""}, "BERTICHE GUSTAVO  932051": {"tipo": "PF", "rubro": "", "cargo": ""}, "RIGHI RAQUEL MARTA  931825": {"tipo": "PF", "rubro": "", "cargo": ""}, "PRATTA GRACIELA SUSANA  - 946153": {"tipo": "PF", "rubro": "", "cargo": ""}, "BURANI ANDRES OSCAR  931908": {"tipo": "PF", "rubro": "", "cargo": ""}, "VEIGA JUAN MANUEL  931970": {"tipo": "PF", "rubro": "", "cargo": ""}, "ZEBALLOS SERGIO GABRIEL  931933": {"tipo": "PF", "rubro": "", "cargo": ""}};
+function load(){
+  try{
+    const c=localStorage.getItem('seg_checks');if(c)checks=JSON.parse(c);
+    const f=localStorage.getItem('seg_frec');if(f)frecOverride=JSON.parse(f);
+    const n=localStorage.getItem('seg_notas');if(n)notas=JSON.parse(n);
+    const h=localStorage.getItem('seg_hist');if(h)historial=JSON.parse(h);
+    const a=localStorage.getItem('seg_alertas');if(a)alertas=JSON.parse(a);
+    const t=localStorage.getItem('seg_tenencia');if(t)tenenciaOverride=JSON.parse(t);
+    const du=localStorage.getItem('seg_dueno');if(du)duenoOverride=JSON.parse(du);
+    const g=localStorage.getItem('seg_giras');if(g)giras=JSON.parse(g);
+    const p=localStorage.getItem('seg_prospects');if(p)prospects=JSON.parse(p);
+    const gr=localStorage.getItem('seg_grupos');if(gr)grupos=JSON.parse(gr);
+    const gm=localStorage.getItem('seg_grupo_miembros');if(gm)grupoMiembros=JSON.parse(gm);
+    const cm=localStorage.getItem('seg_manuales');if(cm)clientesManuales=JSON.parse(cm);
+    const ta=localStorage.getItem('seg_tareas');if(ta)tareas=JSON.parse(ta);
+    const ac=localStorage.getItem('seg_actividades');
+    if(ac){ actividades=JSON.parse(ac);
+      // fill in any missing tipo from defaults
+      Object.keys(ACTIVIDADES_DEFAULT).forEach(k=>{
+        if(!actividades[k]) actividades[k]={...ACTIVIDADES_DEFAULT[k]};
+        else if(!actividades[k].tipo) actividades[k].tipo=ACTIVIDADES_DEFAULT[k].tipo;
+      });
+    } else { actividades={...ACTIVIDADES_DEFAULT}; }
+  }catch(e){}
+}
+
+// ===== SUPABASE SYNC =====
+const SB_URL = 'https://dslqivsuangzqmwvporf.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzbHFpdnN1YW5nenFtd3Zwb3JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5Mzc4ODgsImV4cCI6MjA5OTUxMzg4OH0.2JzugyKQb_if2ZCXKXm7gTTcflmPflG_DwXpbQey8EA';
+const SB_KEYS = ['seg_checks','seg_frec','seg_notas','seg_hist','seg_alertas',
+  'seg_tenencia','seg_dueno','seg_giras','seg_prospects','seg_grupos',
+  'seg_grupo_miembros','seg_manuales','seg_actividades','seg_tareas'];
+
+let sbSyncing=false;
+
+async function sbGet(key){
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/seguimiento?key=eq.${key}&select=value`,{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    const d=await r.json();
+    return d&&d[0]?d[0].value:null;
+  }catch(e){return null;}
+}
+
+async function sbSet(key,value){
+  try{
+    await fetch(`${SB_URL}/rest/v1/seguimiento`,{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,
+        'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({key,value,updated_at:new Date().toISOString()})
+    });
+  }catch(e){}
+}
+
+async function sbPullAll(){
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/seguimiento?select=key,value`,{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    const rows=await r.json();
+    if(!Array.isArray(rows))return;
+    rows.forEach(row=>{
+      if(SB_KEYS.includes(row.key)&&row.value){
+        localStorage.setItem(row.key,row.value);
+      }
+    });
+  }catch(e){console.warn('Supabase pull error:',e);}
+}
+
+async function sbPushAll(){
+  const promises=SB_KEYS.map(k=>{
+    const v=localStorage.getItem(k);
+    return v?sbSet(k,v):Promise.resolve();
+  });
+  await Promise.all(promises);
+}
+
+// override save to also push to Supabase
+const _saveFn=k=>v=>{
+  try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}
+  sbSet(k,JSON.stringify(v));
+};
+
+// sync status indicator
+function setSyncStatus(status){
+  const el=document.getElementById('sync-status');
+  if(!el)return;
+  if(status==='syncing'){el.textContent='⟳ Sincronizando...';el.style.color='#f59e0b';}
+  else if(status==='ok'){el.textContent='✓ Sincronizado';el.style.color='#22c55e';setTimeout(()=>{el.textContent='';el.style.color='';el.textContent='● Online';},2500);}
+  else if(status==='error'){el.textContent='✗ Sin conexión';el.style.color='#ef4444';}
+}
+
+async function syncNow(){
+  if(sbSyncing)return;
+  sbSyncing=true;setSyncStatus('syncing');
+  try{
+    await sbPullAll();
+    load();render();
+    await sbPushAll();
+    setSyncStatus('ok');
+  }catch(e){setSyncStatus('error');}
+  sbSyncing=false;
+}
+// ===========================
+const save=_saveFn;
+const saveChecks=()=>save('seg_checks')(checks);
+const saveFrec=()=>save('seg_frec')(frecOverride);
+const saveNotas=()=>save('seg_notas')(notas);
+const saveHist=()=>save('seg_hist')(historial);
+const saveAlertas=()=>save('seg_alertas')(alertas);
+const saveTen=()=>save('seg_tenencia')(tenenciaOverride);
+const saveDueno=()=>save('seg_dueno')(duenoOverride);
+function getDueno(c){return duenoOverride[c.nombre]!==undefined?duenoOverride[c.nombre]:c.dueno;}
+const saveGiras=()=>save('seg_giras')(giras);
+const saveProspects=()=>save('seg_prospects')(prospects);
+const saveGrupos=()=>save('seg_grupos')(grupos);
+const saveGrupoMiembros=()=>save('seg_grupo_miembros')(grupoMiembros);
+const saveManuales=()=>save('seg_manuales')(clientesManuales);
+const saveActividades=()=>save('seg_actividades')(actividades);
+const saveTareas=()=>save('seg_tareas')(tareas);
+
+function getFrecuencia(c){return (frecOverride[c.nombre]!==undefined?frecOverride[c.nombre]:c.frecuencia)||'';}
+function buildWeekBars(nombre,frec){
+  const {year,month}=state;
+  const totalDias=daysInMonth(year,month);
+  const now=new Date();
+  function toLS(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+  const hoy=toLS(now.getFullYear(),now.getMonth(),now.getDate());
+  const histCliente=historial[nombre]||[];
+
+  // build weeks same as getSemanalPending
+  const weeks=[];
+  let d=1;
+  while(d<=totalDias){
+    const wStart=d;
+    const dow=new Date(year,month,d).getDay();
+    const daysUntilSun=dow===0?0:7-dow;
+    const wEnd=Math.min(d+daysUntilSun,totalDias);
+    weeks.push({wStart,wEnd,
+      wStartStr:toLS(year,month,wStart),
+      wEndStr:toLS(year,month,wEnd)});
+    d=wEnd+1;
+  }
+
+  const f=frec.trim().toLowerCase();
+  const isSemanal=f==='semanal';
+  const isQuincenal=f==='quincenal';
+  const isMensual=f==='mensual';
+
+  // for quincenal, group weeks in pairs; for mensual, one bar
+  let groups=[];
+  if(isMensual){
+    groups=[weeks]; // one group = all weeks
+  } else if(isQuincenal){
+    // two groups: first half and second half
+    const mid=Math.ceil(weeks.length/2);
+    groups=[weeks.slice(0,mid),weeks.slice(mid)];
+  } else {
+    groups=weeks.map(w=>[w]); // one bar per week (semanal or grey)
+  }
+
+  function weekGroupContacted(wList){
+    for(const w of wList){
+      for(let dd=w.wStart;dd<=w.wEnd;dd++){
+        if(isChecked(nombre,dd)) return 'manual';
+        // gira?
+        const pad=n=>String(n).padStart(2,'0');
+        const dayStr=`${year}-${pad(month+1)}-${pad(dd)}`;
+        const esGira=giras.some(g=>g.clientes.includes(nombre)&&g.desde&&g.desde<=dayStr&&(g.hasta||g.desde)>=dayStr);
+        if(esGira){const [gy,gm,gd]=giras.find(g=>g.clientes.includes(nombre)&&g.desde<=dayStr&&(g.hasta||g.desde)>=dayStr).desde.split('-').map(Number);if(checks[`${nombre}|${gy}|${gm-1}|${gd}`])return 'gira';}
+      }
+      const wOk=histCliente.some(h=>h.fecha&&h.fecha>=w.wStartStr&&h.fecha<=w.wEndStr);
+      if(wOk)return 'manual';
+    }
+    return false;
+  }
+
+  const bars=groups.map((wList,i)=>{
+    const wStartStr=wList[0].wStartStr;
+    const wEndStr=wList[wList.length-1].wEndStr;
+    const isFutura=wStartStr>hoy;
+    const isActual=wStartStr<=hoy&&wEndStr>=hoy;
+    const contacted=weekGroupContacted(wList);
+
+    let cls,title;
+    if(isFutura){
+      cls='futura';title=`Sem. ${wList[0].wStart}-${wList[wList.length-1].wEnd}: futura`;
+    } else if(contacted==='gira'){
+      cls='ok-gira';title=`Sem. ${wList[0].wStart}-${wList[wList.length-1].wEnd}: visitado en gira ✓`;
+    } else if(contacted){
+      cls='ok';title=`Sem. ${wList[0].wStart}-${wList[wList.length-1].wEnd}: contactado ✓`;
+    } else if(isActual&&(isSemanal||isQuincenal||isMensual)){
+      cls='actual';title=`Sem. ${wList[0].wStart}-${wList[wList.length-1].wEnd}: semana en curso`;
+    } else if(!f||(!(isSemanal||isQuincenal||isMensual))){
+      cls='pendiente';title=`Sem. ${wList[0].wStart}-${wList[wList.length-1].wEnd}`;
+    } else {
+      cls='alerta';title=`Sem. ${wList[0].wStart}-${wList[wList.length-1].wEnd}: sin contacto ⚠`;
+    }
+
+    return `<div class="week-bar ${cls}" title="${title}"></div>`;
+  }).join('');
+
+  return `<div class="week-bars">${bars}</div>`;
+}
+
+function isGiraDay(nombre,day){
+  // Check if any gira covers this client on this day of the currently displayed month
+  const {year,month}=state;
+  const pad=n=>String(n).padStart(2,'0');
+  const dayStr=`${year}-${pad(month+1)}-${pad(day)}`;
+  // Also check with gira's own year (for cross-year giras)
+  return giras.some(g=>{
+    if(!g.clientes.includes(nombre)||!g.desde) return false;
+    const hasta=g.hasta||g.desde;
+    // does the gira span this calendar day (ignore year, match month+day)?
+    const [gy,gm]=g.desde.split('-').map(Number);
+    const [hy,hm,hd]=hasta.split('-').map(Number);
+    // build equivalent dates in state year for comparison
+    const gDesdeInYear=`${year}-${pad(gm)}-${g.desde.split('-')[2]}`;
+    const gHastaInYear=`${year}-${pad(hm)}-${pad(hd)}`;
+    return gDesdeInYear<=dayStr&&gHastaInYear>=dayStr;
+  });
+}
+
+function isGiraChecked(nombre,day){
+  // tilde stored with gira's own date key
+  const {year,month}=state;
+  const pad=n=>String(n).padStart(2,'0');
+  const dayStr=`${year}-${pad(month+1)}-${pad(day)}`;
+  const gira=giras.find(g=>{
+    if(!g.clientes.includes(nombre)||!g.desde) return false;
+    const hasta=g.hasta||g.desde;
+    const [gy,gm]=g.desde.split('-').map(Number);
+    const [hy,hm,hd]=hasta.split('-').map(Number);
+    const gDesdeInYear=`${year}-${pad(gm)}-${g.desde.split('-')[2]}`;
+    const gHastaInYear=`${year}-${pad(hm)}-${pad(hd)}`;
+    return gDesdeInYear<=dayStr&&gHastaInYear>=dayStr;
+  });
+  if(!gira) return false;
+  // check tilde with gira's actual stored key
+  const [gy,gm,gd]=gira.desde.split('-').map(Number);
+  return !!checks[`${nombre}|${gy}|${gm-1}|${gd}`];
+}
+
+function getTenencia(c){return tenenciaOverride[c.nombre]!==undefined?tenenciaOverride[c.nombre]:c.tenencia;}
+function fmtUSD(v){return v>0?'US$ '+v.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0}):'-';}
+function todayStr(){return new Date().toISOString().split('T')[0];}
+function uid(){return Date.now().toString(36);}
+function chkKey(n,d){return `${n}|${state.year}|${state.month}|${d}`;}
+function isChecked(n,d){return !!checks[chkKey(n,d)];}
+function toggle(n,d){const k=chkKey(n,d);if(checks[k])delete checks[k];else checks[k]=true;saveChecks();}
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate();}
+function dayOfWeek(y,m,d){return new Date(y,m,d).getDay();}
+function isWeekend(y,m,d){const w=dayOfWeek(y,m,d);return w===0||w===6;}
+function weeksInMonth(y,m){
+  const days=daysInMonth(y,m),weeks=[];let week=[];
+  for(let d=1;d<=days;d++){
+    if(!isWeekend(y,m,d))week.push(d);
+    if(dayOfWeek(y,m,d)===5||d===days){if(week.length)weeks.push([...week]);week=[];}
+  }
+  return weeks;
+}
+function getSemanalPending(nombre){
+  const {year,month}=state;
+  const histCliente=historial[nombre]||[];
+  const totalDias=daysInMonth(year,month);
+  const now=new Date();
+  function toLocalStr(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+  const hoy=toLocalStr(now.getFullYear(),now.getMonth(),now.getDate());
+
+  // build weeks within the month (split on Sun boundaries)
+  const weeks=[];
+  let d=1;
+  while(d<=totalDias){
+    const wStart=d;
+    const dow=new Date(year,month,d).getDay();
+    const daysUntilSun=dow===0?0:7-dow;
+    const wEnd=Math.min(d+daysUntilSun,totalDias);
+    weeks.push({wStart,wEnd,
+      wStartStr:toLocalStr(year,month,wStart),
+      wEndStr:toLocalStr(year,month,wEnd)});
+    d=wEnd+1;
+  }
+
+  // was each week contacted? (tilde OR historial)
+  function weekContacted(w){
+    for(let dd=w.wStart;dd<=w.wEnd;dd++){if(isChecked(nombre,dd))return true;}
+    return histCliente.some(h=>h.fecha&&h.fecha>=w.wStartStr&&h.fecha<=w.wEndStr);
+  }
+  const contacted=weeks.map(weekContacted);
+
+  const pending=[];
+  for(let i=0;i<weeks.length;i++){
+    const w=weeks[i];
+    // skip weeks that haven't started yet
+    if(w.wStartStr>hoy) continue;
+    // skip current week (not yet finished)
+    if(w.wEndStr>=hoy) continue;
+    // skip if contacted this week
+    if(contacted[i]) continue;
+    // skip if the NEXT week was contacted (covers this one)
+    if(i+1<weeks.length && contacted[i+1]) continue;
+    pending.push(Array.from({length:w.wEnd-w.wStart+1},(_,k)=>w.wStart+k));
+  }
+  return pending;
+}
+
+function openNuevoCliente(){
+  document.getElementById('nc-nombre').value='';
+  document.getElementById('nc-dueno').value='';
+  document.getElementById('nc-tenencia').value='';
+  document.getElementById('nc-frec').value='';
+  document.getElementById('nc-error').style.display='none';
+  const ov=document.getElementById('nuevo-cliente-overlay');
+  ov.style.display='flex';
+  setTimeout(()=>document.getElementById('nc-nombre').focus(),50);
+}
+function closeNuevoCliente(){
+  document.getElementById('nuevo-cliente-overlay').style.display='none';
+}
+function guardarNuevoCliente(){
+  const nombre=document.getElementById('nc-nombre').value.trim().toUpperCase();
+  const err=document.getElementById('nc-error');
+  if(!nombre){err.textContent='El nombre es obligatorio.';err.style.display='block';return;}
+  if(allClientes().some(c=>c.nombre===nombre)){err.textContent='Ya existe un cliente con ese nombre.';err.style.display='block';return;}
+  clientesManuales.push({
+    id:uid(),nombre,
+    dueno:document.getElementById('nc-dueno').value.trim(),
+    tenencia:parseFloat(document.getElementById('nc-tenencia').value)||0,
+    pct:'',
+    frecuencia:document.getElementById('nc-frec').value
+  });
+  saveManuales();
+  populateFilter();populateGiraClientes();
+  closeNuevoCliente();
+  render();
+  // abrir su modal para que complete la info
+  setTimeout(()=>openModal(nombre),200);
+}
+document.getElementById('nuevo-cliente-overlay').addEventListener('click',function(e){if(e.target===this)closeNuevoCliente();});
+
+function allClientes(){return [...RAW,...clientesManuales];}
+function getClienteGrupos(nombre){return grupos.filter(g=>(grupoMiembros[g.id]||[]).includes(nombre));}
+
+// ===== TOP-LEVEL PAGE SWITCH =====
+function switchPage(p){
+  const pages=['seguimiento','agenda','giras','prospects','grupos','mapa'];
+  document.querySelectorAll('.top-tab').forEach((t,i)=>t.classList.toggle('active',pages[i]===p));
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  if(p==='agenda')renderAgenda();
+  if(p==='giras'){populateGiraClientes();populateGiraProspects();renderGiras();}
+  if(p==='prospects')renderProspects();
+  if(p==='grupos')renderGrupos();
+  if(p==='mapa')renderMapa();
+}
+
+// ===== MODAL =====
+let modalNombre=null,modalClienteBase=null;
+
+function openModal(nombre){
+  const c=allClientes().find(r=>r.nombre===nombre);
+  if(!c)return;
+  modalNombre=nombre;modalClienteBase=c;
+  const frec=getFrecuencia(c)||'—';
+  const ten=getTenencia(c);
+  document.getElementById('modal-title').textContent=nombre;
+  const a=actividades[nombre]||{};
+  const actSub=(a.cargo||a.rubro)?
+    `<span>${[a.cargo,a.rubro].filter(Boolean).join(' · ')}</span>`:'';
+  document.getElementById('modal-sub').innerHTML=
+    `<span>Dueño: <b>${getDueno(c)}</b></span>`+
+    `<span>Tenencia: <b>${fmtUSD(ten)}</b></span>`+
+    `<span>Frec.: <b>${frec}</b></span>`+
+    (c.pct?`<span>${c.pct}</span>`:'')+
+    actSub;
+  const hoy=todayStr();
+  document.getElementById('frm-fecha').value=hoy;
+  document.getElementById('alt-fecha').value=hoy;
+  document.getElementById('frm-comentario').value='';
+  document.getElementById('alt-msg').value='';
+  document.getElementById('modal-nota').value=notas[nombre]||'';
+  document.getElementById('nota-saved-msg').style.display='none';
+  switchTab('historial');
+  renderHistModal(nombre);
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');document.body.style.overflow='';modalNombre=null;}
+
+function switchTab(tab){
+  const tabs=['historial','alertas','actividad','grupos','tenencia','editar','nota'];
+  document.querySelectorAll('.modal-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('new-contact-form').style.display=tab==='historial'?'block':'none';
+  document.getElementById('alerta-form').style.display=tab==='alertas'?'block':'none';
+  if(tab==='alertas'&&modalNombre)renderAlertasModal(modalNombre);
+  if(tab==='grupos'&&modalNombre)renderModalGrupos(modalNombre);
+  if(tab==='actividad'&&modalNombre){
+    const a=actividades[modalNombre]||{};
+    document.getElementById('act-tipo').value=a.tipo||'';
+    document.getElementById('act-rubro').value=a.rubro||'';
+    document.getElementById('act-cargo').value=a.cargo||'';
+    document.getElementById('act-saved-msg').style.display='none';
+  }
+  if(tab==='editar'&&modalClienteBase){
+    const c=modalClienteBase;
+    document.getElementById('edit-dueno').value=getDueno(c);
+    document.getElementById('edit-frec').value=getFrecuencia(c);
+    document.getElementById('edit-dueno-base').textContent=c.dueno||'—';
+    document.getElementById('edit-saved-msg').style.display='none';
+    // populate dueno datalist
+    const dl=document.getElementById('dl-duenos');
+    const duenos=[...new Set(allClientes().map(x=>x.dueno).filter(Boolean))].sort();
+    dl.innerHTML=duenos.map(d=>`<option value="${d}">`).join('');
+  }
+  if(tab==='tenencia'&&modalClienteBase){
+    const c=modalClienteBase;
+    document.getElementById('ten-input').value=getTenencia(c);
+    document.getElementById('ten-base-lbl').textContent='Valor base: '+fmtUSD(c.tenencia);
+  }
+}
+
+// tenencia
+function saveEditCliente(){
+  if(!modalClienteBase)return;
+  const nombre=modalClienteBase.nombre;
+  const nuevoDueno=document.getElementById('edit-dueno').value.trim();
+  const nuevaFrec=document.getElementById('edit-frec').value;
+  if(nuevoDueno) duenoOverride[nombre]=nuevoDueno; else delete duenoOverride[nombre];
+  frecOverride[nombre]=nuevaFrec;
+  saveDueno();saveFrec();
+  // update modal header
+  document.getElementById('modal-sub').innerHTML=
+    `<span>Dueño: <b>${getDueno(modalClienteBase)}</b></span>`+
+    `<span>Tenencia: <b>${fmtUSD(getTenencia(modalClienteBase))}</b></span>`+
+    `<span>Frec.: <b>${getFrecuencia(modalClienteBase)||'—'}</b></span>`;
+  const msg=document.getElementById('edit-saved-msg');
+  msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000);
+  populateFilter();render();
+}
+
+function saveTenencia(){
+  if(!modalClienteBase)return;
+  const v=parseFloat(document.getElementById('ten-input').value);
+  if(isNaN(v)||v<0){alert('Ingresá un número válido.');return;}
+  tenenciaOverride[modalClienteBase.nombre]=v;
+  saveTen();
+  document.getElementById('modal-sub').innerHTML=
+    `<span>Dueño: <b>${modalClienteBase.dueno}</b></span>`+
+    `<span>Tenencia: <b>${fmtUSD(v)}</b></span>`;
+  render();
+}
+function resetTenencia(){
+  if(!modalClienteBase)return;
+  delete tenenciaOverride[modalClienteBase.nombre];
+  saveTen();
+  document.getElementById('ten-input').value=modalClienteBase.tenencia;
+  render();
+}
+
+// alertas
+function renderAlertasModal(nombre){
+  const hoy=todayStr();
+  const entries=(alertas[nombre]||[]).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const el=document.getElementById('alerta-list');
+  if(!entries.length){el.innerHTML='<div class="alerta-empty">No hay alertas. Usá el formulario de abajo.</div>';return;}
+  el.innerHTML=entries.map(e=>{
+    const esHoy=e.fecha===hoy,vencida=!e.done&&e.fecha<hoy;
+    const fd=e.fecha?e.fecha.split('-').reverse().join('/'):'—';
+    const tag=e.done?'<span class="alerta-tag">&#10003; Cumplida</span>':esHoy?'<span class="alerta-tag hoy-tag">&#128276; Hoy</span>':vencida?'<span class="alerta-tag vencida-tag">Vencida</span>':'';
+    return `<div class="alerta-item prio-${e.prio}${vencida?' vencida':''}${esHoy?' hoy':''}">
+      <button class="alerta-done" onclick="toggleAlertaDone('${nombre}','${e.id}')" title="${e.done?'Reabrir':'Cumplida'}">&#${e.done?'9744':'10003'};</button>
+      <button class="alerta-del" onclick="deleteAlerta('${nombre}','${e.id}')">&#10005;</button>
+      <div class="alerta-header"><span class="alerta-fecha-lbl">&#128197; ${fd}</span><span class="alerta-prio ${e.prio}">${e.prio.charAt(0).toUpperCase()+e.prio.slice(1)}</span>${tag}</div>
+      <div class="alerta-msg">${e.msg||'<em style="color:#bbb">Sin mensaje</em>'}</div>
+    </div>`;
+  }).join('');
+}
+function addAlerta(){
+  if(!modalNombre)return;
+  const fecha=document.getElementById('alt-fecha').value;
+  if(!fecha){alert('Elegí una fecha.');return;}
+  if(!alertas[modalNombre])alertas[modalNombre]=[];
+  alertas[modalNombre].push({id:uid(),fecha,prio:document.getElementById('alt-prio').value,msg:document.getElementById('alt-msg').value.trim(),done:false});
+  saveAlertas();document.getElementById('alt-msg').value='';renderAlertasModal(modalNombre);renderAlertasBanner();render();
+}
+function deleteAlerta(nombre,id){
+  if(!confirm('¿Eliminar?'))return;
+  alertas[nombre]=(alertas[nombre]||[]).filter(e=>e.id!==id);
+  saveAlertas();renderAlertasModal(nombre);renderAlertasBanner();render();
+}
+function toggleAlertaDone(nombre,id){
+  const e=(alertas[nombre]||[]).find(x=>x.id===id);
+  if(e){e.done=!e.done;saveAlertas();renderAlertasModal(nombre);renderAlertasBanner();render();}
+}
+function renderAlertasBanner(){
+  const hoy=todayStr(),urgentes=[];
+  RAW.forEach(c=>(alertas[c.nombre]||[]).forEach(a=>{if(!a.done&&a.fecha<=hoy)urgentes.push({nombre:c.nombre,alerta:a});}));
+  urgentes.sort((a,b)=>a.alerta.fecha.localeCompare(b.alerta.fecha));
+  const banner=document.getElementById('alertas-banner'),list=document.getElementById('alertas-banner-list');
+  if(!urgentes.length){banner.classList.remove('visible');return;}
+  banner.classList.add('visible');
+  list.innerHTML=urgentes.slice(0,6).map(u=>{
+    const fd=u.alerta.fecha.split('-').reverse().join('/');
+    const tag=u.alerta.fecha===hoy?'[HOY]':'['+fd+']';
+    return `<li onclick="openModal('${u.nombre.replace(/'/g,"\\'")}');setTimeout(()=>switchTab('alertas'),50)">${tag} <b>${u.nombre}</b> — ${u.alerta.msg||'Sin mensaje'}</li>`;
+  }).join('')+(urgentes.length>6?`<li style="text-decoration:none;color:#aaa">...y ${urgentes.length-6} más</li>`:'');
+}
+
+// historial
+function renderHistModal(nombre){
+  const entries=(historial[nombre]||[]).slice().reverse();
+  const el=document.getElementById('hist-list');
+  if(!entries.length){el.innerHTML='<div class="hist-empty">Sin contactos registrados.</div>';return;}
+  el.innerHTML=entries.map(e=>{
+    const bgC=CANAL_COLORS[e.canal]||'#f5f5f5',txC=CANAL_TEXT[e.canal]||'#555';
+    const fd=e.fecha?e.fecha.split('-').reverse().join('/'):'—';
+    return `<div class="hist-entry">
+      <button class="hist-del" onclick="deleteHistEntry('${nombre}','${e.id}')">&#10005;</button>
+      <div class="hist-entry-header"><span class="hist-date">&#128197; ${fd}</span><span class="hist-canal" style="background:${bgC};color:${txC}">${e.canal}</span>${e.usuario?`<span class="hist-user">por ${e.usuario}</span>`:''}</div>
+      <div class="hist-text">${e.comentario||'<em style="color:#bbb">Sin comentario</em>'}</div>
+    </div>`;
+  }).join('');
+}
+function addHistEntry(){
+  if(!modalNombre)return;
+  const fecha=document.getElementById('frm-fecha').value,comentario=document.getElementById('frm-comentario').value.trim();
+  if(!comentario&&!fecha){alert('Completá fecha o comentario.');return;}
+  if(!historial[modalNombre])historial[modalNombre]=[];
+  historial[modalNombre].push({id:uid(),fecha,canal:document.getElementById('frm-canal').value,usuario:document.getElementById('frm-usuario').value.trim(),comentario});
+  saveHist();document.getElementById('frm-comentario').value='';renderHistModal(modalNombre);render();
+}
+function deleteHistEntry(nombre,id){
+  if(!confirm('¿Eliminar?'))return;
+  historial[nombre]=(historial[nombre]||[]).filter(e=>e.id!==id);
+  saveHist();renderHistModal(nombre);render();
+}
+function saveActividad(){
+  if(!modalNombre)return;
+  const rubro=document.getElementById('act-rubro').value.trim();
+  const cargo=document.getElementById('act-cargo').value.trim();
+  const tipo=document.getElementById('act-tipo').value;
+  actividades[modalNombre]={tipo,rubro,cargo};
+  saveActividades();
+  // persist custom values into datalists so they show next time
+  if(rubro){
+    const dl=document.getElementById('dl-rubros');
+    if(dl&&![...dl.options].some(o=>o.value===rubro)){const o=document.createElement('option');o.value=rubro;dl.appendChild(o);}
+  }
+  if(cargo){
+    const dl=document.getElementById('dl-roles');
+    if(dl&&![...dl.options].some(o=>o.value===cargo)){const o=document.createElement('option');o.value=cargo;dl.appendChild(o);}
+  }
+  const msg=document.getElementById('act-saved-msg');
+  msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000);
+  render();
+}
+
+function saveModalNota(){
+  if(!modalNombre)return;
+  const val=document.getElementById('modal-nota').value.trim();
+  if(val)notas[modalNombre]=val;else delete notas[modalNombre];
+  saveNotas();
+  const msg=document.getElementById('nota-saved-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000);render();
+}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+let editingGiraId=null;
+
+function populateGiraClientes(){
+  const el=document.getElementById('gira-cliente-list');
+  el.innerHTML=allClientes().map(c=>`<label><input type="checkbox" value="${c.nombre}"> ${c.nombre}${clientesManuales.some(m=>m.nombre===c.nombre)?' ⚑':''}</label>`).join('');
+}
+function populateGiraProspects(){
+  const el=document.getElementById('gira-prospect-list');
+  el.innerHTML=prospects.map(p=>`<label style="color:#6a2a9a"><input type="checkbox" class="gira-pr-chk" value="${p.id}"> ${p.nombre}</label>`).join('') || '<span style="color:#aaa;font-size:11px">No hay prospects cargados.</span>';
+}
+function filtrarGiraClientes(){
+  const q=document.getElementById('gira-search-clientes').value.toLowerCase();
+  document.querySelectorAll('#gira-cliente-list label').forEach(lbl=>{
+    lbl.style.display=lbl.textContent.toLowerCase().includes(q)?'':'none';
+  });
+}
+function filtrarGiraProspects(){
+  const q=document.getElementById('gira-search-prospects').value.toLowerCase();
+  document.querySelectorAll('#gira-prospect-list label').forEach(lbl=>{
+    lbl.style.display=lbl.textContent.toLowerCase().includes(q)?'':'none';
+  });
+}
+function registrarGiraEnClientes(giraData){
+  if(!giraData.desde) return;
+  const fecha=giraData.desde; // YYYY-MM-DD
+  const [y,m,d]=fecha.split('-').map(Number);
+  const mes=m-1; // 0-indexed for chkKey
+
+  giraData.clientes.forEach(nombre=>{
+    // tilde using gira's actual date (not state month)
+    const k=`${nombre}|${y}|${mes}|${d}`;
+    checks[k]=true;
+    // historial — avoid duplicate for same gira
+    if(!historial[nombre])historial[nombre]=[];
+    const yaExiste=historial[nombre].some(h=>h.giraId===giraData.id);
+    if(!yaExiste){
+      historial[nombre].push({
+        id:uid(),
+        giraId:giraData.id,
+        fecha,
+        canal:'Reunión',
+        usuario:giraData.responsable||'',
+        comentario:`Gira: ${giraData.nombre}`
+      });
+    }
+  });
+  saveChecks();saveHist();
+}
+
+function aplicarGirasExistentes(){
+  giras.forEach(g=>registrarGiraEnClientes(g));
+  render();
+  alert(`✓ Se aplicaron ${giras.length} gira(s). Los tildes y el historial están actualizados.`);
+}
+
+function addGira(){
+  const nombre=document.getElementById('gira-nombre').value.trim();
+  if(!nombre){alert('Ingresá un nombre para la gira.');return;}
+  const selClientes=[...document.querySelectorAll('#gira-cliente-list input:checked')].map(i=>i.value);
+  const selProspects=[...document.querySelectorAll('#gira-prospect-list input:checked')].map(i=>i.value);
+  const data={nombre,desde:document.getElementById('gira-desde').value,hasta:document.getElementById('gira-hasta').value,responsable:document.getElementById('gira-resp').value.trim(),clientes:selClientes,prospects:selProspects,obs:document.getElementById('gira-obs').value.trim()};
+  if(editingGiraId){
+    const idx=giras.findIndex(g=>g.id===editingGiraId);
+    if(idx>-1){
+      // remove old historial entries from this gira before re-registering
+      const oldGira=giras[idx];
+      oldGira.clientes.forEach(nombre=>{
+        if(historial[nombre]) historial[nombre]=historial[nombre].filter(h=>h.giraId!==editingGiraId);
+      });
+      giras[idx]={...giras[idx],...data};
+    }
+    editingGiraId=null;
+    document.getElementById('gira-btn-save').textContent='Guardar gira';
+    document.getElementById('gira-btn-cancel').style.display='none';
+    document.getElementById('gira-form-title').textContent='+ Nueva gira';
+  } else {
+    const newId=uid();
+    data.id=newId;
+    giras.push(data);
+  }
+  const giraFinal=giras[giras.length-1]||(editingGiraId?null:giras.find(g=>g.id===data.id));
+  // register in clients
+  const giraGuardada=giras.find(g=>g.nombre===data.nombre&&g.desde===data.desde&&g.clientes===data.clientes)||giras[giras.length-1];
+  registrarGiraEnClientes(giraGuardada);
+  saveGiras();
+  document.getElementById('gira-nombre').value='';document.getElementById('gira-desde').value='';document.getElementById('gira-hasta').value='';document.getElementById('gira-resp').value='';document.getElementById('gira-obs').value='';document.getElementById('gira-search-clientes').value='';document.getElementById('gira-search-prospects').value='';
+  document.querySelectorAll('#gira-cliente-list input,#gira-prospect-list input').forEach(i=>i.checked=false);
+  filtrarGiraClientes();filtrarGiraProspects();
+  renderGiras();
+  render();
+}
+
+function editGira(id){
+  const g=giras.find(x=>x.id===id);
+  if(!g)return;
+  editingGiraId=id;
+  document.getElementById('gira-nombre').value=g.nombre||'';
+  document.getElementById('gira-desde').value=g.desde||'';
+  document.getElementById('gira-hasta').value=g.hasta||'';
+  document.getElementById('gira-resp').value=g.responsable||'';
+  document.getElementById('gira-obs').value=g.obs||'';
+  document.getElementById('gira-search-clientes').value='';
+  document.getElementById('gira-search-prospects').value='';
+  filtrarGiraClientes();filtrarGiraProspects();
+  document.querySelectorAll('#gira-cliente-list input').forEach(i=>i.checked=(g.clientes||[]).includes(i.value));
+  document.querySelectorAll('#gira-prospect-list input').forEach(i=>i.checked=(g.prospects||[]).includes(i.value));
+  document.getElementById('gira-btn-save').textContent='Actualizar gira';
+  document.getElementById('gira-btn-cancel').style.display='inline-block';
+  document.getElementById('gira-form-title').textContent='Editando gira';
+  document.getElementById('gira-form-section').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function cancelEditGira(){
+  editingGiraId=null;
+  document.getElementById('gira-nombre').value='';document.getElementById('gira-desde').value='';document.getElementById('gira-hasta').value='';document.getElementById('gira-resp').value='';document.getElementById('gira-obs').value='';
+  document.querySelectorAll('#gira-cliente-list input,#gira-prospect-list input').forEach(i=>i.checked=false);
+  document.getElementById('gira-btn-save').textContent='Guardar gira';
+  document.getElementById('gira-btn-cancel').style.display='none';
+  document.getElementById('gira-form-title').textContent='+ Nueva gira';
+}
+function deleteGira(id){
+  if(!confirm('¿Eliminar esta gira? También se quitarán las entradas de historial generadas automáticamente.'))return;
+  const g=giras.find(x=>x.id===id);
+  if(g){
+    // remove auto historial entries
+    g.clientes.forEach(nombre=>{
+      if(historial[nombre]) historial[nombre]=historial[nombre].filter(h=>h.giraId!==id);
+    });
+    saveHist();
+  }
+  giras=giras.filter(g=>g.id!==id);saveGiras();renderGiras();render();
+}
+function renderGiras(){
+  const el=document.getElementById('giras-list');
+  // refresh prospect checkboxes in case prospects changed
+  populateGiraProspects();
+  if(!giras.length){el.innerHTML='<div style="text-align:center;color:#aaa;padding:32px;font-size:12px">No hay giras registradas.</div>';return;}
+  el.innerHTML=[...giras].reverse().map(g=>{
+    const desde=g.desde?g.desde.split('-').reverse().join('/'):'';
+    const hasta=g.hasta?g.hasta.split('-').reverse().join('/'):'';
+    const rango=desde&&hasta?`${desde} → ${hasta}`:desde||hasta||'Sin fecha';
+    const prList=(g.prospects||[]).map(pid=>{const p=prospects.find(x=>x.id===pid);return p?`<span>${p.nombre}</span>`:null;}).filter(Boolean).join('');
+    const totalVisitas=(g.clientes||[]).length+(g.prospects||[]).length;
+    return `<div class="gira-card">
+      <div class="gira-card-header"><h3>&#9992; ${g.nombre}</h3><div style="display:flex;gap:8px"><button class="gira-del" onclick="editGira('${g.id}')" title="Editar" style="color:#cce;font-size:13px">&#9998;</button><button class="gira-del" onclick="deleteGira('${g.id}')">&#10005;</button></div></div>
+      <div class="gira-card-body">
+        <div class="gira-meta">
+          <span>&#128197; <b>${rango}</b></span>
+          ${g.responsable?`<span>&#128100; <b>${g.responsable}</b></span>`:''}
+          <span>&#128101; <b>${totalVisitas}</b> visita${totalVisitas!==1?'s':''}</span>
+        </div>
+        ${(g.clientes||[]).length?`<div class="gira-section-label">Clientes</div><div class="gira-clientes">${g.clientes.map(n=>`<span>${n}</span>`).join('')}</div>`:''}
+        ${prList?`<div class="gira-section-label">Prospects</div><div class="gira-prospects">${prList}</div>`:''}
+        ${g.obs?`<div class="gira-obs">${g.obs}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== PROSPECTS =====
+const estadoLabel={'primera-relacion':'Primera relación','interesado':'Interesado','en-proceso':'En proceso','convertido':'Convertido'};
+function addProspect(){
+  const nombre=document.getElementById('pr-nombre').value.trim();
+  if(!nombre){alert('Ingresá un nombre.');return;}
+  prospects.push({id:uid(),nombre,estado:document.getElementById('pr-estado').value,dueno:document.getElementById('pr-dueno').value.trim(),origen:document.getElementById('pr-origen').value.trim(),potencial:parseFloat(document.getElementById('pr-potencial').value)||0,fecha:document.getElementById('pr-fecha').value,obs:document.getElementById('pr-obs').value.trim()});
+  saveProspects();
+  ['pr-nombre','pr-dueno','pr-origen','pr-potencial','pr-fecha','pr-obs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pr-estado').value='primera-relacion';
+  renderProspects();
+}
+function deleteProspect(id){
+  if(!confirm('¿Eliminar?'))return;
+  prospects=prospects.filter(p=>p.id!==id);saveProspects();renderProspects();
+}
+function updateEstado(id,val){
+  const p=prospects.find(x=>x.id===id);if(p){p.estado=val;saveProspects();renderProspects();}
+}
+function convertirProspect(id){
+  const p=prospects.find(x=>x.id===id);
+  if(p){p.estado='convertido';saveProspects();renderProspects();}
+}
+function renderProspects(){
+  const filtro=document.getElementById('pr-filtro-estado').value;
+  const el=document.getElementById('prospects-list');
+  const lista=prospects.filter(p=>!filtro||p.estado===filtro);
+  if(!lista.length){el.innerHTML='<div style="text-align:center;color:#aaa;padding:32px;font-size:12px">No hay prospects'+(filtro?' con ese estado':'')+' registrados.</div>';return;}
+  el.innerHTML=[...lista].reverse().map(p=>{
+    const fd=p.fecha?p.fecha.split('-').reverse().join('/'):'';
+    return `<div class="prospect-card">
+      <div class="prospect-card-header">
+        <div class="prospect-nombre">${p.nombre}</div>
+        <span class="prospect-estado ${p.estado}">${estadoLabel[p.estado]||p.estado}</span>
+      </div>
+      <div class="prospect-meta">
+        ${p.dueno?`<span>&#128100; ${p.dueno}</span>`:''}
+        ${p.origen?`<span>&#128279; ${p.origen}</span>`:''}
+        ${p.potencial?`<span>&#128181; US$ ${p.potencial.toLocaleString('es-AR',{minimumFractionDigits:0})}</span>`:''}
+        ${fd?`<span>&#128197; Próx. acción: ${fd}</span>`:''}
+      </div>
+      ${p.obs?`<div class="prospect-obs">${p.obs}</div>`:''}
+      <div class="prospect-actions">
+        <select onchange="updateEstado('${p.id}',this.value)" style="font-size:10px;border:1px solid #ccd;border-radius:5px;padding:3px 6px">
+          ${Object.entries(estadoLabel).map(([v,l])=>`<option value="${v}"${v===p.estado?' selected':''}>${l}</option>`).join('')}
+        </select>
+        ${p.estado!=='convertido'?`<button class="conv" onclick="convertirProspect('${p.id}')">Convertir &#10003;</button>`:''}
+        <button class="del" onclick="deleteProspect('${p.id}')">Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== GRUPOS =====
+function addGrupo(){
+  const nombre=document.getElementById('grp-nombre').value.trim();
+  if(!nombre){alert('Ingresá un nombre para el grupo.');return;}
+  const id=uid();
+  grupos.push({id,nombre,tipo:document.getElementById('grp-tipo').value,obs:document.getElementById('grp-obs').value.trim()});
+  grupoMiembros[id]=[];
+  saveGrupos();saveGrupoMiembros();
+  document.getElementById('grp-nombre').value='';document.getElementById('grp-obs').value='';
+  renderGrupos();
+  // scroll al nuevo grupo
+  setTimeout(()=>{
+    const cards=document.querySelectorAll('#grupos-list .grupo-card');
+    if(cards.length) cards[cards.length-1].scrollIntoView({behavior:'smooth',block:'center'});
+  },100);
+}
+function deleteGrupo(id){
+  if(!confirm('¿Eliminar este grupo? Los miembros no se borran.'))return;
+  grupos=grupos.filter(g=>g.id!==id);
+  delete grupoMiembros[id];
+  saveGrupos();saveGrupoMiembros();renderGrupos();
+}
+function quitarMiembro(grupoId,nombre){
+  grupoMiembros[grupoId]=(grupoMiembros[grupoId]||[]).filter(n=>n!==nombre);
+  saveGrupoMiembros();renderGrupos();renderGrupoAsignaciones();render();
+}
+const tipoLabel={'empresa':'Empresa / holding','familia':'Familia','economico':'Grupo económico','agropecuaria':'Agropecuaria','pyme':'Pyme','industrial':'Industrial','otro':'Otro'};
+const tipoBg={'empresa':'#e8edf8','familia':'#fff3e0','economico':'#e8f4ee','agropecuaria':'#f0f7e0','pyme':'#fef9e0','industrial':'#f0eaf8','otro':'#f5f5f5'};
+const tipoColor={'empresa':'#2a4a9a','familia':'#8a4400','economico':'#1a5a3a','agropecuaria':'#3a6a00','pyme':'#7a6000','industrial':'#5a2a8a','otro':'#666'};
+const tipoHeader={'empresa':'#2a4a7a','familia':'#8a5020','economico':'#1a5a3a','agropecuaria':'#3a6a10','pyme':'#7a6010','industrial':'#5a2a8a','otro':'#555'};
+
+function renderGrupoAsignaciones(){
+  const el=document.getElementById('grp-asignaciones');
+  if(!el)return;
+  const q=(document.getElementById('grp-buscar-cliente')?.value||'').toLowerCase();
+  const todos=allClientes();
+  const filas=todos
+    .filter(c=>!q||c.nombre.toLowerCase().includes(q))
+    .map(c=>{
+      const gs=getClienteGrupos(c.nombre);
+      const esManual=clientesManuales.some(m=>m.nombre===c.nombre);
+      const badges=gs.map(g=>`<span style="background:${tipoBg[g.tipo]||'#eee'};color:${tipoColor[g.tipo]||'#333'};font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px;display:inline-block">${g.nombre}</span>`).join(' ');
+      return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0f0f0;flex-wrap:wrap">
+        <span style="font-size:11px;font-weight:600;color:#1a2e4a;min-width:220px">${c.nombre}${esManual?'<span class="manual-tag">MANUAL</span>':''}</span>
+        <span style="font-size:10px;color:#aaa;min-width:120px">${c.dueno||''}</span>
+        <span style="flex:1">${badges||'<span style="color:#ccc;font-size:10px">Sin grupo</span>'}</span>
+      </div>`;
+    });
+  el.innerHTML=filas.length?filas.join(''):'<div style="color:#aaa;font-size:11px;text-align:center;padding:16px">Sin resultados</div>';
+}
+
+function renderGrupos(){
+  const el=document.getElementById('grupos-list');
+  el.innerHTML='';
+  if(!grupos.length){
+    el.innerHTML='<div style="text-align:center;color:#aaa;padding:32px;font-size:12px">No hay grupos. Creá uno arriba.</div>';
+    renderGrupoAsignaciones();return;
+  }
+  const todos=allClientes();
+  grupos.forEach(g=>{
+    const miembros=grupoMiembros[g.id]||[];
+    const hdrColor=tipoHeader[g.tipo]||'#1a2e4a';
+
+    // ---- card container ----
+    const card=document.createElement('div');
+    card.className='grupo-card';
+
+    // ---- header ----
+    const hdr=document.createElement('div');
+    hdr.className='grupo-card-header';
+    hdr.style.background=hdrColor;
+
+    const hdrInfo=document.createElement('div');
+    hdrInfo.style.cssText='display:flex;align-items:center;gap:10px;flex-wrap:wrap';
+
+    const title=document.createElement('h3');
+    title.textContent=g.nombre;
+
+    const tipoPill=document.createElement('span');
+    tipoPill.textContent=tipoLabel[g.tipo]||g.tipo;
+    tipoPill.style.cssText='font-size:10px;opacity:.8;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:8px';
+
+    const cntPill=document.createElement('span');
+    cntPill.textContent=miembros.length+' miembro'+(miembros.length!==1?'s':'');
+    cntPill.style.cssText='font-size:10px;opacity:.7';
+
+    hdrInfo.append(title,tipoPill,cntPill);
+
+    const delBtn=document.createElement('button');
+    delBtn.className='grupo-del';
+    delBtn.textContent='✕';
+    delBtn.onclick=()=>deleteGrupo(g.id);
+
+    hdr.append(hdrInfo,delBtn);
+    card.appendChild(hdr);
+
+    // ---- body ----
+    const body=document.createElement('div');
+    body.className='grupo-card-body';
+
+    if(g.obs){
+      const obsDiv=document.createElement('div');
+      obsDiv.textContent=g.obs;
+      obsDiv.style.cssText='font-size:11px;color:#666;font-style:italic;margin-bottom:10px';
+      body.appendChild(obsDiv);
+    }
+
+    // chips de miembros actuales
+    const chipsDiv=document.createElement('div');
+    chipsDiv.className='grupo-miembros';
+    chipsDiv.style.marginBottom='14px';
+    if(!miembros.length){
+      const empty=document.createElement('span');
+      empty.style.cssText='color:#aaa;font-size:11px';
+      empty.textContent='Sin miembros aún.';
+      chipsDiv.appendChild(empty);
+    } else {
+      miembros.forEach(nombre=>{
+        const d=todos.find(c=>c.nombre===nombre)?.dueno||'';
+        const act=actividades[nombre]||{};
+        const actStr=[act.cargo,act.rubro].filter(Boolean).join(', ');
+        const chip=document.createElement('span');
+        chip.className='grupo-miembro';
+        chip.textContent=nombre+(d?' ('+d+')':'')+(actStr?' — '+actStr:'');
+        const x=document.createElement('button');
+        x.innerHTML='&#10005;';
+        x.onclick=(function(gid,n){return function(){quitarMiembro(gid,n);};})(g.id,nombre);
+        chip.appendChild(x);
+        chipsDiv.appendChild(chip);
+      });
+    }
+    body.appendChild(chipsDiv);
+
+    // ---- selector de agregar ----
+    const addLabel=document.createElement('div');
+    addLabel.style.cssText='font-size:11px;font-weight:600;color:#444;margin-bottom:6px;border-top:1px solid #eee;padding-top:12px';
+    addLabel.textContent='Agregar miembro:';
+    body.appendChild(addLabel);
+
+    const addRow=document.createElement('div');
+    addRow.style.cssText='display:flex;gap:8px;align-items:center;flex-wrap:wrap';
+
+    // SELECT con todos los clientes no asignados
+    const sel=document.createElement('select');
+    sel.style.cssText='flex:1;min-width:220px;font-size:12px;border:1px solid #bbc;border-radius:6px;padding:7px 10px;background:#fff';
+    
+    const defOpt=document.createElement('option');
+    defOpt.value='';
+    defOpt.textContent='— Seleccioná un cliente —';
+    sel.appendChild(defOpt);
+
+    const noMiembros=todos.filter(c=>!miembros.includes(c.nombre));
+    noMiembros.forEach(c=>{
+      const opt=document.createElement('option');
+      opt.value=c.nombre;
+      opt.textContent=c.nombre+(c.dueno?' ('+c.dueno+')':'');
+      sel.appendChild(opt);
+    });
+
+    const addBtn=document.createElement('button');
+    addBtn.className='btn-add';
+    addBtn.textContent='+ Agregar';
+    addBtn.style.cssText='padding:7px 18px;font-size:12px;white-space:nowrap';
+    addBtn.onclick=(function(gid,s){return function(){
+      const nombre=s.value;
+      if(!nombre)return;
+      if(!(grupoMiembros[gid]||[]).includes(nombre)){
+        if(!grupoMiembros[gid])grupoMiembros[gid]=[];
+        grupoMiembros[gid].push(nombre);
+        saveGrupoMiembros();
+      }
+      renderGrupos();renderGrupoAsignaciones();render();
+    };})(g.id,sel);
+
+    addRow.append(sel,addBtn);
+    body.appendChild(addRow);
+    card.appendChild(body);
+    el.appendChild(card);
+  });
+  renderGrupoAsignaciones();
+}
+
+function agregarMiembroGrupo(grupoId){
+  // kept for compatibility, not used
+}
+
+
+// modal grupos tab
+function renderModalGrupos(nombre){
+  const chips=getClienteGrupos(nombre);
+  const chipHtml=chips.length
+    ?chips.map(g=>`<span class="grupo-chip">${g.nombre}<button onclick="desasignarGrupoModal('${g.id}','${nombre.replace(/'/g,"\\'")}')">&#10005;</button></span>`).join('')
+    :'<span style="font-size:11px;color:#aaa">Sin grupos asignados</span>';
+  document.getElementById('modal-grupos-chips').innerHTML=chipHtml;
+  // populate selector
+  const sel=document.getElementById('modal-grupo-sel');
+  const asignados=chips.map(g=>g.id);
+  sel.innerHTML='<option value="">— Seleccionar grupo —</option>'+
+    grupos.filter(g=>!asignados.includes(g.id)).map(g=>`<option value="${g.id}">${g.nombre}</option>`).join('');
+}
+function crearYAsignarGrupo(){
+  if(!modalNombre)return;
+  const nombre=document.getElementById('modal-grp-nombre').value.trim();
+  if(!nombre){alert('Ingresá un nombre para el grupo.');return;}
+  // crear grupo
+  const id=uid();
+  grupos.push({id,nombre,tipo:document.getElementById('modal-grp-tipo').value,obs:document.getElementById('modal-grp-obs').value.trim()});
+  grupoMiembros[id]=[modalNombre];
+  saveGrupos();saveGrupoMiembros();
+  // limpiar form
+  document.getElementById('modal-grp-nombre').value='';
+  document.getElementById('modal-grp-obs').value='';
+  // cerrar el details
+  const det=document.querySelector('#tab-grupos details');
+  if(det)det.removeAttribute('open');
+  // refrescar
+  renderModalGrupos(modalNombre);
+  render();
+}
+
+function asignarGrupoDesdeModal(){
+  if(!modalNombre)return;
+  const grupoId=document.getElementById('modal-grupo-sel').value;
+  if(!grupoId)return;
+  if(!grupoMiembros[grupoId])grupoMiembros[grupoId]=[];
+  if(!grupoMiembros[grupoId].includes(modalNombre))grupoMiembros[grupoId].push(modalNombre);
+  saveGrupoMiembros();
+  renderModalGrupos(modalNombre);render();
+}
+function desasignarGrupoModal(grupoId,nombre){
+  grupoMiembros[grupoId]=(grupoMiembros[grupoId]||[]).filter(n=>n!==nombre);
+  saveGrupoMiembros();renderModalGrupos(nombre);render();
+}
+
+// ===== CLIENTES MANUALES =====
+function addClienteManual(){
+  const nombre=document.getElementById('mc-nombre').value.trim();
+  if(!nombre){alert('Ingresá un nombre.');return;}
+  if(allClientes().some(c=>c.nombre===nombre)){alert('Ya existe un cliente con ese nombre.');return;}
+  clientesManuales.push({id:uid(),nombre,dueno:document.getElementById('mc-dueno').value.trim(),tenencia:parseFloat(document.getElementById('mc-tenencia').value)||0,pct:'',frecuencia:document.getElementById('mc-frec').value});
+  saveManuales();
+  ['mc-nombre','mc-dueno','mc-tenencia'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mc-frec').value='';
+  populateFilter();populateGiraClientes();
+  render();renderGrupos();
+}
+
+// ===== RENDER SEGUIMIENTO =====
+function render(){
+  const {year,month}=state;
+  document.getElementById('mes-badge').textContent=`${MESES[month]} ${year}`;
+  const days=daysInMonth(year,month);
+  const workDays=Array.from({length:days},(_,i)=>i+1).filter(d=>!isWeekend(year,month,d));
+  const filtroDueno=document.getElementById('filtro-dueno').value;
+  const filtroCliente=document.getElementById('filtro-cliente').value.toLowerCase();
+  const filtered=allClientes().filter(r=>{
+    if(filtroDueno&&getDueno(r)!==filtroDueno)return false;
+    if(filtroCliente&&!r.nombre.toLowerCase().includes(filtroCliente))return false;
+    return true;
+  });
+  const byOwner={};
+  filtered.forEach(r=>{const d=getDueno(r);if(!byOwner[d])byOwner[d]=[];byOwner[d].push(r);});
+  let totalChecked=0,totalPending=0;const pendingList=[];
+
+  // sort order by frecuencia
+  const frecOrder={'Diario':0,'Semanal':1,'Quincenal':2,'Mensual':3,'':4};
+  function getFrecOrder(c){const f=getFrecuencia(c);return frecOrder[f]!==undefined?frecOrder[f]:4;}
+
+  // build week map for the month (same logic as getSemanalPending)
+  // always build Mon-Sun weeks for separators in header
+  function getMonthWeeks(){
+    const weeks=[];let d=1;
+    while(d<=daysInMonth(year,month)){
+      const wStart=d,dow=new Date(year,month,d).getDay();
+      const dEnd=Math.min(d+(dow===0?0:7-dow),daysInMonth(year,month));
+      weeks.push({wStart,wEnd:dEnd});d=dEnd+1;
+    }
+    return weeks;
+  }
+  const monthWeeks=getMonthWeeks();
+
+  // build periods according to frecuencia
+  function getPeriods(frec){
+    const f=frec.trim().toLowerCase();
+    const total=daysInMonth(year,month);
+    if(f==='semanal'||f==='diario') return monthWeeks; // Mon-Sun
+    if(f==='quincenal'){
+      // first half: 1-15, second half: 16-end
+      return [{wStart:1,wEnd:15},{wStart:16,wEnd:total}];
+    }
+    if(f==='mensual') return [{wStart:1,wEnd:total}];
+    return monthWeeks; // default for grey
+  }
+
+  function getWeekColor(nombre,frec,day){
+    const now=new Date();
+    function toLS(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+    const hoy=toLS(now.getFullYear(),now.getMonth(),now.getDate());
+    const f=frec.trim().toLowerCase();
+    const hasFrecuencia=f==='semanal'||f==='quincenal'||f==='mensual'||f==='diario';
+
+    const periods=getPeriods(frec);
+    const period=periods.find(w=>day>=w.wStart&&day<=w.wEnd);
+    if(!period) return '';
+    const wStartStr=toLS(year,month,period.wStart);
+    const wEndStr=toLS(year,month,period.wEnd);
+    const histCliente=historial[nombre]||[];
+
+    // contacted this period?
+    let contacted=false,giraContact=false;
+    for(let dd=period.wStart;dd<=period.wEnd;dd++){
+      if(isChecked(nombre,dd)){contacted=true;break;}
+      const pad=n=>String(n).padStart(2,'0');
+      const ds=`${year}-${pad(month+1)}-${pad(dd)}`;
+      const g=giras.find(g=>g.clientes.includes(nombre)&&g.desde&&g.desde<=ds&&(g.hasta||g.desde)>=ds);
+      if(g){const [gy,gm,gd]=g.desde.split('-').map(Number);if(checks[`${nombre}|${gy}|${gm-1}|${gd}`]){giraContact=true;break;}}
+    }
+    if(!contacted) contacted=histCliente.some(h=>h.fecha&&h.fecha>=wStartStr&&h.fecha<=wEndStr);
+
+    const isFutura=wStartStr>hoy;
+    const isActual=wStartStr<=hoy&&wEndStr>=hoy;
+
+    if(contacted||giraContact) return giraContact?'rgba(124,58,237,.25)':'rgba(26,122,63,.22)';
+    if(!hasFrecuencia) return '';
+    if(isFutura) return '';
+    if(isActual) return 'rgba(240,192,64,.35)';
+    return 'rgba(231,76,60,.22)'; // vencida
+  }
+
+  // is day the first of a period (for separator border)
+  function isFirstOfPeriod(frec,day){
+    return getPeriods(frec).some(w=>w.wStart===day);
+  }
+
+  function periodContacted(nombre,p){
+    const histC=historial[nombre]||[];
+    function toLS(d){return `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+    for(let dd=p.wStart;dd<=p.wEnd;dd++){
+      if(isChecked(nombre,dd)) return 'manual';
+      const ds=toLS(dd);
+      const g=giras.find(g=>g.clientes.includes(nombre)&&g.desde&&g.desde<=ds&&(g.hasta||g.desde)>=ds);
+      if(g){const [gy,gm,gd]=g.desde.split('-').map(Number);if(checks[`${nombre}|${gy}|${gm-1}|${gd}`])return 'gira';}
+    }
+    const ws=toLS(p.wStart),we=toLS(p.wEnd);
+    if(histC.some(h=>h.fecha&&h.fecha>=ws&&h.fecha<=we)) return 'manual';
+    return false;
+  }
+
+  function getPillInfo(nombre,frec){
+    const now=new Date();
+    const hoy=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    const f=frec.trim().toLowerCase();
+    const hasFrq=f==='semanal'||f==='quincenal'||f==='mensual'||f==='diario';
+    const periods=getPeriods(frec);
+    const map={};
+    periods.forEach(p=>{
+      const pwd=workDays.filter(d=>d>=p.wStart&&d<=p.wEnd);
+      if(!pwd.length) return;
+      const ws=`${year}-${String(month+1).padStart(2,'0')}-${String(p.wStart).padStart(2,'0')}`;
+      const we=`${year}-${String(month+1).padStart(2,'0')}-${String(p.wEnd).padStart(2,'0')}`;
+      const ct=periodContacted(nombre,p);
+      const isFutura=ws>hoy;
+      const isActual=ws<=hoy&&we>=hoy;
+      let bg;
+      if(ct==='gira')   bg='#ce93d8';
+      else if(ct)       bg='#a5d6a7';
+      else if(!hasFrq)  bg='#e8eaf0';
+      else if(isFutura) bg='#f0f2f5';
+      else if(isActual) bg='#ffe082';
+      else              bg='#ef9a9a';
+      pwd.forEach((d,i)=>{
+        map[d]={bg,isFirst:i===0,isLast:i===pwd.length-1};
+      });
+    });
+    return map;
+  }
+
+  // helper: is period contacted (checks ALL days including weekends)
+  const sections=Object.entries(byOwner).map(([dueno,clientes])=>{
+    let ownerPending=0;
+    const sorted=[...clientes].sort((a,b)=>getFrecOrder(a)-getFrecOrder(b));
+
+    const rows=sorted.map(c=>{
+      const frec=getFrecuencia(c),isSemanal=frec.trim().toLowerCase()==='semanal';
+      let rowAlert=false;
+      if(isSemanal){const pp=getSemanalPending(c.nombre);if(pp.length){rowAlert=true;ownerPending++;totalPending++;pendingList.push({nombre:c.nombre,dueno,semanas:pp});}}
+      const ten=getTenencia(c);
+      const pillMap=getPillInfo(c.nombre,frec);
+      const dayCells=workDays.map(d=>{
+        const chk=isChecked(c.nombre,d);
+        const esGiraDay=isGiraDay(c.nombre,d);
+        const chkGira=esGiraDay&&isGiraChecked(c.nombre,d);
+        const chkTotal=chk||chkGira;
+        if(chkTotal) totalChecked++;
+        const id=`chk_${c.nombre.replace(/[^a-z0-9]/gi,'_')}_${d}`;
+        const pill=pillMap[d]||{bg:'',isFirst:false,isLast:false};
+        const {bg,isFirst:isF,isLast:isL}=pill;
+        let tdStyle='';
+        if(bg){
+          const rL=isF?'7px':'0'; const rR=isL?'7px':'0';
+          // solid outer border, white gap between blocks
+          const bTop=`border-top:2px solid ${bg==='#ffe082'?'#f0a000':bg==='#ef9a9a'?'#d94040':bg==='#a5d6a7'?'#2e7d32':bg==='#ce93d8'?'#6a1b9a':'#aaa'};`;
+          const bBot=`border-bottom:2px solid ${bg==='#ffe082'?'#f0a000':bg==='#ef9a9a'?'#d94040':bg==='#a5d6a7'?'#2e7d32':bg==='#ce93d8'?'#6a1b9a':'#aaa'};`;
+          const borderColor=bg==='#ffe082'?'#f0a000':bg==='#ef9a9a'?'#d94040':bg==='#a5d6a7'?'#2e7d32':bg==='#ce93d8'?'#6a1b9a':'#bbb';
+          const bL=isF?`border-left:2px solid ${borderColor};padding-left:2px;`:'border-left:none;';
+          const bR=isL?`border-right:2px solid ${borderColor};padding-right:2px;`:'border-right:none;';
+          const mleft=isF?'margin-left:4px;':'';
+          const mright=isL?'margin-right:4px;':'';
+          tdStyle=`style="background:${bg};${bTop}${bBot}${bL}${bR}${mleft}${mright}border-radius:${rL} ${rR} ${rR} ${rL};padding-top:4px;padding-bottom:4px"`;
+        }
+        return `<td class="day-col" ${tdStyle}><input class="day-chk${esGiraDay?' gira-chk':''}" type="checkbox" id="${id}" ${chkTotal?'checked':''} data-nombre="${c.nombre.replace(/"/g,'&quot;')}" data-day="${d}"><label class="day-lbl${esGiraDay?' gira-lbl':''}" for="${id}">&#10003;</label></td>`;
+      }).join('');
+      const hasHist=(historial[c.nombre]||[]).length>0,hasNota=!!notas[c.nombre],hasAlerta=(alertas[c.nombre]||[]).some(a=>!a.done);
+      const clienteGrupos=getClienteGrupos(c.nombre);
+      const hasGrupo=clienteGrupos.length>0;
+      const esManual=clientesManuales.some(m=>m.nombre===c.nombre);
+      const act=actividades[c.nombre]||{};
+      const dots=(hasHist?'<span class="has-hist-dot" title="Historial"></span>':'')+(hasNota?'<span class="has-nota-dot" title="Observación"></span>':'')+(hasAlerta?'<span class="has-alerta-dot" title="Alerta pendiente"></span>':'')+(hasGrupo?'<span class="has-grupo-dot" title="'+clienteGrupos.map(g=>g.nombre).join(', ')+'"></span>':'');
+      const manualTag=esManual?'<span class="manual-tag">MANUAL</span>':'';
+      const grupoSelect=(()=>{
+        const gid=`grp_${c.nombre.replace(/[^a-z0-9]/gi,'_')}`;
+        const asignados=clienteGrupos.map(g=>g.id);
+        // show first assigned group as selected, rest as other options
+        const opts=['<option value="">— Sin grupo —</option>']
+          .concat(grupos.map(g=>`<option value="${g.id}"${asignados.includes(g.id)?' selected':''}>${g.nombre}</option>`))
+          .join('');
+        const badgeColor=clienteGrupos[0]?tipoColor[clienteGrupos[0].tipo]||'#555':'#999';
+        const badgeBg=clienteGrupos[0]?tipoBg[clienteGrupos[0].tipo]||'#eee':'transparent';
+        return `<select class="grupo-inline-sel" id="${gid}" data-nombre="${c.nombre.replace(/"/g,'&quot;')}"
+          style="font-size:10px;border:1px solid ${clienteGrupos[0]?badgeColor+'88':'#ccd'};border-radius:6px;padding:2px 5px;background:${badgeBg};color:${badgeColor};font-weight:${clienteGrupos[0]?'600':'400'};max-width:130px;cursor:pointer">${opts}</select>`;
+      })();
+      const alertIcon=rowAlert?'<span class="alert-icon" title="Contacto pendiente">&#9888;</span>':'';
+      const tenModificada=tenenciaOverride[c.nombre]!==undefined;
+      const tenDisplay=`<span class="tenencia-val${tenModificada?' tenencia-modificada':''}" data-nombre="${c.nombre.replace(/"/g,'&quot;')}" title="${tenModificada?'Editado':'Click para editar'}">${fmtUSD(ten)}</span>`;
+      const fid=`frec_${c.nombre.replace(/[^a-z0-9]/gi,'_')}`;
+      return `<tr class="${rowAlert?'alert-row':''}">
+        <td class="col-cliente"><span class="nombre-link" data-nombre="${c.nombre.replace(/"/g,'&quot;')}">${c.nombre}</span>${manualTag}${alertIcon}${dots}</td>
+        <td class="col-grupo">${grupoSelect}</td>
+        <td class="col-actividad">
+          <select class="act-inline-sel" data-nombre="${c.nombre.replace(/"/g,'&quot;')}" data-field="tipo"
+            style="font-size:10px;border:1px solid #ccd;border-radius:6px;padding:2px 4px;background:${act.tipo==='PF'?'#e8edf8':act.tipo==='PJ'?'#fff3e0':'#fff'};color:${act.tipo==='PF'?'#2a4a9a':act.tipo==='PJ'?'#8a4400':'#999'};font-weight:${act.tipo?'700':'400'};max-width:60px">
+            <option value="">—</option>
+            <option value="PF"${act.tipo==='PF'?' selected':''}>PF</option>
+            <option value="PJ"${act.tipo==='PJ'?' selected':''}>PJ</option>
+          </select>
+        </td>
+        <td class="col-actividad">
+          <input type="text" class="act-inline-inp" data-nombre="${c.nombre.replace(/"/g,'&quot;')}" data-field="rubro"
+            list="dl-rubros" value="${act.rubro||''}" placeholder="—"
+            style="font-size:10px;border:1px solid #ccd;border-radius:6px;padding:2px 6px;width:90px;background:#fff;color:#333">
+        </td>
+        <td class="col-actividad">
+          <input type="text" class="act-inline-inp" data-nombre="${c.nombre.replace(/"/g,'&quot;')}" data-field="cargo"
+            list="dl-roles" value="${act.cargo||''}" placeholder="—"
+            style="font-size:10px;border:1px solid #ccd;border-radius:6px;padding:2px 6px;width:80px;background:#fff;color:#333">
+        </td>
+        <td class="col-tenencia">${tenDisplay}</td>
+        <td class="col-frec"><select class="frec-select" id="${fid}" data-nombre="${c.nombre.replace(/"/g,'&quot;')}">${FREC_OPTS.map(o=>`<option value="${o}"${o===frec?' selected':''}>${o||'—'}</option>`).join('')}</select></td>
+        ${dayCells}
+      </tr>`;
+    }).join('');
+
+    // week/period starts for header separators (Mon-Sun splits)
+    const weekStarts=new Set(monthWeeks.map(w=>w.wStart));
+    // also quincenal split at 16
+    const qStarts=new Set([1,16]);
+
+    const dayHeaders=workDays.map(d=>{
+      const names=['D','L','M','Mi','J','V','S'];
+      const isWeekStart=weekStarts.has(d);
+      const isQStart=qStarts.has(d);
+      const sepStyle=isWeekStart
+        ?`border-left:2px solid #c8cdd8;padding-left:4px`
+        :'';
+      const numStyle=isWeekStart?`color:#1a2e4a;font-weight:700`:`color:#666;font-weight:400`;
+      return `<th class="day-col" style="${sepStyle}">`
+        +`<span style="${numStyle};font-size:11px">${d}</span>`
+        +`<br><span style="font-weight:500;color:#9aa;font-size:9px;text-transform:uppercase">${names[dayOfWeek(year,month,d)]}</span>`
+        +`</th>`;
+    }).join('');
+
+    return `<div class="owner-section">
+      <div class="owner-header" onclick="toggleSection(this)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <h2>${dueno}</h2>
+          <span style="font-size:11px;opacity:.6;font-weight:400">${clientes.length} cliente${clientes.length!==1?'s':''}</span>
+        </div>
+        <span class="owner-meta">${ownerPending?`<span style="background:rgba(255,255,255,.15);padding:2px 10px;border-radius:10px">&#9888; ${ownerPending} pendiente${ownerPending>1?'s':''}</span>`:''}</span>
+      </div>
+      <div class="owner-body"><table><thead><tr>
+        <th class="col-cliente" style="font-size:11px;color:#1a2e4a">Cliente</th>
+        <th class="col-grupo" style="font-size:11px;color:#1a2e4a">Grupo</th>
+        <th class="col-actividad" style="font-size:11px;color:#1a2e4a">PF/PJ</th>
+        <th class="col-actividad" style="font-size:11px;color:#1a2e4a">Actividad</th>
+        <th class="col-actividad" style="font-size:11px;color:#1a2e4a">Rol</th>
+        <th class="col-tenencia" style="font-size:11px;color:#1a2e4a">Tenencia USD</th>
+        <th class="col-frec" style="font-size:11px;color:#1a2e4a">Frecuencia</th>
+        ${dayHeaders}
+      </tr></thead><tbody>${rows}</tbody></table></div>
+    </div>`;
+  });
+
+  document.getElementById('main-content').innerHTML=sections.join('');
+  document.getElementById('stats-bar').innerHTML=`
+    <div class="stat"><div class="stat-n">${filtered.length}</div><div class="stat-l">Clientes activos</div></div>
+    <div class="stat ok"><div class="stat-n">${totalChecked}</div><div class="stat-l">Contactos registrados</div></div>
+    <div class="stat ${totalPending?'warn':''}"><div class="stat-n">${totalPending}</div><div class="stat-l">Alertas pendientes</div></div>
+    <div class="stat"><div class="stat-n">${workDays.length}</div><div class="stat-l">Días hábiles</div></div>`;
+  // store for agenda use
+  window._lastPendingList=pendingList;
+
+  document.querySelectorAll('input.day-chk').forEach(inp=>inp.addEventListener('change',function(){toggle(this.dataset.nombre,parseInt(this.dataset.day));render();}));
+  document.querySelectorAll('select.frec-select').forEach(sel=>sel.addEventListener('change',function(){frecOverride[this.dataset.nombre]=this.value;saveFrec();render();}));
+  document.querySelectorAll('.nombre-link').forEach(el=>el.addEventListener('click',function(){openModal(this.dataset.nombre);}));
+  document.querySelectorAll('.tenencia-val').forEach(el=>el.addEventListener('click',function(){openModal(this.dataset.nombre);setTimeout(()=>switchTab('tenencia'),50);}));
+  document.querySelectorAll('select.act-inline-sel').forEach(sel=>{
+    sel.addEventListener('change',function(){
+      const nombre=this.dataset.nombre;
+      const field=this.dataset.field;
+      if(!actividades[nombre]) actividades[nombre]={tipo:'',rubro:'',cargo:''};
+      actividades[nombre][field]=this.value;
+      saveActividades();render();
+    });
+  });
+  document.querySelectorAll('input.act-inline-inp').forEach(inp=>{
+    inp.addEventListener('change',function(){
+      const nombre=this.dataset.nombre;
+      const field=this.dataset.field;
+      if(!actividades[nombre]) actividades[nombre]={tipo:'',rubro:'',cargo:''};
+      actividades[nombre][field]=this.value.trim();
+      saveActividades();
+      // update datalist with custom value
+      if(field==='rubro'){const dl=document.getElementById('dl-rubros');if(dl&&![...dl.options].some(o=>o.value===this.value)){const o=document.createElement('option');o.value=this.value;dl.appendChild(o);}}
+      if(field==='cargo'){const dl=document.getElementById('dl-roles');if(dl&&![...dl.options].some(o=>o.value===this.value)){const o=document.createElement('option');o.value=this.value;dl.appendChild(o);}}
+    });
+  });
+  document.querySelectorAll('select.grupo-inline-sel').forEach(sel=>{
+    sel.addEventListener('change',function(){
+      const nombre=this.dataset.nombre;
+      const grupoId=this.value;
+      // remove from all groups first
+      grupos.forEach(g=>{
+        if(grupoMiembros[g.id]) grupoMiembros[g.id]=grupoMiembros[g.id].filter(n=>n!==nombre);
+      });
+      // assign to selected group
+      if(grupoId){
+        if(!grupoMiembros[grupoId]) grupoMiembros[grupoId]=[];
+        if(!grupoMiembros[grupoId].includes(nombre)) grupoMiembros[grupoId].push(nombre);
+      }
+      saveGrupoMiembros();
+      render();
+    });
+  });
+  renderAlertasBanner();
+}
+
+function toggleSection(header){const body=header.nextElementSibling;body.style.display=body.style.display==='none'?'':'none';}
+function populateFilter(){
+  const sel=document.getElementById('filtro-dueno');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">Todos</option>';
+  [...new Set(allClientes().map(r=>getDueno(r)).filter(Boolean))].sort().forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;sel.appendChild(o);});
+  sel.value=cur;
+}
+document.getElementById('btn-prev').onclick=()=>{state.month--;if(state.month<0){state.month=11;state.year--;}render();};
+document.getElementById('btn-next').onclick=()=>{state.month++;if(state.month>11){state.month=0;state.year++;}render();};
+document.getElementById('filtro-dueno').addEventListener('change',render);
+document.getElementById('filtro-cliente').addEventListener('input',render);
+
+function crearAlertaDesdeAgenda(){
+  const nombre=document.getElementById('ag-nueva-cliente').value.trim();
+  if(!nombre){alert('Ingresá el nombre del cliente.');return;}
+  const existe=allClientes().find(c=>c.nombre===nombre);
+  if(!existe){alert('Cliente no encontrado. Verificá el nombre.');return;}
+  const fecha=document.getElementById('ag-nueva-fecha').value;
+  if(!fecha){alert('Elegí una fecha.');return;}
+  if(!alertas[nombre])alertas[nombre]=[];
+  alertas[nombre].push({
+    id:uid(),fecha,
+    prio:document.getElementById('ag-nueva-prio').value,
+    msg:document.getElementById('ag-nueva-msg').value.trim(),
+    done:false
+  });
+  saveAlertas();
+  document.getElementById('ag-nueva-cliente').value='';
+  document.getElementById('ag-nueva-msg').value='';
+  const ok=document.getElementById('ag-nueva-ok');
+  ok.style.display='inline';setTimeout(()=>ok.style.display='none',2000);
+  renderAgendaAlertas();renderAlertasBanner();
+}
+
+function crearTarea(){
+  const desc=document.getElementById('tarea-desc').value.trim();
+  if(!desc){alert('Ingresá una descripción.');return;}
+  tareas.push({
+    id:uid(),
+    desc,
+    fecha:document.getElementById('tarea-fecha').value,
+    prio:document.getElementById('tarea-prio').value,
+    notas:document.getElementById('tarea-notas').value.trim(),
+    done:false
+  });
+  saveTareas();
+  document.getElementById('tarea-desc').value='';
+  document.getElementById('tarea-notas').value='';
+  const ok=document.getElementById('tarea-ok');
+  ok.style.display='inline';setTimeout(()=>ok.style.display='none',2000);
+  renderTareas();
+}
+
+function renderTareas(){
+  const hoy=todayStr();
+  const filtroEstado=document.getElementById('tarea-filtro-estado')?.value||'';
+  const filtroPrio=document.getElementById('tarea-filtro-prio')?.value||'';
+  const el=document.getElementById('tareas-list');
+  if(!el)return;
+
+  const MESES_CORTOS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+  let lista=[...tareas].sort((a,b)=>{
+    const ord={vencida:0,hoy:1,pendiente:2,cumplida:3};
+    const getOrd=t=>{
+      if(t.done)return ord.cumplida;
+      if(t.fecha===hoy)return ord.hoy;
+      if(t.fecha&&t.fecha<hoy)return ord.vencida;
+      return ord.pendiente;
+    };
+    return getOrd(a)-getOrd(b)||(a.fecha||'').localeCompare(b.fecha||'');
+  }).filter(t=>{
+    const estado=t.done?'cumplida':t.fecha===hoy?'hoy':t.fecha&&t.fecha<hoy?'vencida':'pendiente';
+    if(filtroEstado&&estado!==filtroEstado)return false;
+    if(filtroPrio&&t.prio!==filtroPrio)return false;
+    return true;
+  });
+
+  if(!lista.length){
+    el.innerHTML='<div style="text-align:center;color:#aaa;padding:24px;font-size:12px">No hay tareas'+( filtroEstado||filtroPrio?' con ese filtro':'')+'. Creá una arriba.</div>';
+    return;
+  }
+
+  el.innerHTML=lista.map(t=>{
+    const esHoy=t.fecha===hoy,vencida=!t.done&&t.fecha&&t.fecha<hoy;
+    const estado=t.done?'cumplida':esHoy?'hoy':vencida?'vencida':'pendiente';
+    const [ty,tm,td]=t.fecha?t.fecha.split('-').map(Number):[0,0,0];
+    const tag=t.done
+      ?'<span class="alerta-tag">&#10003; Cumplida</span>'
+      :esHoy?'<span class="alerta-tag hoy-tag">&#128276; Hoy</span>'
+      :vencida?'<span class="alerta-tag vencida-tag">Vencida</span>':'';
+    return `<div class="agenda-alerta-item ${estado}" style="border-left-color:${t.prio==='alta'?'#c0392b':t.prio==='media'?'#e67e22':'#2a6ab5'}">
+      <div class="agenda-fecha-col${esHoy?' hoy-col':vencida?' vencida-col':''}">
+        <div class="agenda-fecha-dia">${td||'—'}</div>
+        <div class="agenda-fecha-mes">${tm?MESES_CORTOS[tm-1]:''} ${ty||''}</div>
+      </div>
+      <div class="agenda-alerta-body">
+        <div style="font-size:12px;font-weight:700;color:#1a2e4a">${t.desc}</div>
+        <div class="agenda-alerta-meta">
+          <span class="agenda-alerta-prio ${t.prio}">${t.prio.charAt(0).toUpperCase()+t.prio.slice(1)}</span>
+          ${tag}
+        </div>
+        ${t.notas?`<div class="agenda-alerta-msg">${t.notas}</div>`:''}
+      </div>
+      <div class="agenda-alerta-actions">
+        <button class="${t.done?'':'done-btn'}" onclick="toggleTarea('${t.id}')">${t.done?'↩ Reabrir':'&#10003; Cumplir'}</button>
+        <button onclick="deleteTarea('${t.id}')">&#10005; Borrar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleTarea(id){
+  const t=tareas.find(x=>x.id===id);
+  if(t){t.done=!t.done;saveTareas();renderTareas();}
+}
+function deleteTarea(id){
+  if(!confirm('¿Eliminar esta tarea?'))return;
+  tareas=tareas.filter(x=>x.id!==id);saveTareas();renderTareas();
+}
+
+// ===== AGENDA =====
+let agCalState={year:_now.getFullYear(),month:_now.getMonth()};
+
+function renderAgenda(){
+  // populate dueno filters
+  const duenos=[...new Set(allClientes().map(c=>getDueno(c)).filter(Boolean))].sort();
+  ['ag-filtro-dueno','ag-hist-dueno','ag-cal-dueno'].forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">Todos</option>'+duenos.map(d=>`<option value="${d}">${d}</option>`).join('');
+    sel.value=cur;
+  });
+  // populate cliente datalist for new alert form
+  const dl=document.getElementById('dl-clientes-agenda');
+  if(dl) dl.innerHTML=allClientes().map(c=>`<option value="${c.nombre.replace(/"/g,'&quot;')}">`).join('');
+  // set default date to today
+  const hoy=todayStr();
+  const agFecha=document.getElementById('ag-nueva-fecha');
+  if(agFecha&&!agFecha.value) agFecha.value=hoy;
+  const tareaFecha=document.getElementById('tarea-fecha');
+  if(tareaFecha&&!tareaFecha.value) tareaFecha.value=hoy;
+
+  renderAgendaAlertas();
+  renderAgendaHistorial();
+  renderAgendaCalendario();
+  renderTareas();
+}
+
+function switchAgendaTab(tab){
+  document.querySelectorAll('.agenda-subtab').forEach((t,i)=>t.classList.toggle('active',['alertas','historial','calendario'][i]===tab));
+  document.querySelectorAll('.agenda-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('agpanel-'+tab).classList.add('active');
+  if(tab==='alertas'){renderAgendaAlertas();renderTareas();}
+  if(tab==='historial')renderAgendaHistorial();
+  if(tab==='calendario')renderAgendaCalendario();
+}
+
+function renderAgendaAlertas(){
+  // seguimiento incompleto panel
+  const pending=window._lastPendingList||[];
+  const pendEl=document.getElementById('ag-pending-panel');
+  if(pendEl){
+    if(pending.length){
+    const cards=pending.map(p=>{
+      const sems=p.semanas.map(w=>`<span class="pending-card-sem">${w[0]}-${w[w.length-1]}/${state.month+1}</span>`).join('');
+      const safeNombre=p.nombre.replace(/'/g,"\\'");
+      return `<div class="pending-card" onclick="openModal('${safeNombre}');switchPage('seguimiento')" title="Abrir ficha de ${p.nombre}">
+        <div class="pending-card-name">&#9888; ${p.nombre}</div>
+        <div class="pending-card-dueno">${p.dueno}</div>
+        <div class="pending-card-sems">${sems}</div>
+      </div>`;
+    }).join('');
+    pendEl.innerHTML=`<div class="pending-panel">
+      <div class="pending-panel-header">
+        <span style="font-size:16px">&#9888;</span>
+        <h3>Seguimiento incompleto — ${pending.length} cliente${pending.length!==1?'s':''} sin contacto semanal</h3>
+      </div>
+      <div class="pending-cards">${cards}</div>
+    </div>`;
+  } else {
+    pendEl.innerHTML='<div style="background:#e8f4ee;border:1px solid #a8d8a8;border-radius:8px;padding:10px 16px;font-size:12px;color:#1a5a3a;margin-bottom:4px">&#10003; Seguimiento al día — no hay contactos semanales pendientes.</div>';
+  }
+  }
+  const hoy=todayStr();
+  const filtroEstado=document.getElementById('ag-filtro-estado').value;
+  const filtroDueno=document.getElementById('ag-filtro-dueno').value;
+  const filtroPrio=document.getElementById('ag-filtro-prio').value;
+
+  // collect all alerts
+  const todos=allClientes();
+  let items=[];
+  todos.forEach(c=>{
+    if(filtroDueno&&c.dueno!==filtroDueno)return;
+    (alertas[c.nombre]||[]).forEach(a=>{
+      const esHoy=a.fecha===hoy;
+      const vencida=!a.done&&a.fecha<hoy;
+      const estado=a.done?'cumplida':esHoy?'hoy':vencida?'vencida':'pendiente';
+      if(filtroEstado&&estado!==filtroEstado)return;
+      if(filtroPrio&&a.prio!==filtroPrio)return;
+      items.push({cliente:c,alerta:a,estado,esHoy,vencida});
+    });
+  });
+
+  // sort: vencidas primero, luego hoy, luego futuras; dentro de cada grupo por fecha asc
+  const orden={vencida:0,hoy:1,pendiente:2,cumplida:3};
+  items.sort((a,b)=>orden[a.estado]-orden[b.estado]||a.alerta.fecha.localeCompare(b.alerta.fecha));
+
+  const el=document.getElementById('agenda-alertas-list');
+  if(!items.length){
+    el.innerHTML='<div style="text-align:center;color:#aaa;padding:40px;font-size:12px">No hay alertas con ese filtro.</div>';
+    return;
+  }
+
+  // group by date
+  const groups={};
+  items.forEach(item=>{
+    const k=item.alerta.fecha||'sin-fecha';
+    if(!groups[k])groups[k]=[];
+    groups[k].push(item);
+  });
+
+  const MESES_CORTOS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  let html='';
+  Object.entries(groups).forEach(([fecha,list])=>{
+    const esHoyGrp=fecha===hoy;
+    const esVencidaGrp=fecha<hoy&&fecha!==hoy;
+    const [y,m,d]=fecha!=='sin-fecha'?fecha.split('-').map(Number):[0,0,0];
+    const label=fecha==='sin-fecha'?'Sin fecha':esHoyGrp?'HOY — '+d+' de '+MESES_CORTOS[m-1]:d+' de '+MESES_CORTOS[m-1]+' '+y;
+    html+=`<div class="agenda-day-header${esHoyGrp?' hoy-lbl':''}">${esVencidaGrp?'⚠ ':esHoyGrp?'📅 ':''}${label}</div>`;
+    list.forEach(({cliente,alerta,estado,esHoy,vencida})=>{
+      const fd=alerta.fecha?alerta.fecha.split('-').reverse().join('/'):'—';
+      const [ay,am,ad]=alerta.fecha?alerta.fecha.split('-').map(Number):[0,0,0];
+      const mesStr=am?MESES_CORTOS[am-1]:'';
+      html+=`<div class="agenda-alerta-item ${estado}">
+        <div class="agenda-fecha-col ${esHoy?'hoy-col':vencida?'vencida-col':''}">
+          <div class="agenda-fecha-dia">${ad||'—'}</div>
+          <div class="agenda-fecha-mes">${mesStr} ${ay||''}</div>
+        </div>
+        <div class="agenda-alerta-body">
+          <div class="agenda-alerta-cliente" onclick="openModal('${cliente.nombre.replace(/'/g,"\\'")}');switchPage('seguimiento')">${cliente.nombre}</div>
+          <div class="agenda-alerta-meta">
+            <span>Dueño: ${cliente.dueno||'—'}</span>
+            <span class="agenda-alerta-prio ${alerta.prio}">${alerta.prio.charAt(0).toUpperCase()+alerta.prio.slice(1)}</span>
+            ${estado==='cumplida'?'<span style="color:#1a7a3f">✓ Cumplida</span>':estado==='vencida'?'<span style="color:#c0392b">Vencida</span>':esHoy?'<span style="color:#e67e22">Hoy</span>':''}
+          </div>
+          ${alerta.msg?`<div class="agenda-alerta-msg">${alerta.msg}</div>`:''}
+        </div>
+        <div class="agenda-alerta-actions">
+          <button class="done-btn" onclick="agToggleAlerta('${cliente.nombre.replace(/'/g,"\\'")}','${alerta.id}')">${alerta.done?'↩ Reabrir':'✓ Cumplir'}</button>
+          <button onclick="agDeleteAlerta('${cliente.nombre.replace(/'/g,"\\'")}','${alerta.id}')">✕ Borrar</button>
+        </div>
+      </div>`;
+    });
+  });
+  el.innerHTML=html;
+}
+
+function agToggleAlerta(nombre,id){
+  const e=(alertas[nombre]||[]).find(x=>x.id===id);
+  if(e){e.done=!e.done;saveAlertas();renderAgendaAlertas();renderAlertasBanner();}
+}
+function agDeleteAlerta(nombre,id){
+  if(!confirm('¿Eliminar esta alerta?'))return;
+  alertas[nombre]=(alertas[nombre]||[]).filter(e=>e.id!==id);
+  saveAlertas();renderAgendaAlertas();renderAlertasBanner();
+}
+
+function renderAgendaHistorial(){
+  const filtroDueno=document.getElementById('ag-hist-dueno').value;
+  const filtroCanal=document.getElementById('ag-hist-canal').value;
+  const buscar=document.getElementById('ag-hist-buscar').value.toLowerCase();
+  const CANAL_COLORS={'Llamada':'#dff2e8','WhatsApp':'#e8f8e8','Email':'#e8edf8','Reunión':'#f3e8f8','Otro':'#f5f5f5'};
+  const CANAL_TEXT={'Llamada':'#1a7a3f','WhatsApp':'#1a6a1f','Email':'#2a4a9a','Reunión':'#6a2a9a','Otro':'#555'};
+
+  let items=[];
+  allClientes().forEach(c=>{
+    if(filtroDueno&&c.dueno!==filtroDueno)return;
+    (historial[c.nombre]||[]).forEach(h=>{
+      if(filtroCanal&&h.canal!==filtroCanal)return;
+      if(buscar&&!c.nombre.toLowerCase().includes(buscar)&&!(h.comentario||'').toLowerCase().includes(buscar))return;
+      items.push({cliente:c,entrada:h});
+    });
+  });
+
+  items.sort((a,b)=>b.entrada.fecha.localeCompare(a.entrada.fecha));
+
+  const el=document.getElementById('agenda-historial-list');
+  if(!items.length){
+    el.innerHTML='<div style="text-align:center;color:#aaa;padding:40px;font-size:12px">No hay contactos registrados.</div>';
+    return;
+  }
+
+  const MESES_CORTOS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  el.innerHTML=items.map(({cliente,entrada})=>{
+    const [y,m,d]=entrada.fecha?entrada.fecha.split('-').map(Number):[0,0,0];
+    const bg=CANAL_COLORS[entrada.canal]||'#f5f5f5';
+    const tx=CANAL_TEXT[entrada.canal]||'#555';
+    return `<div class="hist-uni-item">
+      <div class="hist-uni-fecha">
+        <div class="hist-uni-dia">${d||'—'}</div>
+        <div class="hist-uni-mes">${m?MESES_CORTOS[m-1]:''} ${y||''}</div>
+      </div>
+      <div class="hist-uni-body">
+        <div class="hist-uni-cliente" onclick="openModal('${cliente.nombre.replace(/'/g,"\\'")}');switchPage('seguimiento')">${cliente.nombre}</div>
+        <div class="hist-uni-meta">
+          <span style="background:${bg};color:${tx};padding:1px 7px;border-radius:8px;font-weight:600">${entrada.canal}</span>
+          ${entrada.usuario?`<span>por ${entrada.usuario}</span>`:''}
+          <span>${cliente.dueno||''}</span>
+        </div>
+        ${entrada.comentario?`<div class="hist-uni-txt">${entrada.comentario}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// calendario tildados
+function agCalPrev(){agCalState.month--;if(agCalState.month<0){agCalState.month=11;agCalState.year--;}renderAgendaCalendario();}
+function agCalNext(){agCalState.month++;if(agCalState.month>11){agCalState.month=0;agCalState.year++;}renderAgendaCalendario();}
+
+function renderAgendaCalendario(){
+  const {year,month}=agCalState;
+  const filtroDueno=document.getElementById('ag-cal-dueno').value;
+  document.getElementById('ag-cal-badge').textContent=MESES[month]+' '+year;
+
+  // headers
+  const days=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  document.getElementById('agenda-cal-headers').innerHTML=days.map(d=>`<div class="cal-header-cell">${d}</div>`).join('');
+
+  const primerDia=new Date(year,month,1).getDay(); // 0=Dom
+  const offset=primerDia===0?6:primerDia-1; // ajuste lunes-first
+  const totalDias=daysInMonth(year,month);
+  const hoy=new Date();
+  const esEsMes=hoy.getFullYear()===year&&hoy.getMonth()===month;
+
+  // get all clients with tildados this month
+  const clientes=allClientes().filter(c=>!filtroDueno||c.dueno===filtroDueno);
+
+  // build day → [nombres]
+  const dayMap={};
+  clientes.forEach(c=>{
+    for(let d=1;d<=totalDias;d++){
+      if(isChecked(c.nombre,d)){
+        if(!dayMap[d])dayMap[d]=[];
+        dayMap[d].push(c.nombre);
+      }
+    }
+  });
+
+  let cells='';
+  // empty cells for offset
+  for(let i=0;i<offset;i++) cells+='<div class="cal-cell othermonth"></div>';
+
+  for(let d=1;d<=totalDias;d++){
+    const isToday=esEsMes&&d===hoy.getDate();
+    const nombres=dayMap[d]||[];
+    const chips=nombres.slice(0,4).map(n=>`<div class="cal-chip" title="${n}" onclick="openModal('${n.replace(/'/g,"\\'")}');switchPage('seguimiento')">${n.split(' ')[0]}</div>`).join('');
+    const mas=nombres.length>4?`<div style="font-size:9px;color:#888">+${nombres.length-4} más</div>`:'';
+    cells+=`<div class="cal-cell${isToday?' today':''}">
+      <div class="cal-cell-day">${d}</div>
+      ${chips}${mas}
+    </div>`;
+  }
+  document.getElementById('agenda-cal-grid').innerHTML=cells;
+}
+
+
+// ===== PRELOADED DATA =====
+(function(){
+  const PRELOAD = {
+    'seg_frec': {"SERRA LUIS ALBERTO": "Quincenal", "PETIT FOURS  SA": "Quincenal", "MACARIO LUIS ALBERTO": "Quincenal", "NICOLAU JAVIER NESTOR  931826": "Quincenal", "SERRA CLARA": "Quincenal", "SANDRONI MARIA ISABEL": "Quincenal", "SERRA PALOMA": "Quincenal", "MILESY BERNARDO  931819": "Quincenal", "BOZZER ELSO ALEJANDRO  932041": "Quincenal", "BURANI ANDRES OSCAR  931908": "Quincenal", "PASCUAL MARIA FERNANDA  - 944744": "Quincenal", "REALE DANIELA": "Quincenal", "CORSI ALEJANDRO HUMBERTO  932078": "Semanal", "ACQUARONE FERNANDO OSCAR": "Quincenal", "MERONI NORA ELENA": "Quincenal", "MANCIONI JORGE ALBERTO": "Semanal", "MANCIONI MARIA FLORENCIA": "Semanal", "MANCIONI JOAQUIN": "Semanal", "FRATTINI MARIA JULIA": "Semanal", "ROLDAN JULIO ALEJANDRO  931847": "Quincenal", "FUHR DIEGO MATIAS  932091": "Quincenal", "VILLEGAS CESAR HERNAN  931941": "Quincenal", "LORENZO MARIANO ANDRES  932105": "Quincenal", "LOPEZ FEDERICO NICOLAS  931974": "Quincenal", "ALICER SRL": "", "PAMPINFIER    SA": "", "ROZADILLA BLAS OMAR  - 944988": "Quincenal", "MUGICA DIAZ PATRICIO MATIAS  - 946330": "Quincenal", "FRUMENTO ANA MARIA  - 944634": "Mensual", "ACQUARONE IGNACIO FERNANDO": "Quincenal", "RIART JOSE LUIS": "Mensual", "LOBERTTI ALEJANDRO DAVID": "Quincenal", "ALBAJARI KAISER MARTIN ERNESTO  - 944388": "Mensual", "DOMINGUEZ CINTIA VERONICA": "Mensual", "DEL PAPA ANA LEA  931905": "Quincenal", "PEREYRA MARIA SOL": "Mensual", "REPIZO JAVIER ALEJANDRO": "Mensual", "CROSA FERNANDO": "Mensual", "CADIROLA GISELA": "Mensual", "BEVILACQUA GUSTAVO OMAR": "Mensual", "ACCORINTI BELLORINI MARIA DELFINA": "Mensual", "VENA GIULIANO  931837": "Quincenal", "ROMON DIEGO CARLOS": "Mensual", "FIDEICOMISO PARQUE INDUSTRIAL VACA MUERTA": "", "PASTOR ISABEL ADELA": "", "NIEDFELD PATRICIA BERNARDA": "", "BERLINGIERI MARIA LAURA": "Mensual", "LINERA MARIA BELEN  - 946710": "Mensual", "ULLOA OMAR WENCESLAO  931972": "Mensual", "CELAA ALEJANDRA": "Mensual", "GERLERO FLAVIO ADRIAN": "Mensual", "ACOPIAR SA": "Mensual", "CARIDE MAURICIO ALBERTO  931887": "Mensual", "MELO ANIBAL HORACIO": "Mensual", "PROCESS SRL": "Quincenal", "RIENZI IGNACIO BENJAMIN": "Mensual", "GALEAZZI EDUARDO RICHARD": "Quincenal", "NICOLINO ENRRE LUIS E HIJO SRL": "Quincenal", "VARESI JUAN CRUZ": "Quincenal", "NIERO TOMAS  931792": "Quincenal", "PIERELLA SRL": "Quincenal", "PRIMON EZEQUIEL FEDERICO  931937": "Semanal", "D Y M CANTARINI SS": "Mensual", "SCARAFONI PABLO ANDRES  - 1821": "Quincenal", "INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -": "Semanal"},
+    'seg_checks': {"BURANI ANDRES OSCAR  931908|2025|6|8": true, "ACQUARONE FERNANDO OSCAR|2025|6|7": true, "MANCIONI JORGE ALBERTO|2025|6|7": true, "PAMPINFIER    SA|2026|6|2": true, "MANCIONI JORGE ALBERTO|2026|6|1": true, "MANCIONI MARIA FLORENCIA|2026|6|1": true, "MANCIONI JOAQUIN|2026|6|1": true, "FRATTINI MARIA JULIA|2026|6|1": true, "INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -|2026|6|6": true, "BURANI ANDRES OSCAR  931908|2026|6|8": true},
+    'seg_dueno': {"ALICER SRL": "Leonardo Sancho", "PAMPINFIER    SA": "Leonardo Sancho"},
+    'seg_alertas': {"D Y M CANTARINI SS": [{"id": "mrcefri4", "fecha": "2026-07-13", "prio": "media", "msg": "Contactar por Retiro", "done": false}], "ALBAJARI KAISER MARTIN ERNESTO  - 944388": [{"id": "mrcqo7zt", "fecha": "2026-07-13", "prio": "media", "msg": "Enviar Informes", "done": false}], "SCARAFONI PABLO ANDRES  - 1821": [{"id": "mrcqw2ky", "fecha": "2026-07-13", "prio": "media", "msg": "Enviar Rendicion", "done": false}], "COOPAR": [{"id": "mrf6k3wx", "fecha": "2026-07-13", "prio": "media", "msg": "", "done": false}], "BURANI ANDRES OSCAR  931908": [{"id": "mrfrp3m9", "fecha": "2026-07-13", "prio": "media", "msg": "operar 2.5", "done": false}]},
+    'seg_actividades': {"D Y M CANTARINI SS": {"rubro": "Agropecuario", "cargo": "", "tipo": "PJ"}, "SERRA LUIS ALBERTO": {"rubro": "Agropecuario", "cargo": "Socio", "tipo": "PF"}, "PETIT FOURS  SA": {"tipo": "PJ", "rubro": "Industrial", "cargo": ""}, "MACARIO LUIS ALBERTO": {"tipo": "PF", "rubro": "Agropecuario", "cargo": "Socio"}, "NICOLAU JAVIER NESTOR  931826": {"tipo": "PF", "rubro": "", "cargo": ""}, "SERRA CLARA": {"tipo": "PF", "rubro": "", "cargo": ""}, "SANDRONI MARIA ISABEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "SERRA PALOMA": {"tipo": "PF", "rubro": "", "cargo": ""}, "MILESY BERNARDO  931819": {"tipo": "PF", "rubro": "", "cargo": ""}, "BOZZER ELSO ALEJANDRO  932041": {"tipo": "PF", "rubro": "", "cargo": ""}, "PASCUAL MARIA FERNANDA  - 944744": {"tipo": "PF", "rubro": "Riesgos", "cargo": "Empleado"}, "REALE DANIELA": {"tipo": "PF", "rubro": "Riesgos", "cargo": "Empleado"}, "ROZADILLA BLAS OMAR  - 944988": {"tipo": "PF", "rubro": "Riesgos", "cargo": "Empleado"}, "MUGICA DIAZ PATRICIO MATIAS  - 946330": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACQUARONE FERNANDO OSCAR": {"tipo": "PF", "rubro": "Servicios", "cargo": "Titular"}, "MERONI NORA ELENA": {"tipo": "PF", "rubro": "Otro", "cargo": "Familiar Titular"}, "MANCIONI JORGE ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI MARIA FLORENCIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACQUARONE IGNACIO FERNANDO": {"tipo": "PF", "rubro": "Otro", "cargo": "Familiar Titular"}, "FRUMENTO ANA MARIA  - 944634": {"tipo": "PF", "rubro": "Otro", "cargo": "Familiar"}, "RIART JOSE LUIS": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOBERTTI ALEJANDRO DAVID": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALBAJARI KAISER MARTIN ERNESTO  - 944388": {"tipo": "PF", "rubro": "", "cargo": ""}, "DOMINGUEZ CINTIA VERONICA": {"tipo": "PF", "rubro": "", "cargo": ""}, "DEL PAPA ANA LEA  931905": {"tipo": "PF", "rubro": "", "cargo": ""}, "PEREYRA MARIA SOL": {"tipo": "PF", "rubro": "", "cargo": ""}, "REPIZO JAVIER ALEJANDRO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CROSA FERNANDO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CADIROLA GISELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "BEVILACQUA GUSTAVO OMAR": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACCORINTI BELLORINI MARIA DELFINA": {"tipo": "PF", "rubro": "", "cargo": ""}, "VENA GIULIANO  931837": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI JOAQUIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ROMON DIEGO CARLOS": {"tipo": "PF", "rubro": "", "cargo": ""}, "FIDEICOMISO PARQUE INDUSTRIAL VACA MUERTA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PASTOR ISABEL ADELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "NIEDFELD PATRICIA BERNARDA": {"tipo": "PF", "rubro": "", "cargo": ""}, "BERLINGIERI MARIA LAURA": {"tipo": "PF", "rubro": "", "cargo": ""}, "LINERA MARIA BELEN  - 946710": {"tipo": "PF", "rubro": "", "cargo": ""}, "ULLOA OMAR WENCESLAO  931972": {"tipo": "PF", "rubro": "", "cargo": ""}, "CELAA ALEJANDRA": {"tipo": "PF", "rubro": "", "cargo": ""}, "GERLERO FLAVIO ADRIAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACOPIAR SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PROAGRO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROTECNOLOGIA Y SERVICIOS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CARIDE MAURICIO ALBERTO  931887": {"tipo": "PF", "rubro": "", "cargo": ""}, "MELO ANIBAL HORACIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "PROCESS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "RIENZI IGNACIO BENJAMIN": {"tipo": "PF", "rubro": "Servicios", "cargo": "Empleado"}, "ALOE SALVADOR CRISTIAN  931727": {"tipo": "PF", "rubro": "", "cargo": ""}, "INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GALEAZZI EDUARDO RICHARD": {"tipo": "PF", "rubro": "", "cargo": ""}, "NICOLINO ENRRE LUIS E HIJO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "VARESI JUAN CRUZ": {"tipo": "PF", "rubro": "", "cargo": ""}, "NIERO TOMAS  931792": {"tipo": "PF", "rubro": "", "cargo": ""}, "PIERELLA SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PRIMON EZEQUIEL FEDERICO  931937": {"tipo": "PF", "rubro": "", "cargo": ""}, "CORSI ALEJANDRO HUMBERTO  932078": {"tipo": "PF", "rubro": "", "cargo": ""}, "FIORNOVELLI MARIA LUJAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "SCARAFONI PABLO ANDRES  - 1821": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALICER SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROIDEAS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AG TRUCKS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROPECUARIA SAN ANTONIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "ROLDAN JULIO ALEJANDRO  931847": {"tipo": "PF", "rubro": "", "cargo": ""}, "FUHR DIEGO MATIAS  932091": {"tipo": "PF", "rubro": "", "cargo": ""}, "VILLEGAS CESAR HERNAN  931941": {"tipo": "PF", "rubro": "", "cargo": ""}, "LORENZO MARIANO ANDRES  932105": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOPEZ FEDERICO NICOLAS  931974": {"tipo": "PF", "rubro": "", "cargo": ""}, "FERIAS DEL NORTE SACIA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SCILINGO HNOS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SELLART IGNACIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "MENZIO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SIEMBRAS ASOCIADAS REGION NUCLEO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FRATTINI MARIA JULIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "FAITELLA FERNANDES ANDREA CAROLINA": {"tipo": "PF", "rubro": "", "cargo": ""}, "PRODUCIR INTEGRAL SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "DESIGN QUALITY AND DEVELOPMENT SAS": {"tipo": "PJ", "rubro": "", "cargo": ""}, "BENAVIDEZ LOLA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ABUELO JULIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SYNERGIA IT GROUP SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PI GROUP SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GARCIA CARRARA EMILIO MANUEL  - 947142": {"tipo": "PF", "rubro": "", "cargo": ""}, "GARCIA CARRARA JOSEFINA INES": {"tipo": "PF", "rubro": "", "cargo": ""}, "GARCIA CARRARA EMILIO MANUEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "LAS COLONIAS DISTRIBUCIONES SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PAMPINFIER    SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "COOPAR": {"tipo": "PJ", "rubro": "", "cargo": ""}, "LA CAMBICHA SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CASADO JUAN MANUEL  931989": {"tipo": "PF", "rubro": "", "cargo": ""}, "BERTICHE GUSTAVO  932051": {"tipo": "PF", "rubro": "", "cargo": ""}, "RIGHI RAQUEL MARTA  931825": {"tipo": "PF", "rubro": "", "cargo": ""}, "PRATTA GRACIELA SUSANA  - 946153": {"tipo": "PF", "rubro": "", "cargo": ""}, "BURANI ANDRES OSCAR  931908": {"tipo": "PF", "rubro": "", "cargo": ""}, "VEIGA JUAN MANUEL  931970": {"tipo": "PF", "rubro": "", "cargo": ""}, "ZEBALLOS SERGIO GABRIEL  931933": {"tipo": "PF", "rubro": "", "cargo": ""}},
+    'seg_giras': [{"id": "mrcby090", "nombre": "Gira Cordoba", "desde": "2026-06-24", "hasta": "2026-06-25", "responsable": "Agustin y Damian", "clientes": ["SERRA LUIS ALBERTO", "SERRA CLARA", "SANDRONI MARIA ISABEL", "SERRA PALOMA", "AGROTECNOLOGIA Y SERVICIOS SA"], "prospects": [], "obs": "Ver minuta completa en historial"}]
+  };
+  Object.entries(PRELOAD).forEach(([k,v])=>{
+    if(!localStorage.getItem(k)) localStorage.setItem(k, JSON.stringify(v));
+  });
+})();
+// ===========================
+// ===== MAPA DE RELACIONES =====
+const MAPA_TIPO_COLOR={agropecuaria:'#22c55e',pyme:'#f59e0b',empresa:'#3b82f6',economico:'#8b5cf6',otro:'#64748b'};
+let mapaSimulation=null, mapaInitialized=false;
+
+function shortNameMapa(n){
+  const parts=n.replace(/\s+\d+$/,'').replace(/\s+-\s+\d+$/,'').trim().split(/\s+/);
+  if(parts.length<=2) return parts.join(' ');
+  return parts[0]+' '+parts[parts.length-1];
+}
+
+function renderMapa(){
+  const svgEl=document.getElementById('mapa-svg');
+  if(!svgEl) return;
+  const W=svgEl.clientWidth||800, H=svgEl.clientHeight||600;
+
+  // build nodes and links from current data
+  const nodes=[], links=[], nodeById={};
+
+  grupos.forEach(g=>{
+    const mems=grupoMiembros[g.id]||[];
+    const n={id:'g_'+g.id,label:g.nombre,tipo:'grupo',tipoGrupo:g.tipo,
+      color:MAPA_TIPO_COLOR[g.tipo]||'#64748b',r:24+mems.length*2,miembros:mems.length,data:g};
+    nodes.push(n);nodeById[n.id]=n;
+  });
+
+  Object.entries(grupoMiembros).forEach(([gid,members])=>{
+    members.forEach(nombre=>{
+      const nid='c_'+nombre;
+      const act=actividades[nombre]||{};
+      if(!nodeById[nid]){
+        const isPJ=act.tipo==='PJ';
+        const n={id:nid,label:shortNameMapa(nombre),fullName:nombre,
+          tipo:'cliente',tipoPers:act.tipo||'PF',rubro:act.rubro||'',cargo:act.cargo||'',
+          color:isPJ?'#fbbf24':'#94a3b8',r:isPJ?9:7,shape:isPJ?'square':'circle',grupos:[]};
+        nodes.push(n);nodeById[nid]=n;
+      }
+      nodeById[nid].grupos=nodeById[nid].grupos||[];
+      nodeById[nid].grupos.push(gid);
+      links.push({source:'g_'+gid,target:nid,gid});
+    });
+  });
+
+  // clear and rebuild svg
+  const svg=d3.select('#mapa-svg');
+  svg.selectAll('*').remove();
+
+  const g=svg.append('g');
+  const zoom=d3.zoom().scaleExtent([.15,4]).on('zoom',e=>g.attr('transform',e.transform));
+  svg.call(zoom);
+
+  if(mapaSimulation) mapaSimulation.stop();
+  mapaSimulation=d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(links).id(d=>d.id).distance(90).strength(.6))
+    .force('charge',d3.forceManyBody().strength(d=>d.tipo==='grupo'?-600:-150))
+    .force('center',d3.forceCenter(W/2,H/2))
+    .force('collision',d3.forceCollide(d=>d.r+10))
+    .force('x',d3.forceX(W/2).strength(.04))
+    .force('y',d3.forceY(H/2).strength(.04));
+
+  const linkEl=g.append('g').selectAll('line').data(links).join('line')
+    .attr('stroke-opacity',.4).attr('stroke-width',1.5)
+    .attr('stroke',d=>{const gr=grupos.find(x=>x.id===d.gid);return gr?MAPA_TIPO_COLOR[gr.tipo]||'#64748b':'#64748b';});
+
+  const nodeEl=g.append('g').selectAll('g').data(nodes).join('g')
+    .style('cursor','pointer')
+    .call(d3.drag()
+      .on('start',(e,d)=>{if(!e.active)mapaSimulation.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y;})
+      .on('end',(e,d)=>{if(!e.active)mapaSimulation.alphaTarget(0);d.fx=null;d.fy=null;}))
+    .on('click',(e,d)=>{e.stopPropagation();mapaSelectNode(d,nodeEl,linkEl);})
+    .on('mouseover',(e,d)=>mapaTooltip(e,d,true))
+    .on('mousemove',e=>{const t=document.getElementById('tooltip');t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-10)+'px';})
+    .on('mouseout',()=>document.getElementById('tooltip').style.display='none');
+
+  nodeEl.each(function(d){
+    const el=d3.select(this);
+    if(d.tipo==='grupo'){
+      el.append('circle').attr('r',d.r).attr('fill',d.color+'22').attr('stroke',d.color).attr('stroke-width',2.5)
+        .style('filter',`drop-shadow(0 0 10px ${d.color}88)`);
+      el.append('text').attr('text-anchor','middle').attr('dy','0.35em').attr('fill','#fff')
+        .attr('font-size',d.label.length>14?'9px':'11px').attr('font-weight','700')
+        .attr('pointer-events','none').text(d.label);
+    } else {
+      if(d.shape==='square'){
+        el.append('rect').attr('x',-d.r).attr('y',-d.r).attr('width',d.r*2).attr('height',d.r*2)
+          .attr('rx',3).attr('fill',d.color+'44').attr('stroke',d.color).attr('stroke-width',1.5);
+      } else {
+        el.append('circle').attr('r',d.r).attr('fill',d.color+'44').attr('stroke',d.color).attr('stroke-width',1.5);
+      }
+      el.append('text').attr('text-anchor','middle').attr('dy',d.r+11).attr('fill','#94a3b8')
+        .attr('font-size','8px').attr('pointer-events','none').text(d.label);
+    }
+  });
+
+  svg.on('click',()=>{
+    nodeEl.style('opacity',1);linkEl.style('opacity',null);
+    document.getElementById('mapa-info').style.display='none';
+  });
+
+  mapaSimulation.on('tick',()=>{
+    linkEl.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    nodeEl.attr('transform',d=>`translate(${d.x},${d.y})`);
+  });
+
+  // store refs for filter
+  window._mapaNodeEl=nodeEl;window._mapaLinkEl=linkEl;
+  window._mapaNodes=nodes;window._mapaLinks=links;
+  window._mapaZoom=zoom;window._mapaSvg=svg;
+  window._mapaW=W;window._mapaH=H;
+}
+
+function mapaTooltip(e,d){
+  const tt=document.getElementById('tooltip');
+  let html='';
+  if(d.tipo==='grupo'){
+    html=`<div style="font-weight:700;color:#fff;font-size:13px;margin-bottom:4px">🏢 ${d.label}</div>
+      <div style="font-size:11px;color:#94a3b8">Tipo: <span style="color:#e2e8f0">${d.tipoGrupo}</span></div>
+      <div style="font-size:11px;color:#94a3b8">Miembros: <span style="color:#e2e8f0">${d.miembros}</span></div>`;
+  } else {
+    html=`<div style="font-weight:700;color:#fff;font-size:13px;margin-bottom:4px">${d.tipoPers==='PJ'?'🏭':'👤'} ${d.fullName}</div>
+      ${d.rubro?`<div style="font-size:11px;color:#94a3b8">Rubro: <span style="color:#e2e8f0">${d.rubro}</span></div>`:''}
+      ${d.cargo?`<div style="font-size:11px;color:#94a3b8">Rol: <span style="color:#e2e8f0">${d.cargo}</span></div>`:''}`;
+  }
+  tt.innerHTML=html;tt.style.display='block';
+  tt.style.left=(e.clientX+14)+'px';tt.style.top=(e.clientY-10)+'px';
+}
+
+function mapaSelectNode(d,nodeEl,linkEl){
+  const links=window._mapaLinks||[];
+  const connected=new Set([d.id]);
+  links.forEach(l=>{
+    const s=l.source.id||l.source,t=l.target.id||l.target;
+    if(s===d.id)connected.add(t);if(t===d.id)connected.add(s);
+  });
+  nodeEl.style('opacity',n=>connected.has(n.id)?1:.15);
+  linkEl.style('opacity',l=>{
+    const s=l.source.id||l.source,t=l.target.id||l.target;
+    return s===d.id||t===d.id?1:.05;
+  });
+  // info panel
+  const panel=document.getElementById('mapa-info');
+  const title=document.getElementById('mapa-info-title');
+  const body=document.getElementById('mapa-info-body');
+  panel.style.display='block';
+  if(d.tipo==='grupo'){
+    title.textContent=d.label;
+    const mems=grupoMiembros[d.data.id]||[];
+    body.innerHTML=`<div class="mapa-info-row">Tipo: <span>${d.tipoGrupo}</span></div>
+      <div class="mapa-info-row">Miembros: <span>${mems.length}</span></div>
+      <div style="margin-top:8px">${mems.map(m=>{const a=actividades[m]||{};return `<div class="mapa-info-mem">${a.tipo==='PJ'?'🏭':'👤'} ${shortNameMapa(m)}${a.cargo?' — '+a.cargo:''}</div>`;}).join('')}</div>`;
+  } else {
+    title.textContent=shortNameMapa(d.fullName);
+    const grNombres=(d.grupos||[]).map(gid=>{const g=grupos.find(x=>x.id===gid);return g?g.nombre:'?';});
+    body.innerHTML=`<div class="mapa-info-row">Tipo: <span>${d.tipoPers||'—'}</span></div>
+      ${d.rubro?`<div class="mapa-info-row">Rubro: <span>${d.rubro}</span></div>`:''}
+      ${d.cargo?`<div class="mapa-info-row">Rol: <span>${d.cargo}</span></div>`:''}
+      <div class="mapa-info-row">Grupo: <span>${grNombres.join(', ')||'—'}</span></div>`;
+  }
+}
+
+function mapaFilter(tipo){
+  document.querySelectorAll('.mapa-btn').forEach(b=>b.classList.remove('active'));
+  const btnId='mapa-btn-'+(tipo==='all'?'all':tipo);
+  const btn=document.getElementById(btnId);if(btn)btn.classList.add('active');
+  const nodeEl=window._mapaNodeEl,linkEl=window._mapaLinkEl;
+  if(!nodeEl)return;
+  const nodes=window._mapaNodes||[],links=window._mapaLinks||[];
+  if(tipo==='all'){nodeEl.style('display','');linkEl.style('display','');return;}
+  const visGrupos=new Set(grupos.filter(g=>g.tipo===tipo).map(g=>'g_'+g.id));
+  const visClientes=new Set();
+  links.forEach(l=>{const s=l.source.id||l.source;if(visGrupos.has(s))visClientes.add(l.target.id||l.target);});
+  const vis=new Set([...visGrupos,...visClientes]);
+  nodeEl.style('display',d=>vis.has(d.id)?'':'none');
+  linkEl.style('display',l=>{const s=l.source.id||l.source,t=l.target.id||l.target;return vis.has(s)&&vis.has(t)?'':'none';});
+}
+
+function mapaReset(){
+  const svg=window._mapaSvg,zoom=window._mapaZoom,W=window._mapaW,H=window._mapaH;
+  if(svg&&zoom) svg.transition().duration(600).call(zoom.transform,d3.zoomIdentity.translate(W/2,H/2).scale(.85).translate(-W/2,-H/2));
+}
+
+(async()=>{
+  setSyncStatus('syncing');
+  await sbPullAll();
+  setSyncStatus('ok');
+  load();populateFilter();populateGiraClientes();populateGiraProspects();render();
+  // auto-sync every 60 seconds
+  setInterval(()=>sbPullAll().then(()=>{load();render();}),60000);
+})();
+
+// Debug: log what's in localStorage
+console.log('=== STORAGE DEBUG ===');
+['seg_checks','seg_frec','seg_notas','seg_hist','seg_alertas','seg_tenencia','seg_dueno','seg_actividades','seg_grupos','seg_grupo_miembros','seg_manuales','seg_giras','seg_prospects','seg_tareas'].forEach(k=>{
+  const v=localStorage.getItem(k);
+  if(v) console.log(k+': '+v.length+' chars, sample: '+v.substring(0,80));
+  else console.log(k+': EMPTY');
+});
+</script>
+</body>
+</html>
