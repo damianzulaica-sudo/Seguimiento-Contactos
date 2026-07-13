@@ -342,6 +342,25 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <body>
 
+<!-- PASSWORD SCREEN -->
+<div id="login-screen" style="display:none;position:fixed;inset:0;background:#0f1923;z-index:9999;display:flex;align-items:center;justify-content:center">
+  <div style="background:#1a2e4a;border-radius:16px;padding:40px;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+    <div style="font-size:32px;margin-bottom:12px">🔒</div>
+    <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px">Allaria Seguimiento</div>
+    <div style="font-size:12px;color:#94a3b8;margin-bottom:24px">Ingresá la contraseña para acceder</div>
+    <input type="password" id="pwd-input" placeholder="Contraseña..." 
+      style="width:100%;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:10px 14px;font-size:14px;background:rgba(255,255,255,.08);color:#fff;margin-bottom:12px;outline:none"
+      onkeydown="if(event.key==='Enter')checkPwd()">
+    <button onclick="checkPwd()" 
+      style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer">
+      Ingresar
+    </button>
+    <div id="pwd-error" style="color:#ef4444;font-size:11px;margin-top:8px;display:none">Contraseña incorrecta</div>
+  </div>
+</div>
+
+<div id="app-content" style="display:none">
+
 <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 24px 0;flex-wrap:wrap;gap:8px">
   <h1 style="font-size:18px;font-weight:600;color:#1a2e4a">Matriz de seguimiento de contacto</h1>
   <div style="display:flex;align-items:center;gap:10px">
@@ -831,11 +850,11 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
 
         <div class="form-row">
           <label>Tipo de persona
-            <select id="act-tipo" style="width:160px">
-              <option value="">— Sin definir —</option>
-              <option value="PF">Persona Física (PF)</option>
-              <option value="PJ">Persona Jurídica (PJ)</option>
-            </select>
+            <input type="text" id="act-tipo" list="dl-tipos" autocomplete="off" placeholder="PF, PJ, Fideicomiso..." style="width:180px">
+            <datalist id="dl-tipos">
+              <option value="PF"><option value="PJ">
+              <option value="Fideicomiso"><option value="Fondo"><option value="Asociación Civil">
+            </datalist>
           </label>
         </div>
         <div class="form-row">
@@ -1460,6 +1479,7 @@ function renderAlertasModal(nombre){
     return `<div class="alerta-item prio-${e.prio}${vencida?' vencida':''}${esHoy?' hoy':''}">
       <button class="alerta-done" onclick="toggleAlertaDone('${nombre}','${e.id}')" title="${e.done?'Reabrir':'Cumplida'}">&#${e.done?'9744':'10003'};</button>
       <button class="alerta-del" onclick="deleteAlerta('${nombre}','${e.id}')">&#10005;</button>
+      <button style="position:absolute;top:8px;right:52px;background:none;border:none;cursor:pointer;font-size:12px;color:#f59e0b" onclick="postergarAlerta('${nombre}','${e.id}')" title="Postergar al día siguiente hábil">⏩</button>
       <div class="alerta-header"><span class="alerta-fecha-lbl">&#128197; ${fd}</span><span class="alerta-prio ${e.prio}">${e.prio.charAt(0).toUpperCase()+e.prio.slice(1)}</span>${tag}</div>
       <div class="alerta-msg">${e.msg||'<em style="color:#bbb">Sin mensaje</em>'}</div>
     </div>`;
@@ -1478,6 +1498,16 @@ function deleteAlerta(nombre,id){
   alertas[nombre]=(alertas[nombre]||[]).filter(e=>e.id!==id);
   saveAlertas();renderAlertasModal(nombre);renderAlertasBanner();render();
 }
+function postergarAlerta(nombre,id){
+  const e=(alertas[nombre]||[]).find(x=>x.id===id);
+  if(!e)return;
+  const d=new Date(e.fecha+'T12:00:00');
+  d.setDate(d.getDate()+1);
+  while(d.getDay()===0||d.getDay()===6) d.setDate(d.getDate()+1);
+  e.fecha=d.toISOString().split('T')[0];
+  saveAlertas();renderAlertasModal(nombre);renderAlertasBanner();
+}
+
 function toggleAlertaDone(nombre,id){
   const e=(alertas[nombre]||[]).find(x=>x.id===id);
   if(e){e.done=!e.done;saveAlertas();renderAlertasModal(nombre);renderAlertasBanner();render();}
@@ -2205,12 +2235,9 @@ function render(){
         <td class="col-cliente"><span class="nombre-link" data-nombre="${c.nombre.replace(/"/g,'&quot;')}">${c.nombre}</span>${manualTag}${alertIcon}${dots}</td>
         <td class="col-grupo">${grupoSelect}</td>
         <td class="col-actividad">
-          <select class="act-inline-sel" data-nombre="${c.nombre.replace(/"/g,'&quot;')}" data-field="tipo"
-            style="font-size:10px;border:1px solid #ccd;border-radius:6px;padding:2px 4px;background:${act.tipo==='PF'?'#e8edf8':act.tipo==='PJ'?'#fff3e0':'#fff'};color:${act.tipo==='PF'?'#2a4a9a':act.tipo==='PJ'?'#8a4400':'#999'};font-weight:${act.tipo?'700':'400'};max-width:60px">
-            <option value="">—</option>
-            <option value="PF"${act.tipo==='PF'?' selected':''}>PF</option>
-            <option value="PJ"${act.tipo==='PJ'?' selected':''}>PJ</option>
-          </select>
+          <input type="text" class="act-inline-sel" data-nombre="${c.nombre.replace(/"/g,'&quot;')}" data-field="tipo"
+            list="dl-tipos" value="${act.tipo||''}" placeholder="—" autocomplete="off"
+            style="font-size:10px;border:1px solid ${act.tipo?'#aab':'#ccd'};border-radius:6px;padding:2px 5px;background:${act.tipo==='PF'?'#e8edf8':act.tipo==='PJ'?'#fff3e0':'#fff'};color:${act.tipo==='PF'?'#2a4a9a':act.tipo==='PJ'?'#8a4400':'#999'};font-weight:${act.tipo?'700':'400'};max-width:70px">
         </td>
         <td class="col-actividad">
           <input type="text" class="act-inline-inp" data-nombre="${c.nombre.replace(/"/g,'&quot;')}" data-field="rubro"
@@ -2281,25 +2308,17 @@ function render(){
   document.querySelectorAll('select.frec-select').forEach(sel=>sel.addEventListener('change',function(){frecOverride[this.dataset.nombre]=this.value;saveFrec();render();}));
   document.querySelectorAll('.nombre-link').forEach(el=>el.addEventListener('click',function(){openModal(this.dataset.nombre);}));
   document.querySelectorAll('.tenencia-val').forEach(el=>el.addEventListener('click',function(){openModal(this.dataset.nombre);setTimeout(()=>switchTab('tenencia'),50);}));
-  document.querySelectorAll('select.act-inline-sel').forEach(sel=>{
-    sel.addEventListener('change',function(){
-      const nombre=this.dataset.nombre;
-      const field=this.dataset.field;
-      if(!actividades[nombre]) actividades[nombre]={tipo:'',rubro:'',cargo:''};
-      actividades[nombre][field]=this.value;
-      saveActividades();render();
-    });
-  });
-  document.querySelectorAll('input.act-inline-inp').forEach(inp=>{
+  document.querySelectorAll('input.act-inline-sel,input.act-inline-inp').forEach(inp=>{
     inp.addEventListener('change',function(){
       const nombre=this.dataset.nombre;
       const field=this.dataset.field;
       if(!actividades[nombre]) actividades[nombre]={tipo:'',rubro:'',cargo:''};
       actividades[nombre][field]=this.value.trim();
       saveActividades();
-      // update datalist with custom value
+      if(field==='tipo'){const dl=document.getElementById('dl-tipos');if(dl&&![...dl.options].some(o=>o.value===this.value)){const o=document.createElement('option');o.value=this.value;dl.appendChild(o);}}
       if(field==='rubro'){const dl=document.getElementById('dl-rubros');if(dl&&![...dl.options].some(o=>o.value===this.value)){const o=document.createElement('option');o.value=this.value;dl.appendChild(o);}}
       if(field==='cargo'){const dl=document.getElementById('dl-roles');if(dl&&![...dl.options].some(o=>o.value===this.value)){const o=document.createElement('option');o.value=this.value;dl.appendChild(o);}}
+      render();
     });
   });
   document.querySelectorAll('select.grupo-inline-sel').forEach(sel=>{
@@ -2573,12 +2592,24 @@ function renderAgendaAlertas(){
         </div>
         <div class="agenda-alerta-actions">
           <button class="done-btn" onclick="agToggleAlerta('${cliente.nombre.replace(/'/g,"\\'")}','${alerta.id}')">${alerta.done?'↩ Reabrir':'✓ Cumplir'}</button>
+          <button style="color:#f59e0b;border-color:#fcd34d" onclick="agPostergar('${cliente.nombre.replace(/'/g,"\\'")}','${alerta.id}')">⏩ Mañana</button>
           <button onclick="agDeleteAlerta('${cliente.nombre.replace(/'/g,"\\'")}','${alerta.id}')">✕ Borrar</button>
         </div>
       </div>`;
     });
   });
   el.innerHTML=html;
+}
+
+function agPostergar(nombre,id){
+  const e=(alertas[nombre]||[]).find(x=>x.id===id);
+  if(!e)return;
+  const d=new Date(e.fecha+'T12:00:00');
+  d.setDate(d.getDate()+1);
+  // skip weekends
+  while(d.getDay()===0||d.getDay()===6) d.setDate(d.getDate()+1);
+  e.fecha=d.toISOString().split('T')[0];
+  saveAlertas();renderAgendaAlertas();renderAlertasBanner();
 }
 
 function agToggleAlerta(nombre,id){
@@ -2891,8 +2922,36 @@ function mapaReset(){
   await sbPullAll();
   setSyncStatus('ok');
   load();populateFilter();populateGiraClientes();populateGiraProspects();render();
-  // auto-sync every 60 seconds
-  setInterval(()=>sbPullAll().then(()=>{load();render();}),60000);
+
+  // Supabase Realtime — recibe cambios de otros usuarios al instante
+  const ws_url=SB_URL.replace('https','wss')+'/realtime/v1/websocket?apikey='+SB_KEY+'&vsn=1.0.0';
+  let ws;
+  function connectRealtime(){
+    ws=new WebSocket(ws_url);
+    ws.onopen=()=>{
+      ws.send(JSON.stringify({topic:'realtime:public:seguimiento',event:'phx_join',payload:{},ref:'1'}));
+      setSyncStatus('ok');
+    };
+    ws.onmessage=async(e)=>{
+      const msg=JSON.parse(e.data);
+      if(msg.event==='INSERT'||msg.event==='UPDATE'){
+        const {key,value}=msg.payload.record||{};
+        if(key&&value&&SB_KEYS.includes(key)){
+          localStorage.setItem(key,value);
+          load();render();
+          setSyncStatus('ok');
+        }
+      }
+    };
+    ws.onclose=()=>{
+      setSyncStatus('error');
+      setTimeout(connectRealtime,3000); // reconectar si se cae
+    };
+    ws.onerror=()=>setSyncStatus('error');
+    // heartbeat cada 25s para mantener conexión viva
+    setInterval(()=>{if(ws.readyState===1)ws.send(JSON.stringify({topic:'phoenix',event:'heartbeat',payload:{},ref:'hb'}));},25000);
+  }
+  connectRealtime();
 })();
 
 // Debug: log what's in localStorage
@@ -2902,6 +2961,32 @@ console.log('=== STORAGE DEBUG ===');
   if(v) console.log(k+': '+v.length+' chars, sample: '+v.substring(0,80));
   else console.log(k+': EMPTY');
 });
+</script>
+</div><!-- end app-content -->
+
+<script>
+const APP_PWD = 'allaria2026';
+function checkPwd(){
+  const val=document.getElementById('pwd-input').value;
+  if(val===APP_PWD){
+    sessionStorage.setItem('auth','1');
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app-content').style.display='block';
+  } else {
+    document.getElementById('pwd-error').style.display='block';
+    document.getElementById('pwd-input').value='';
+    document.getElementById('pwd-input').focus();
+  }
+}
+// check session
+if(sessionStorage.getItem('auth')==='1'){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-content').style.display='block';
+} else {
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app-content').style.display='none';
+  setTimeout(()=>document.getElementById('pwd-input').focus(),100);
+}
 </script>
 </body>
 </html>
