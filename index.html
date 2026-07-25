@@ -338,8 +338,14 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
 .mapa-info-row{font-size:11px;color:#94a3b8;margin-bottom:5px}
 .mapa-info-row span{color:#e2e8f0;font-weight:600}
 .mapa-info-mem{font-size:10px;color:#cbd5e1;padding:2px 7px;background:rgba(255,255,255,.06);border-radius:4px;margin-bottom:3px}
+/* ===== INACTIVO / REFLOTADO ===== */
+.row-inactivo td{background:#f3f4f6!important;color:#9ca3af}
+.row-inactivo .nombre-link{color:#9ca3af!important;border-bottom-color:#ccc!important}
+.row-inactivo input.day-chk:checked + label.day-lbl{background:#9ca3af;border-color:#9ca3af}
+.badge-inactivo{font-size:9px;background:#e5e7eb;color:#6b7280;border-radius:5px;padding:1px 7px;margin-left:5px;font-weight:700;vertical-align:middle;letter-spacing:.3px}
+.badge-reflotado{font-size:9px;background:#fef3c7;color:#92400e;border:1px solid #f59e0b;border-radius:5px;padding:1px 7px;margin-left:5px;font-weight:700;vertical-align:middle;letter-spacing:.3px}
+.oficial-tag{font-size:9px;color:#6b7280;margin-left:4px;font-style:italic}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <body>
 
 <!-- PASSWORD SCREEN -->
@@ -376,6 +382,7 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
   <div class="top-tab" onclick="switchPage('prospects')">&#127919; Prospects</div>
   <div class="top-tab" onclick="switchPage('grupos')">&#128101; Grupos</div>
   <div class="top-tab" onclick="switchPage('mapa')">&#127760; Mapa</div>
+  <div class="top-tab" onclick="switchPage('resumen')">&#128202; Resumen</div>
 </div>
 
 <!-- ===== PÁGINA SEGUIMIENTO ===== -->
@@ -386,6 +393,14 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
   <button class="btn btn-nav" id="btn-next">&#8250;</button>
   <label>Filtrar dueño: <select id="filtro-dueno"><option value="">Todos</option></select></label>
   <label>Buscar: <input type="text" id="filtro-cliente" placeholder="Nombre..." style="width:180px"></label>
+  <label>Estado:
+    <select id="filtro-estado" style="font-size:11px;border:1px solid #ccd;border-radius:5px;padding:5px 8px">
+      <option value="">Todos</option>
+      <option value="activo">Activos</option>
+      <option value="inactivo">Inactivos</option>
+      <option value="reflotado">Reflotados</option>
+    </select>
+  </label>
   <button class="btn" onclick="openNuevoCliente()" style="background:#1a2e4a;color:#fff;border-color:#1a2e4a;font-weight:600">&#43; Nuevo cliente</button>
 </div>
 
@@ -811,6 +826,31 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
 </div>
 </div>
 
+<!-- ===== PÁGINA RESUMEN ===== -->
+<div class="page" id="page-resumen">
+<div style="padding:20px 24px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <h2 style="font-size:15px;font-weight:700;color:#1a2e4a">&#128202; Resumen de actividad</h2>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <label style="font-size:11px;color:#555">Período:
+        <select id="res-periodo" onchange="renderResumen()" style="font-size:11px;border:1px solid #ccd;border-radius:5px;padding:4px 8px;margin-left:4px">
+          <option value="mes">Este mes</option>
+          <option value="semana">Esta semana</option>
+          <option value="mes-ant">Mes anterior</option>
+        </select>
+      </label>
+      <label style="font-size:11px;color:#555">Asesor:
+        <select id="res-dueno" onchange="renderResumen()" style="font-size:11px;border:1px solid #ccd;border-radius:5px;padding:4px 8px;margin-left:4px">
+          <option value="">Todos</option>
+        </select>
+      </label>
+      <button class="btn" onclick="exportResumenPDF()" style="font-size:11px;background:#1a2e4a;color:#fff;border-color:#1a2e4a">&#128196; Exportar PDF</button>
+    </div>
+  </div>
+  <div id="resumen-content"></div>
+</div>
+</div>
+
 <!-- ===== MODAL CLIENTE ===== -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
@@ -820,6 +860,8 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
         <div class="modal-sub" id="modal-sub"></div>
       </div>
       <button class="modal-close" onclick="closeModal()">&#10005;</button>
+      <button onclick="eliminarCliente()" title="Eliminar cliente" style="background:none;border:1px solid rgba(255,255,255,.3);color:#fca5a5;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;margin-right:4px">&#128465; Eliminar</button>
+      <button id="btn-toggle-estado" onclick="toggleEstadoCliente()" style="background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;margin-right:4px"></button>
     </div>
     <div class="modal-tabs">
       <div class="modal-tab active" onclick="switchTab('historial')">&#128203; Historial</div>
@@ -829,6 +871,7 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
       <div class="modal-tab" onclick="switchTab('tenencia')">&#128181; Tenencia</div>
       <div class="modal-tab" onclick="switchTab('editar')">&#9998; Editar</div>
       <div class="modal-tab" onclick="switchTab('nota')">&#128196; Observación</div>
+      <div class="modal-tab" onclick="switchTab('operaciones')">&#128200; Operaciones</div>
     </div>
     <div class="modal-body">
       <div class="tab-panel active" id="tab-historial"><div id="hist-list"></div></div>
@@ -948,6 +991,10 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
           <span class="nota-saved" id="nota-saved-msg">&#10003; Guardado</span>
         </div>
       </div>
+      <div class="tab-panel" id="tab-operaciones">
+        <div id="op-loading" style="text-align:center;padding:30px;color:#888;font-size:12px">⏳ Cargando operaciones...</div>
+        <div id="op-content" style="display:none"></div>
+      </div>
     </div>
     <div class="new-contact-form" id="new-contact-form">
       <div style="font-size:11px;font-weight:700;color:#1a2e4a;margin-bottom:10px">&#43; Registrar contacto</div>
@@ -984,7 +1031,7 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
 </div>
 
 <script>
-const RAW = [{"nombre":"SERRA LUIS ALBERTO","tenencia":809247.02,"pct":"12,71%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"PETIT FOURS  SA","tenencia":148404.68,"pct":"2,33%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"MACARIO LUIS ALBERTO","tenencia":108502.0,"pct":"1,70%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"NICOLAU JAVIER NESTOR  931826","tenencia":104685.13,"pct":"1,64%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"SERRA CLARA","tenencia":93976.13,"pct":"1,48%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"SANDRONI MARIA ISABEL","tenencia":93579.87,"pct":"1,47%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"SERRA PALOMA","tenencia":93492.3,"pct":"1,47%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"MILESY BERNARDO  931819","tenencia":25841.76,"pct":"0,41%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"BOZZER ELSO ALEJANDRO  932041","tenencia":16043.69,"pct":"0,25%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"PASCUAL MARIA FERNANDA  - 944744","tenencia":13602.08,"pct":"0,21%","dueno":"All Bankers","frecuencia":""},{"nombre":"REALE DANIELA","tenencia":4686.97,"pct":"0,07%","dueno":"All Bankers","frecuencia":""},{"nombre":"ROZADILLA BLAS OMAR  - 944988","tenencia":23314.69,"pct":"0,37%","dueno":"Blas Rozadilla","frecuencia":""},{"nombre":"MUGICA DIAZ PATRICIO MATIAS  - 946330","tenencia":3898.41,"pct":"0,06%","dueno":"Blas Rozadilla","frecuencia":""},{"nombre":"ACQUARONE FERNANDO OSCAR","tenencia":356017.92,"pct":"5,59%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MERONI NORA ELENA","tenencia":229951.24,"pct":"3,61%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MANCIONI JORGE ALBERTO","tenencia":210585.63,"pct":"3,31%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MANCIONI MARIA FLORENCIA","tenencia":71691.77,"pct":"1,13%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ACQUARONE IGNACIO FERNANDO","tenencia":69193.12,"pct":"1,09%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"FRUMENTO ANA MARIA  - 944634","tenencia":52803.54,"pct":"0,83%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"RIART JOSE LUIS","tenencia":49515.35,"pct":"0,78%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"LOBERTTI ALEJANDRO DAVID","tenencia":37814.9,"pct":"0,59%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ALBAJARI KAISER MARTIN ERNESTO  - 944388","tenencia":33796.86,"pct":"0,53%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"DOMINGUEZ CINTIA VERONICA","tenencia":23671.36,"pct":"0,37%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"DEL PAPA ANA LEA  931905","tenencia":14866.63,"pct":"0,23%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"PEREYRA MARIA SOL","tenencia":13283.8,"pct":"0,21%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"REPIZO JAVIER ALEJANDRO","tenencia":13041.9,"pct":"0,20%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"CROSA FERNANDO","tenencia":12228.51,"pct":"0,19%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"CADIROLA GISELA","tenencia":7965.91,"pct":"0,13%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"BEVILACQUA GUSTAVO OMAR","tenencia":5530.94,"pct":"0,09%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ACCORINTI BELLORINI MARIA DELFINA","tenencia":2689.95,"pct":"0,04%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"VENA GIULIANO  931837","tenencia":1901.77,"pct":"0,03%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MANCIONI JOAQUIN","tenencia":1819.18,"pct":"0,03%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ROMON DIEGO CARLOS","tenencia":880.47,"pct":"0,01%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"FIDEICOMISO PARQUE INDUSTRIAL VACA MUERTA","tenencia":12.88,"pct":"0,00%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"PASTOR ISABEL ADELA","tenencia":0.0,"pct":"0,00%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"NIEDFELD PATRICIA BERNARDA","tenencia":0.0,"pct":"0,00%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"BERLINGIERI MARIA LAURA","tenencia":3379.62,"pct":"0,05%","dueno":"Elisa Sanchez","frecuencia":""},{"nombre":"LINERA MARIA BELEN  - 946710","tenencia":1213.88,"pct":"0,02%","dueno":"Emilia Linera","frecuencia":""},{"nombre":"ULLOA OMAR WENCESLAO  931972","tenencia":100710.86,"pct":"1,58%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"CELAA ALEJANDRA","tenencia":67025.91,"pct":"1,05%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"GERLERO FLAVIO ADRIAN","tenencia":5871.15,"pct":"0,09%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"ACOPIAR SA","tenencia":585.77,"pct":"0,01%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"PROAGRO SRL","tenencia":0.0,"pct":"0,00%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"AGROTECNOLOGIA Y SERVICIOS SA","tenencia":0.0,"pct":"0,00%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"CARIDE MAURICIO ALBERTO  931887","tenencia":3264.34,"pct":"0,05%","dueno":"Ezequiel Rapetti","frecuencia":""},{"nombre":"MELO ANIBAL HORACIO","tenencia":108723.7,"pct":"1,71%","dueno":"Guadalupe Guardiol","frecuencia":""},{"nombre":"PROCESS SRL","tenencia":257183.83,"pct":"4,04%","dueno":"Ignacio Diaz Hermelo","frecuencia":""},{"nombre":"RIENZI IGNACIO BENJAMIN","tenencia":952.52,"pct":"0,01%","dueno":"Ignacio Rienzi","frecuencia":""},{"nombre":"ALOE SALVADOR CRISTIAN  931727","tenencia":0.0,"pct":"0,00%","dueno":"Jorge Culasso","frecuencia":""},{"nombre":"INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -","tenencia":837153.6,"pct":"13,15%","dueno":"Juan Cruz Varesi","frecuencia":"Semanal"},{"nombre":"GALEAZZI EDUARDO RICHARD","tenencia":59552.3,"pct":"0,94%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"NICOLINO ENRRE LUIS E HIJO SRL","tenencia":37151.94,"pct":"0,58%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"VARESI JUAN CRUZ","tenencia":30095.99,"pct":"0,47%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"NIERO TOMAS  931792","tenencia":10437.09,"pct":"0,16%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"PIERELLA SRL","tenencia":7196.28,"pct":"0,11%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"PRIMON EZEQUIEL FEDERICO  931937","tenencia":6769.48,"pct":"0,11%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"CORSI ALEJANDRO HUMBERTO  932078","tenencia":6577.41,"pct":"0,10%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"D Y M CANTARINI SS","tenencia":1182.34,"pct":"0,02%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"FIORNOVELLI MARIA LUJAN","tenencia":54.82,"pct":"0,00%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"SCARAFONI PABLO ANDRES  - 1821","tenencia":373278.28,"pct":"5,86%","dueno":"Juan Politti","frecuencia":""},{"nombre":"ALICER SRL","tenencia":0.0,"pct":"","dueno":"Leo Sancho","frecuencia":""},{"nombre":"AGROIDEAS SA","tenencia":1323.64,"pct":"0,02%","dueno":"Leonardo Sancho","frecuencia":""},{"nombre":"AG TRUCKS SRL","tenencia":0.0,"pct":"0,00%","dueno":"Leonardo Sancho","frecuencia":""},{"nombre":"AGROPECUARIA SAN ANTONIO SA","tenencia":0.0,"pct":"0,00%","dueno":"Leonardo Sancho","frecuencia":""},{"nombre":"ROLDAN JULIO ALEJANDRO  931847","tenencia":44995.41,"pct":"0,71%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"FUHR DIEGO MATIAS  932091","tenencia":11991.38,"pct":"0,19%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"VILLEGAS CESAR HERNAN  931941","tenencia":11973.64,"pct":"0,19%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"LORENZO MARIANO ANDRES  932105","tenencia":9427.29,"pct":"0,15%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"LOPEZ FEDERICO NICOLAS  931974","tenencia":2693.4,"pct":"0,04%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"FERIAS DEL NORTE SACIA","tenencia":38843.39,"pct":"0,61%","dueno":"Martin Artero","frecuencia":""},{"nombre":"SCILINGO HNOS SA","tenencia":12760.57,"pct":"0,20%","dueno":"Martin Artero","frecuencia":""},{"nombre":"SELLART IGNACIO","tenencia":841.68,"pct":"0,01%","dueno":"Martin Artero","frecuencia":""},{"nombre":"MENZIO SRL","tenencia":0.0,"pct":"0,00%","dueno":"Martin Artero","frecuencia":""},{"nombre":"SIEMBRAS ASOCIADAS REGION NUCLEO SA","tenencia":0.0,"pct":"0,00%","dueno":"Martin Artero","frecuencia":""},{"nombre":"FRATTINI MARIA JULIA","tenencia":61868.14,"pct":"0,97%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"FAITELLA FERNANDES ANDREA CAROLINA","tenencia":23061.15,"pct":"0,36%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"PRODUCIR INTEGRAL SA","tenencia":18622.25,"pct":"0,29%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"DESIGN QUALITY AND DEVELOPMENT SAS","tenencia":1721.56,"pct":"0,03%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"BENAVIDEZ LOLA","tenencia":1596.03,"pct":"0,03%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"ABUELO JULIO SA","tenencia":316.97,"pct":"0,00%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"SYNERGIA IT GROUP SRL","tenencia":110.85,"pct":"0,00%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"PI GROUP SRL","tenencia":0.0,"pct":"0,00%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"GARCIA CARRARA EMILIO MANUEL  - 947142","tenencia":718497.28,"pct":"11,28%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"GARCIA CARRARA JOSEFINA INES","tenencia":217126.93,"pct":"3,41%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"GARCIA CARRARA EMILIO MANUEL","tenencia":187571.57,"pct":"2,95%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"LAS COLONIAS DISTRIBUCIONES SA","tenencia":39482.04,"pct":"0,62%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"PAMPINFIER    SA","tenencia":0.0,"pct":"0,00%","dueno":"Melisa Flores","frecuencia":""},{"nombre":"COOPAR","tenencia":79618.25,"pct":"1,25%","dueno":"Miguel Fenner","frecuencia":""},{"nombre":"LA CAMBICHA SA","tenencia":41424.0,"pct":"0,65%","dueno":"Miguel Fenner","frecuencia":""},{"nombre":"CASADO JUAN MANUEL  931989","tenencia":19450.18,"pct":"0,31%","dueno":"Miguel Fenner","frecuencia":""},{"nombre":"BERTICHE GUSTAVO  932051","tenencia":82083.48,"pct":"1,29%","dueno":"Pablo Mas","frecuencia":""},{"nombre":"RIGHI RAQUEL MARTA  931825","tenencia":30052.36,"pct":"0,47%","dueno":"Pablo Mas","frecuencia":""},{"nombre":"PRATTA GRACIELA SUSANA  - 946153","tenencia":11594.06,"pct":"0,18%","dueno":"Pablo Mas","frecuencia":""},{"nombre":"BURANI ANDRES OSCAR  931908","tenencia":11191.44,"pct":"0,18%","dueno":"Raquel Quintana","frecuencia":""},{"nombre":"VEIGA JUAN MANUEL  931970","tenencia":20186.81,"pct":"0,32%","dueno":"Sergio Zeballos","frecuencia":""},{"nombre":"ZEBALLOS SERGIO GABRIEL  931933","tenencia":0.0,"pct":"","dueno":"Sergio Zeballos","frecuencia":""}];
+const RAW = [{"nombre":"SERRA LUIS ALBERTO","tenencia":809247.02,"pct":"12,71%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"PETIT FOURS  SA","tenencia":148404.68,"pct":"2,33%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"MACARIO LUIS ALBERTO","tenencia":108502.0,"pct":"1,70%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"NICOLAU JAVIER NESTOR  931826","tenencia":104685.13,"pct":"1,64%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"SERRA CLARA","tenencia":93976.13,"pct":"1,48%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"SANDRONI MARIA ISABEL","tenencia":93579.87,"pct":"1,47%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"SERRA PALOMA","tenencia":93492.3,"pct":"1,47%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"MILESY BERNARDO  931819","tenencia":25841.76,"pct":"0,41%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"BOZZER ELSO ALEJANDRO  932041","tenencia":16043.69,"pct":"0,25%","dueno":"Agustin Marcotegui","frecuencia":""},{"nombre":"PASCUAL MARIA FERNANDA  - 944744","tenencia":13602.08,"pct":"0,21%","dueno":"All Bankers","frecuencia":""},{"nombre":"REALE DANIELA","tenencia":4686.97,"pct":"0,07%","dueno":"All Bankers","frecuencia":""},{"nombre":"ROZADILLA BLAS OMAR  - 944988","tenencia":23314.69,"pct":"0,37%","dueno":"Blas Rozadilla","frecuencia":""},{"nombre":"MUGICA DIAZ PATRICIO MATIAS  - 946330","tenencia":3898.41,"pct":"0,06%","dueno":"Blas Rozadilla","frecuencia":""},{"nombre":"ACQUARONE FERNANDO OSCAR","tenencia":356017.92,"pct":"5,59%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MERONI NORA ELENA","tenencia":229951.24,"pct":"3,61%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MANCIONI JORGE ALBERTO","tenencia":210585.63,"pct":"3,31%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MANCIONI MARIA FLORENCIA","tenencia":71691.77,"pct":"1,13%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ACQUARONE IGNACIO FERNANDO","tenencia":69193.12,"pct":"1,09%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"FRUMENTO ANA MARIA  - 944634","tenencia":52803.54,"pct":"0,83%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"RIART JOSE LUIS","tenencia":49515.35,"pct":"0,78%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"LOBERTTI ALEJANDRO DAVID","tenencia":37814.9,"pct":"0,59%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ALBAJARI KAISER MARTIN ERNESTO  - 944388","tenencia":33796.86,"pct":"0,53%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"DOMINGUEZ CINTIA VERONICA","tenencia":23671.36,"pct":"0,37%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"DEL PAPA ANA LEA  931905","tenencia":14866.63,"pct":"0,23%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"PEREYRA MARIA SOL","tenencia":13283.8,"pct":"0,21%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"REPIZO JAVIER ALEJANDRO","tenencia":13041.9,"pct":"0,20%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"CROSA FERNANDO","tenencia":12228.51,"pct":"0,19%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"CADIROLA GISELA","tenencia":7965.91,"pct":"0,13%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"BEVILACQUA GUSTAVO OMAR","tenencia":5530.94,"pct":"0,09%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ACCORINTI BELLORINI MARIA DELFINA","tenencia":2689.95,"pct":"0,04%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"VENA GIULIANO  931837","tenencia":1901.77,"pct":"0,03%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"MANCIONI JOAQUIN","tenencia":1819.18,"pct":"0,03%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"ROMON DIEGO CARLOS","tenencia":880.47,"pct":"0,01%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"FIDEICOMISO PARQUE INDUSTRIAL VACA MUERTA","tenencia":12.88,"pct":"0,00%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"PASTOR ISABEL ADELA","tenencia":0.0,"pct":"0,00%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"NIEDFELD PATRICIA BERNARDA","tenencia":0.0,"pct":"0,00%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"BERLINGIERI MARIA LAURA","tenencia":3379.62,"pct":"0,05%","dueno":"Elisa Sanchez","frecuencia":""},{"nombre":"LINERA MARIA BELEN  - 946710","tenencia":1213.88,"pct":"0,02%","dueno":"Emilia Linera","frecuencia":""},{"nombre":"ULLOA OMAR WENCESLAO  931972","tenencia":100710.86,"pct":"1,58%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"CELAA ALEJANDRA","tenencia":67025.91,"pct":"1,05%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"GERLERO FLAVIO ADRIAN","tenencia":5871.15,"pct":"0,09%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"ACOPIAR SA","tenencia":585.77,"pct":"0,01%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"PROAGRO SRL","tenencia":0.0,"pct":"0,00%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"AGROTECNOLOGIA Y SERVICIOS SA","tenencia":0.0,"pct":"0,00%","dueno":"Esteban Moscariello","frecuencia":""},{"nombre":"CARIDE MAURICIO ALBERTO  931887","tenencia":3264.34,"pct":"0,05%","dueno":"Ezequiel Rapetti","frecuencia":""},{"nombre":"MELO ANIBAL HORACIO","tenencia":108723.7,"pct":"1,71%","dueno":"Guadalupe Guardiol","frecuencia":""},{"nombre":"PROCESS SRL","tenencia":257183.83,"pct":"4,04%","dueno":"Ignacio Diaz Hermelo","frecuencia":""},{"nombre":"RIENZI IGNACIO BENJAMIN","tenencia":952.52,"pct":"0,01%","dueno":"Ignacio Rienzi","frecuencia":""},{"nombre":"ALOE SALVADOR CRISTIAN  931727","tenencia":0.0,"pct":"0,00%","dueno":"Jorge Culasso","frecuencia":""},{"nombre":"INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -","tenencia":837153.6,"pct":"13,15%","dueno":"Juan Cruz Varesi","frecuencia":"Semanal"},{"nombre":"GALEAZZI EDUARDO RICHARD","tenencia":59552.3,"pct":"0,94%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"NICOLINO ENRRE LUIS E HIJO SRL","tenencia":37151.94,"pct":"0,58%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"VARESI JUAN CRUZ","tenencia":30095.99,"pct":"0,47%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"NIERO TOMAS  931792","tenencia":10437.09,"pct":"0,16%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"PIERELLA SRL","tenencia":7196.28,"pct":"0,11%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"PRIMON EZEQUIEL FEDERICO  931937","tenencia":6769.48,"pct":"0,11%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"CORSI ALEJANDRO HUMBERTO  932078","tenencia":6577.41,"pct":"0,10%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"D Y M CANTARINI SS","tenencia":1182.34,"pct":"0,02%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"FIORNOVELLI MARIA LUJAN","tenencia":54.82,"pct":"0,00%","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"SCARAFONI PABLO ANDRES  - 1821","tenencia":373278.28,"pct":"5,86%","dueno":"Juan Politti","frecuencia":""},{"nombre":"ALICER SRL","tenencia":0.0,"pct":"","dueno":"Leo Sancho","frecuencia":""},{"nombre":"AGROIDEAS SA","tenencia":1323.64,"pct":"0,02%","dueno":"Leonardo Sancho","frecuencia":""},{"nombre":"AG TRUCKS SRL","tenencia":0.0,"pct":"0,00%","dueno":"Leonardo Sancho","frecuencia":""},{"nombre":"AGROPECUARIA SAN ANTONIO SA","tenencia":0.0,"pct":"0,00%","dueno":"Leonardo Sancho","frecuencia":""},{"nombre":"ROLDAN JULIO ALEJANDRO  931847","tenencia":44995.41,"pct":"0,71%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"FUHR DIEGO MATIAS  932091","tenencia":11991.38,"pct":"0,19%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"VILLEGAS CESAR HERNAN  931941","tenencia":11973.64,"pct":"0,19%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"LORENZO MARIANO ANDRES  932105","tenencia":9427.29,"pct":"0,15%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"LOPEZ FEDERICO NICOLAS  931974","tenencia":2693.4,"pct":"0,04%","dueno":"Mariano Pons","frecuencia":""},{"nombre":"FERIAS DEL NORTE SACIA","tenencia":38843.39,"pct":"0,61%","dueno":"Martin Artero","frecuencia":""},{"nombre":"SCILINGO HNOS SA","tenencia":12760.57,"pct":"0,20%","dueno":"Martin Artero","frecuencia":""},{"nombre":"SELLART IGNACIO","tenencia":841.68,"pct":"0,01%","dueno":"Martin Artero","frecuencia":""},{"nombre":"MENZIO SRL","tenencia":0.0,"pct":"0,00%","dueno":"Martin Artero","frecuencia":""},{"nombre":"SIEMBRAS ASOCIADAS REGION NUCLEO SA","tenencia":0.0,"pct":"0,00%","dueno":"Martin Artero","frecuencia":""},{"nombre":"FRATTINI MARIA JULIA","tenencia":61868.14,"pct":"0,97%","dueno":"Damian Zulaica","frecuencia":""},{"nombre":"FAITELLA FERNANDES ANDREA CAROLINA","tenencia":23061.15,"pct":"0,36%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"PRODUCIR INTEGRAL SA","tenencia":18622.25,"pct":"0,29%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"DESIGN QUALITY AND DEVELOPMENT SAS","tenencia":1721.56,"pct":"0,03%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"BENAVIDEZ LOLA","tenencia":1596.03,"pct":"0,03%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"ABUELO JULIO SA","tenencia":316.97,"pct":"0,00%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"SYNERGIA IT GROUP SRL","tenencia":110.85,"pct":"0,00%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"PI GROUP SRL","tenencia":0.0,"pct":"0,00%","dueno":"Matias Fernicola","frecuencia":""},{"nombre":"GARCIA CARRARA EMILIO MANUEL  - 947142","tenencia":718497.28,"pct":"11,28%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"GARCIA CARRARA JOSEFINA INES","tenencia":217126.93,"pct":"3,41%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"GARCIA CARRARA EMILIO MANUEL","tenencia":187571.57,"pct":"2,95%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"LAS COLONIAS DISTRIBUCIONES SA","tenencia":39482.04,"pct":"0,62%","dueno":"Mauro Picardi","frecuencia":""},{"nombre":"PAMPINFIER    SA","tenencia":0.0,"pct":"0,00%","dueno":"Melisa Flores","frecuencia":""},{"nombre":"COOPAR","tenencia":79618.25,"pct":"1,25%","dueno":"Miguel Fenner","frecuencia":""},{"nombre":"LA CAMBICHA SA","tenencia":41424.0,"pct":"0,65%","dueno":"Miguel Fenner","frecuencia":""},{"nombre":"CASADO JUAN MANUEL  931989","tenencia":19450.18,"pct":"0,31%","dueno":"Miguel Fenner","frecuencia":""},{"nombre":"BERTICHE GUSTAVO  932051","tenencia":82083.48,"pct":"1,29%","dueno":"Pablo Mas","frecuencia":""},{"nombre":"RIGHI RAQUEL MARTA  931825","tenencia":30052.36,"pct":"0,47%","dueno":"Pablo Mas","frecuencia":""},{"nombre":"PRATTA GRACIELA SUSANA  - 946153","tenencia":11594.06,"pct":"0,18%","dueno":"Pablo Mas","frecuencia":""},{"nombre":"BURANI ANDRES OSCAR  931908","tenencia":11191.44,"pct":"0,18%","dueno":"Raquel Quintana","frecuencia":""},{"nombre":"VEIGA JUAN MANUEL  931970","tenencia":20186.81,"pct":"0,32%","dueno":"Sergio Zeballos","frecuencia":""},{"nombre":"ZEBALLOS SERGIO GABRIEL  931933","tenencia":0.0,"pct":"","dueno":"Sergio Zeballos","frecuencia":""},{"nombre":"GALEAZZI S A  - DARUMA","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"GALEAZZI S A","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"CALISA COMPLEJO ALIMENTARIO SA","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"AGROPECUARIA LA RESERVA SA","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"ARBANIT FELLOW SAS","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"SILVIA LOMBARDI SRL","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"SALOMONE SANTIAGO MIGUEL","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"BASCULAS GAMA SRL","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"INDUSTRIAS SAVINI SRL","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"PRINTEMPS SRL","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"VELLA ROGELIO DANIEL","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"CIUCCI MIGUEL ANGEL","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"GUNEGONDI ALBERTO FEDERICO","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"AGROGANADERA SAN SEBASTIAN ELAM SRL","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"SELVA AGROPECUARIA SRL","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"SANCHEZ MARIA ELISA","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"DE VICENZO MARIANO JOSE","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"CIDONI EZEQUIEL RAMIRO","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"LOAL SERVICIOS INTEGRALES S R L","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"TRANSPORTE ALEM EXPRESS S A S","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"SCARPATTI AMOBLAMIENTOS SRL","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"SALDUTTI FEDERICO MARTIN  931841","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"BAUDRACCO MATIAS  931904","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"SACCONE BRUNO DAVID","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"STANGAFERRO RAMIRO  - 943055","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"SILOCCHI JUAN MANUEL  - 943129","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"VAZQUES PABLO  - 944270","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"STAMPFLI GERMAN CARLOS  - 945831","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"PALOMBARINI LUISINA  - 946021","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"FABIAN ANDRES SPESOT Y WALTER ANDRES SPESOT SOC CAPITULO I SECCION IV","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"RODRIGUEZ MAURICIO  931828","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"NINA JUAN","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"DOLCE BRUNO AGUSTIN","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"LEGUIZAMON LUCAS LAUTARO","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"DEMARCHI OSCAR GERMAN  - 946315","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"BENDAHAN GUSTAVO NICOLAS","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"BIOLATO CEREALES SC","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"COOP AGROPECUARIA DE LA VIOLETA    LTDA","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"BENEDETTO IVAN EDUARDO  931999","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"FRANCISCO SELLART S A","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"SHOCRON ANDRES- 947706","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"LAZARO EMANUEL JUAN","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"MURRO OSCAR ALBERTO","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"CONTRERAS FRANCO CARLOS","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"MOLINOS JUAN SEMINO SA","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"VARESI ANGEL CARLOS JOSE","tenencia":0.0,"pct":"","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"COUZIER ENRIQUE","tenencia":0.0,"pct":"","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"FIORNOVELLI MARIA CECILIA","tenencia":0.0,"pct":"","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"FANDINO SERGIO GASTON  931818","tenencia":0.0,"pct":"","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"DON BRANDINO LOGISTICA SRL","tenencia":0.0,"pct":"","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"FYCSA  S A  - DARUMA","tenencia":0.0,"pct":"","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"FYCSA  S A","tenencia":0.0,"pct":"","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"SAISI GABRIEL","tenencia":0.0,"pct":"","dueno":"Juan Cruz Varesi","frecuencia":""},{"nombre":"QUINTANA RAQUEL MERCEDES","tenencia":0.0,"pct":"","dueno":"All Bankers","frecuencia":""},{"nombre":"RAPETTI EZEQUIEL MAURICIO","tenencia":0.0,"pct":"","dueno":"All Bankers","frecuencia":""},{"nombre":"IVO BENJAMIN BLANC","tenencia":0.0,"pct":"","dueno":"All Bankers","frecuencia":""},{"nombre":"BLANC IVO SEGUNDO  - 2306","tenencia":0.0,"pct":"","dueno":"All Bankers","frecuencia":""},{"nombre":"PONS MARIANO SEBASTIAN","tenencia":0.0,"pct":"","dueno":"All Bankers","frecuencia":""},{"nombre":"PONTET MARTA INES","tenencia":0.0,"pct":"","dueno":"Lantia Capital","frecuencia":""},{"nombre":"KINSELLA MARIA ALEJANDRA","tenencia":0.0,"pct":"","dueno":"Lantia Capital","frecuencia":""},{"nombre":"PAREJA DUARTE ESTANISLAO FACUNDO","tenencia":0.0,"pct":"","dueno":"Lantia Capital","frecuencia":""},{"nombre":"LANTIA CAPITAL SA","tenencia":0.0,"pct":"","dueno":"Lantia Capital","frecuencia":""},{"nombre":"CASTILLO SEBASTIAN CRUZ  - 947356","tenencia":0.0,"pct":"","dueno":"Lantia Capital","frecuencia":""},{"nombre":"LINERA MARIA EMILIA","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"ZAPATA MARTIN","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"MORALES FERNANDO DIEGO","tenencia":0.0,"pct":"","dueno":"ALLARIA, ROSARIO","frecuencia":""},{"nombre":"SOLUCIONES ALDEBARAN AGRO SRL","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"LES FRERES SRL","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""},{"nombre":"AFRAL SRL","tenencia":0.0,"pct":"","dueno":"ALLARIA, AGROFINANZAS","frecuencia":""}];
 
 const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const FREC_OPTS=['','Semanal','Quincenal','Mensual'];
@@ -993,7 +1040,7 @@ const CANAL_TEXT={'Llamada':'#1a7a3f','WhatsApp':'#1a6a1f','Email':'#2a4a9a','Re
 
 const _now=new Date();
 let state={year:_now.getFullYear(),month:_now.getMonth()};
-let checks={},frecOverride={},notas={},historial={},alertas={},tenenciaOverride={},duenoOverride={},giras=[],prospects=[],grupos=[],clientesManuales=[],actividades={},tareas=[];
+let checks={},frecOverride={},notas={},historial={},alertas={},tenenciaOverride={},duenoOverride={},giras=[],prospects=[],grupos=[],clientesManuales=[],actividades={},tareas=[],estadoCliente={};
 // actividades[nombre] = {rubro, cargo, empresa}
 // clientesManuales: [{id, nombre, dueno, tenencia, frecuencia}]
 // grupoMiembros: {grupoId: [nombre, ...]}  stored separately for easy lookup
@@ -1001,7 +1048,8 @@ let grupoMiembros={};  // grupoId -> [nombre]
 
 
 // Pre-load PF/PJ classifications if actividades not yet saved
-const ACTIVIDADES_DEFAULT = {"SERRA LUIS ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "PETIT FOURS  SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "MACARIO LUIS ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "NICOLAU JAVIER NESTOR  931826": {"tipo": "PF", "rubro": "", "cargo": ""}, "SERRA CLARA": {"tipo": "PF", "rubro": "", "cargo": ""}, "SANDRONI MARIA ISABEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "SERRA PALOMA": {"tipo": "PF", "rubro": "", "cargo": ""}, "MILESY BERNARDO  931819": {"tipo": "PF", "rubro": "", "cargo": ""}, "BOZZER ELSO ALEJANDRO  932041": {"tipo": "PF", "rubro": "", "cargo": ""}, "PASCUAL MARIA FERNANDA  - 944744": {"tipo": "PF", "rubro": "", "cargo": ""}, "REALE DANIELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ROZADILLA BLAS OMAR  - 944988": {"tipo": "PF", "rubro": "", "cargo": ""}, "MUGICA DIAZ PATRICIO MATIAS  - 946330": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACQUARONE FERNANDO OSCAR": {"tipo": "PF", "rubro": "", "cargo": ""}, "MERONI NORA ELENA": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI JORGE ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI MARIA FLORENCIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACQUARONE IGNACIO FERNANDO": {"tipo": "PF", "rubro": "", "cargo": ""}, "FRUMENTO ANA MARIA  - 944634": {"tipo": "PF", "rubro": "", "cargo": ""}, "RIART JOSE LUIS": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOBERTTI ALEJANDRO DAVID": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALBAJARI KAISER MARTIN ERNESTO  - 944388": {"tipo": "PF", "rubro": "", "cargo": ""}, "DOMINGUEZ CINTIA VERONICA": {"tipo": "PF", "rubro": "", "cargo": ""}, "DEL PAPA ANA LEA  931905": {"tipo": "PF", "rubro": "", "cargo": ""}, "PEREYRA MARIA SOL": {"tipo": "PF", "rubro": "", "cargo": ""}, "REPIZO JAVIER ALEJANDRO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CROSA FERNANDO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CADIROLA GISELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "BEVILACQUA GUSTAVO OMAR": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACCORINTI BELLORINI MARIA DELFINA": {"tipo": "PF", "rubro": "", "cargo": ""}, "VENA GIULIANO  931837": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI JOAQUIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ROMON DIEGO CARLOS": {"tipo": "PF", "rubro": "", "cargo": ""}, "FIDEICOMISO PARQUE INDUSTRIAL VACA MUERTA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PASTOR ISABEL ADELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "NIEDFELD PATRICIA BERNARDA": {"tipo": "PF", "rubro": "", "cargo": ""}, "BERLINGIERI MARIA LAURA": {"tipo": "PF", "rubro": "", "cargo": ""}, "LINERA MARIA BELEN  - 946710": {"tipo": "PF", "rubro": "", "cargo": ""}, "ULLOA OMAR WENCESLAO  931972": {"tipo": "PF", "rubro": "", "cargo": ""}, "CELAA ALEJANDRA": {"tipo": "PF", "rubro": "", "cargo": ""}, "GERLERO FLAVIO ADRIAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACOPIAR SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PROAGRO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROTECNOLOGIA Y SERVICIOS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CARIDE MAURICIO ALBERTO  931887": {"tipo": "PF", "rubro": "", "cargo": ""}, "MELO ANIBAL HORACIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "PROCESS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "RIENZI IGNACIO BENJAMIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALOE SALVADOR CRISTIAN  931727": {"tipo": "PF", "rubro": "", "cargo": ""}, "INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GALEAZZI EDUARDO RICHARD": {"tipo": "PF", "rubro": "", "cargo": ""}, "NICOLINO ENRRE LUIS E HIJO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "VARESI JUAN CRUZ": {"tipo": "PF", "rubro": "", "cargo": ""}, "NIERO TOMAS  931792": {"tipo": "PF", "rubro": "", "cargo": ""}, "PIERELLA SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PRIMON EZEQUIEL FEDERICO  931937": {"tipo": "PF", "rubro": "", "cargo": ""}, "CORSI ALEJANDRO HUMBERTO  932078": {"tipo": "PF", "rubro": "", "cargo": ""}, "D Y M CANTARINI SS": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FIORNOVELLI MARIA LUJAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "SCARAFONI PABLO ANDRES  - 1821": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALICER SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROIDEAS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AG TRUCKS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROPECUARIA SAN ANTONIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "ROLDAN JULIO ALEJANDRO  931847": {"tipo": "PF", "rubro": "", "cargo": ""}, "FUHR DIEGO MATIAS  932091": {"tipo": "PF", "rubro": "", "cargo": ""}, "VILLEGAS CESAR HERNAN  931941": {"tipo": "PF", "rubro": "", "cargo": ""}, "LORENZO MARIANO ANDRES  932105": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOPEZ FEDERICO NICOLAS  931974": {"tipo": "PF", "rubro": "", "cargo": ""}, "FERIAS DEL NORTE SACIA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SCILINGO HNOS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SELLART IGNACIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "MENZIO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SIEMBRAS ASOCIADAS REGION NUCLEO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FRATTINI MARIA JULIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "FAITELLA FERNANDES ANDREA CAROLINA": {"tipo": "PF", "rubro": "", "cargo": ""}, "PRODUCIR INTEGRAL SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "DESIGN QUALITY AND DEVELOPMENT SAS": {"tipo": "PJ", "rubro": "", "cargo": ""}, "BENAVIDEZ LOLA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ABUELO JULIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SYNERGIA IT GROUP SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PI GROUP SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GARCIA CARRARA EMILIO MANUEL  - 947142": {"tipo": "PF", "rubro": "", "cargo": ""}, "GARCIA CARRARA JOSEFINA INES": {"tipo": "PF", "rubro": "", "cargo": ""}, "GARCIA CARRARA EMILIO MANUEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "LAS COLONIAS DISTRIBUCIONES SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PAMPINFIER    SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "COOPAR": {"tipo": "PJ", "rubro": "", "cargo": ""}, "LA CAMBICHA SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CASADO JUAN MANUEL  931989": {"tipo": "PF", "rubro": "", "cargo": ""}, "BERTICHE GUSTAVO  932051": {"tipo": "PF", "rubro": "", "cargo": ""}, "RIGHI RAQUEL MARTA  931825": {"tipo": "PF", "rubro": "", "cargo": ""}, "PRATTA GRACIELA SUSANA  - 946153": {"tipo": "PF", "rubro": "", "cargo": ""}, "BURANI ANDRES OSCAR  931908": {"tipo": "PF", "rubro": "", "cargo": ""}, "VEIGA JUAN MANUEL  931970": {"tipo": "PF", "rubro": "", "cargo": ""}, "ZEBALLOS SERGIO GABRIEL  931933": {"tipo": "PF", "rubro": "", "cargo": ""}};
+const ACTIVIDADES_DEFAULT = {"SERRA LUIS ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "PETIT FOURS  SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "MACARIO LUIS ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "NICOLAU JAVIER NESTOR  931826": {"tipo": "PF", "rubro": "", "cargo": ""}, "SERRA CLARA": {"tipo": "PF", "rubro": "", "cargo": ""}, "SANDRONI MARIA ISABEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "SERRA PALOMA": {"tipo": "PF", "rubro": "", "cargo": ""}, "MILESY BERNARDO  931819": {"tipo": "PF", "rubro": "", "cargo": ""}, "BOZZER ELSO ALEJANDRO  932041": {"tipo": "PF", "rubro": "", "cargo": ""}, "PASCUAL MARIA FERNANDA  - 944744": {"tipo": "PF", "rubro": "", "cargo": ""}, "REALE DANIELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ROZADILLA BLAS OMAR  - 944988": {"tipo": "PF", "rubro": "", "cargo": ""}, "MUGICA DIAZ PATRICIO MATIAS  - 946330": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACQUARONE FERNANDO OSCAR": {"tipo": "PF", "rubro": "", "cargo": ""}, "MERONI NORA ELENA": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI JORGE ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI MARIA FLORENCIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACQUARONE IGNACIO FERNANDO": {"tipo": "PF", "rubro": "", "cargo": ""}, "FRUMENTO ANA MARIA  - 944634": {"tipo": "PF", "rubro": "", "cargo": ""}, "RIART JOSE LUIS": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOBERTTI ALEJANDRO DAVID": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALBAJARI KAISER MARTIN ERNESTO  - 944388": {"tipo": "PF", "rubro": "", "cargo": ""}, "DOMINGUEZ CINTIA VERONICA": {"tipo": "PF", "rubro": "", "cargo": ""}, "DEL PAPA ANA LEA  931905": {"tipo": "PF", "rubro": "", "cargo": ""}, "PEREYRA MARIA SOL": {"tipo": "PF", "rubro": "", "cargo": ""}, "REPIZO JAVIER ALEJANDRO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CROSA FERNANDO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CADIROLA GISELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "BEVILACQUA GUSTAVO OMAR": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACCORINTI BELLORINI MARIA DELFINA": {"tipo": "PF", "rubro": "", "cargo": ""}, "VENA GIULIANO  931837": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI JOAQUIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ROMON DIEGO CARLOS": {"tipo": "PF", "rubro": "", "cargo": ""}, "FIDEICOMISO PARQUE INDUSTRIAL VACA MUERTA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PASTOR ISABEL ADELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "NIEDFELD PATRICIA BERNARDA": {"tipo": "PF", "rubro": "", "cargo": ""}, "BERLINGIERI MARIA LAURA": {"tipo": "PF", "rubro": "", "cargo": ""}, "LINERA MARIA BELEN  - 946710": {"tipo": "PF", "rubro": "", "cargo": ""}, "ULLOA OMAR WENCESLAO  931972": {"tipo": "PF", "rubro": "", "cargo": ""}, "CELAA ALEJANDRA": {"tipo": "PF", "rubro": "", "cargo": ""}, "GERLERO FLAVIO ADRIAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACOPIAR SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PROAGRO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROTECNOLOGIA Y SERVICIOS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CARIDE MAURICIO ALBERTO  931887": {"tipo": "PF", "rubro": "", "cargo": ""}, "MELO ANIBAL HORACIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "PROCESS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "RIENZI IGNACIO BENJAMIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALOE SALVADOR CRISTIAN  931727": {"tipo": "PF", "rubro": "", "cargo": ""}, "INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GALEAZZI EDUARDO RICHARD": {"tipo": "PF", "rubro": "", "cargo": ""}, "NICOLINO ENRRE LUIS E HIJO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "VARESI JUAN CRUZ": {"tipo": "PF", "rubro": "", "cargo": ""}, "NIERO TOMAS  931792": {"tipo": "PF", "rubro": "", "cargo": ""}, "PIERELLA SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PRIMON EZEQUIEL FEDERICO  931937": {"tipo": "PF", "rubro": "", "cargo": ""}, "CORSI ALEJANDRO HUMBERTO  932078": {"tipo": "PF", "rubro": "", "cargo": ""}, "D Y M CANTARINI SS": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FIORNOVELLI MARIA LUJAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "SCARAFONI PABLO ANDRES  - 1821": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALICER SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROIDEAS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AG TRUCKS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROPECUARIA SAN ANTONIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "ROLDAN JULIO ALEJANDRO  931847": {"tipo": "PF", "rubro": "", "cargo": ""}, "FUHR DIEGO MATIAS  932091": {"tipo": "PF", "rubro": "", "cargo": ""}, "VILLEGAS CESAR HERNAN  931941": {"tipo": "PF", "rubro": "", "cargo": ""}, "LORENZO MARIANO ANDRES  932105": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOPEZ FEDERICO NICOLAS  931974": {"tipo": "PF", "rubro": "", "cargo": ""}, "FERIAS DEL NORTE SACIA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SCILINGO HNOS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SELLART IGNACIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "MENZIO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SIEMBRAS ASOCIADAS REGION NUCLEO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FRATTINI MARIA JULIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "FAITELLA FERNANDES ANDREA CAROLINA": {"tipo": "PF", "rubro": "", "cargo": ""}, "PRODUCIR INTEGRAL SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "DESIGN QUALITY AND DEVELOPMENT SAS": {"tipo": "PJ", "rubro": "", "cargo": ""}, "BENAVIDEZ LOLA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ABUELO JULIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SYNERGIA IT GROUP SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PI GROUP SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GARCIA CARRARA EMILIO MANUEL  - 947142": {"tipo": "PF", "rubro": "", "cargo": ""}, "GARCIA CARRARA JOSEFINA INES": {"tipo": "PF", "rubro": "", "cargo": ""}, "GARCIA CARRARA EMILIO MANUEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "LAS COLONIAS DISTRIBUCIONES SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PAMPINFIER    SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "COOPAR": {"tipo": "PJ", "rubro": "", "cargo": ""}, "LA CAMBICHA SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CASADO JUAN MANUEL  931989": {"tipo": "PF", "rubro": "", "cargo": ""}, "BERTICHE GUSTAVO  932051": {"tipo": "PF", "rubro": "", "cargo": ""}, "RIGHI RAQUEL MARTA  931825": {"tipo": "PF", "rubro": "", "cargo": ""}, "PRATTA GRACIELA SUSANA  - 946153": {"tipo": "PF", "rubro": "", "cargo": ""}, "BURANI ANDRES OSCAR  931908": {"tipo": "PF", "rubro": "", "cargo": ""}, "VEIGA JUAN MANUEL  931970": {"tipo": "PF", "rubro": "", "cargo": ""}, "ZEBALLOS SERGIO GABRIEL  931933": {"tipo": "PF", "rubro": "", "cargo": ""}, "GALEAZZI S A  - DARUMA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GALEAZZI S A": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CALISA COMPLEJO ALIMENTARIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROPECUARIA LA RESERVA SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "ARBANIT FELLOW SAS": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SILVIA LOMBARDI SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SALOMONE SANTIAGO MIGUEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "BASCULAS GAMA SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "INDUSTRIAS SAVINI SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PRINTEMPS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "VELLA ROGELIO DANIEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "CIUCCI MIGUEL ANGEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "GUNEGONDI ALBERTO FEDERICO": {"tipo": "PF", "rubro": "", "cargo": ""}, "AGROGANADERA SAN SEBASTIAN ELAM SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SELVA AGROPECUARIA SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SANCHEZ MARIA ELISA": {"tipo": "PF", "rubro": "", "cargo": ""}, "DE VICENZO MARIANO JOSE": {"tipo": "PF", "rubro": "", "cargo": ""}, "CIDONI EZEQUIEL RAMIRO": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOAL SERVICIOS INTEGRALES S R L": {"tipo": "PJ", "rubro": "", "cargo": ""}, "TRANSPORTE ALEM EXPRESS S A S": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SCARPATTI AMOBLAMIENTOS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SALDUTTI FEDERICO MARTIN  931841": {"tipo": "PF", "rubro": "", "cargo": ""}, "BAUDRACCO MATIAS  931904": {"tipo": "PF", "rubro": "", "cargo": ""}, "SACCONE BRUNO DAVID": {"tipo": "PF", "rubro": "", "cargo": ""}, "STANGAFERRO RAMIRO  - 943055": {"tipo": "PF", "rubro": "", "cargo": ""}, "SILOCCHI JUAN MANUEL  - 943129": {"tipo": "PF", "rubro": "", "cargo": ""}, "VAZQUES PABLO  - 944270": {"tipo": "PF", "rubro": "", "cargo": ""}, "STAMPFLI GERMAN CARLOS  - 945831": {"tipo": "PF", "rubro": "", "cargo": ""}, "PALOMBARINI LUISINA  - 946021": {"tipo": "PF", "rubro": "", "cargo": ""}, "FABIAN ANDRES SPESOT Y WALTER ANDRES SPESOT SOC CAPITULO I SECCION IV": {"tipo": "PJ", "rubro": "", "cargo": ""}, "RODRIGUEZ MAURICIO  931828": {"tipo": "PF", "rubro": "", "cargo": ""}, "NINA JUAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "DOLCE BRUNO AGUSTIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "LEGUIZAMON LUCAS LAUTARO": {"tipo": "PF", "rubro": "", "cargo": ""}, "DEMARCHI OSCAR GERMAN  - 946315": {"tipo": "PF", "rubro": "", "cargo": ""}, "BENDAHAN GUSTAVO NICOLAS": {"tipo": "PF", "rubro": "", "cargo": ""}, "BIOLATO CEREALES SC": {"tipo": "PJ", "rubro": "", "cargo": ""}, "COOP AGROPECUARIA DE LA VIOLETA    LTDA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "BENEDETTO IVAN EDUARDO  931999": {"tipo": "PF", "rubro": "", "cargo": ""}, "FRANCISCO SELLART S A": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SHOCRON ANDRES- 947706": {"tipo": "PF", "rubro": "", "cargo": ""}, "LAZARO EMANUEL JUAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "MURRO OSCAR ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CONTRERAS FRANCO CARLOS": {"tipo": "PF", "rubro": "", "cargo": ""}, "MOLINOS JUAN SEMINO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "VARESI ANGEL CARLOS JOSE": {"tipo": "PF", "rubro": "", "cargo": ""}, "COUZIER ENRIQUE": {"tipo": "PF", "rubro": "", "cargo": ""}, "FIORNOVELLI MARIA CECILIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "FANDINO SERGIO GASTON  931818": {"tipo": "PF", "rubro": "", "cargo": ""}, "DON BRANDINO LOGISTICA SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FYCSA  S A  - DARUMA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FYCSA  S A": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SAISI GABRIEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "QUINTANA RAQUEL MERCEDES": {"tipo": "PF", "rubro": "", "cargo": ""}, "RAPETTI EZEQUIEL MAURICIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "IVO BENJAMIN BLANC": {"tipo": "PF", "rubro": "", "cargo": ""}, "BLANC IVO SEGUNDO  - 2306": {"tipo": "PF", "rubro": "", "cargo": ""}, "PONS MARIANO SEBASTIAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "PONTET MARTA INES": {"tipo": "PF", "rubro": "", "cargo": ""}, "KINSELLA MARIA ALEJANDRA": {"tipo": "PF", "rubro": "", "cargo": ""}, "PAREJA DUARTE ESTANISLAO FACUNDO": {"tipo": "PF", "rubro": "", "cargo": ""}, "LANTIA CAPITAL SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CASTILLO SEBASTIAN CRUZ  - 947356": {"tipo": "PF", "rubro": "", "cargo": ""}, "LINERA MARIA EMILIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ZAPATA MARTIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "MORALES FERNANDO DIEGO": {"tipo": "PF", "rubro": "", "cargo": ""}, "SOLUCIONES ALDEBARAN AGRO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "LES FRERES SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AFRAL SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}};
+const COMITENTE_MAP = {"VILLEGAS CESAR HERNAN  931941": "600931941", "LOPEZ FEDERICO NICOLAS  931974": "600931974", "GALEAZZI S A  - DARUMA": "100274439", "GALEAZZI S A": "650000364", "SERRA PALOMA": "600931577", "MACARIO LUIS ALBERTO": "600931585", "SERRA LUIS ALBERTO": "600931694", "SERRA CLARA": "600931695", "SANDRONI MARIA ISABEL": "600931696", "MILESY BERNARDO  931819": "600931819", "NICOLAU JAVIER NESTOR  931826": "600931826", "PETIT FOURS  SA": "650000226", "BOZZER ELSO ALEJANDRO  932041": "600932041", "CALISA COMPLEJO ALIMENTARIO SA": "302704", "AGROPECUARIA LA RESERVA SA": "102161", "PEREYRA MARIA SOL": "171918", "PASTOR ISABEL ADELA": "600000389", "LOBERTTI ALEJANDRO DAVID": "600000484", "REPIZO JAVIER ALEJANDRO": "600000486", "ARBANIT FELLOW SAS": "102245", "DOMINGUEZ CINTIA VERONICA": "600000591", "ACQUARONE FERNANDO OSCAR": "600000595", "SILVIA LOMBARDI SRL": "2002625", "CROSA FERNANDO": "600000663", "ACQUARONE IGNACIO FERNANDO": "600000729", "MANCIONI MARIA FLORENCIA": "600000784", "MANCIONI JORGE ALBERTO": "600000791", "SALOMONE SANTIAGO MIGUEL": "600000819", "BASCULAS GAMA SRL": "202414", "INDUSTRIAS SAVINI SRL": "9784", "PRINTEMPS SRL": "171993", "VELLA ROGELIO DANIEL": "600000923", "CIUCCI MIGUEL ANGEL": "600001111", "GUNEGONDI ALBERTO FEDERICO": "600001290", "AGROGANADERA SAN SEBASTIAN ELAM SRL": "102271", "BEVILACQUA GUSTAVO OMAR": "600001507", "SELVA AGROPECUARIA SRL": "2002642", "SANCHEZ MARIA ELISA": "600001572", "MANCIONI JOAQUIN": "600001583", "MERONI NORA ELENA": "600001594", "CADIROLA GISELA": "600001958", "RIART JOSE LUIS": "600001976", "ROMON DIEGO CARLOS": "600931314", "DE VICENZO MARIANO JOSE": "600931360", "CIDONI EZEQUIEL RAMIRO": "600931520", "LOAL SERVICIOS INTEGRALES S R L": "650000030", "TRANSPORTE ALEM EXPRESS S A S": "650000043", "ALBAJARI KAISER MARTIN ERNESTO  - 944388": "25944388", "FIDEICOMISO PARQUE INDUSTRIAL VACA MUERTA": "35000074", "NIEDFELD PATRICIA BERNARDA": "600931609", "FRUMENTO ANA MARIA  - 944634": "25944634", "ACCORINTI BELLORINI MARIA DELFINA": "600931712", "SCARPATTI AMOBLAMIENTOS SRL": "35000142", "SALDUTTI FEDERICO MARTIN  931841": "600931841", "BAUDRACCO MATIAS  931904": "600931904", "DEL PAPA ANA LEA  931905": "600931905", "BERLINGIERI MARIA LAURA": "600931715", "SACCONE BRUNO DAVID": "903212", "STANGAFERRO RAMIRO  - 943055": "25943055", "SILOCCHI JUAN MANUEL  - 943129": "25943129", "VAZQUES PABLO  - 944270": "25944270", "STAMPFLI GERMAN CARLOS  - 945831": "25945831", "PALOMBARINI LUISINA  - 946021": "25946021", "ALOE SALVADOR CRISTIAN  931727": "600931727", "FABIAN ANDRES SPESOT Y WALTER ANDRES SPESOT SOC CAPITULO I SECCION IV": "601353", "FRATTINI MARIA JULIA": "601311", "RODRIGUEZ MAURICIO  931828": "600931828", "NINA JUAN": "600932118", "SOLUCIONES ALDEBARAN AGRO SRL": "35000503", "REALE DANIELA": "191081", "PASCUAL MARIA FERNANDA  - 944744": "25944744", "ROZADILLA BLAS OMAR  - 944988": "25944988", "DEMARCHI OSCAR GERMAN  - 946315": "25946315", "MUGICA DIAZ PATRICIO MATIAS  - 946330": "25946330", "VENA GIULIANO  931837": "600931837", "QUINTANA RAQUEL MERCEDES": "600931349", "LINERA MARIA EMILIA": "120518", "LINERA MARIA BELEN  - 946710": "25946710", "AGROTECNOLOGIA Y SERVICIOS SA": "100873", "ACOPIAR SA": "102258", "PROAGRO SRL": "171995", "CELAA ALEJANDRA": "600931300", "GERLERO FLAVIO ADRIAN": "600931583", "BENDAHAN GUSTAVO NICOLAS": "600931644", "ULLOA OMAR WENCESLAO  931972": "600931972", "RAPETTI EZEQUIEL MAURICIO": "191599", "CARIDE MAURICIO ALBERTO  931887": "600931887", "ZAPATA MARTIN": "27147", "MORALES FERNANDO DIEGO": "132272", "MELO ANIBAL HORACIO": "132398", "PROCESS SRL": "650000042", "RIENZI IGNACIO BENJAMIN": "191592", "IVO BENJAMIN BLANC": "903141", "BLANC IVO SEGUNDO  - 2306": "25002306", "INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -": "9373", "GALEAZZI EDUARDO RICHARD": "700853", "FIORNOVELLI MARIA LUJAN": "601124", "VARESI ANGEL CARLOS JOSE": "2300272", "COUZIER ENRIQUE": "303326", "FIORNOVELLI MARIA CECILIA": "601194", "D Y M CANTARINI SS": "401330", "VARESI JUAN CRUZ": "2300384", "NIERO TOMAS  931792": "600931792", "FANDINO SERGIO GASTON  931818": "600931818", "PIERELLA SRL": "35000357", "DON BRANDINO LOGISTICA SRL": "35000379", "PRIMON EZEQUIEL FEDERICO  931937": "600931937", "NICOLINO ENRRE LUIS E HIJO SRL": "650000254", "CORSI ALEJANDRO HUMBERTO  932078": "600932078", "FYCSA  S A  - DARUMA": "100274024", "FYCSA  S A": "650000362", "SCARAFONI PABLO ANDRES  - 1821": "25001821", "ALICER SRL": "650000265", "AGROPECUARIA SAN ANTONIO SA": "100903", "AGROIDEAS SA": "101822", "AG TRUCKS SRL": "102184", "BIOLATO CEREALES SC": "202456", "COOP AGROPECUARIA DE LA VIOLETA    LTDA": "650000026", "LES FRERES SRL": "121622", "PONS MARIANO SEBASTIAN": "171811", "AFRAL SRL": "102295", "ROLDAN JULIO ALEJANDRO  931847": "600931847", "BENEDETTO IVAN EDUARDO  931999": "600931999", "FUHR DIEGO MATIAS  932091": "600932091", "LORENZO MARIANO ANDRES  932105": "600932105", "FERIAS DEL NORTE SACIA": "6639", "MENZIO SRL": "650000001", "FRANCISCO SELLART S A": "650000021", "SELLART IGNACIO": "600931576", "SIEMBRAS ASOCIADAS REGION NUCLEO SA": "650000296", "SCILINGO HNOS SA": "650000307", "ABUELO JULIO SA": "100893", "PONTET MARTA INES": "171529", "BENAVIDEZ LOLA": "201953", "FAITELLA FERNANDES ANDREA CAROLINA": "600965", "KINSELLA MARIA ALEJANDRA": "11497", "PAREJA DUARTE ESTANISLAO FACUNDO": "171880", "DESIGN QUALITY AND DEVELOPMENT SAS": "401341", "PI GROUP SRL": "171988", "SYNERGIA IT GROUP SRL": "2002634", "PRODUCIR INTEGRAL SA": "171996", "LANTIA CAPITAL SA": "35000467", "CASTILLO SEBASTIAN CRUZ  - 947356": "25947356", "PAMPINFIER    SA": "650000245", "LA CAMBICHA SA": "121642", "CASADO JUAN MANUEL  931989": "600931989", "COOPAR": "650000264", "RIGHI RAQUEL MARTA  931825": "600931825", "PRATTA GRACIELA SUSANA  - 946153": "25946153", "BERTICHE GUSTAVO  932051": "600932051", "BURANI ANDRES OSCAR  931908": "600931908", "ZEBALLOS SERGIO GABRIEL  931933": "600931933", "VEIGA JUAN MANUEL  931970": "600931970", "SHOCRON ANDRES- 947706": "25947706", "LAZARO EMANUEL JUAN": "600932122", "MURRO OSCAR ALBERTO": "600932108", "CONTRERAS FRANCO CARLOS": "25947422", "DOLCE BRUNO AGUSTIN": "25947321", "LEGUIZAMON LUCAS LAUTARO": "25947296", "MOLINOS JUAN SEMINO SA": "650000259", "SAISI GABRIEL": "600931950"};
 function load(){
   try{
     const c=localStorage.getItem('seg_checks');if(c)checks=JSON.parse(c);
@@ -1017,6 +1065,7 @@ function load(){
     const gm=localStorage.getItem('seg_grupo_miembros');if(gm)grupoMiembros=JSON.parse(gm);
     const cm=localStorage.getItem('seg_manuales');if(cm)clientesManuales=JSON.parse(cm);
     const ta=localStorage.getItem('seg_tareas');if(ta)tareas=JSON.parse(ta);
+    const ec=localStorage.getItem('seg_estado');if(ec)estadoCliente=JSON.parse(ec);
     const ac=localStorage.getItem('seg_actividades');
     if(ac){ actividades=JSON.parse(ac);
       // fill in any missing tipo from defaults
@@ -1033,7 +1082,7 @@ const SB_URL = 'https://dslqivsuangzqmwvporf.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzbHFpdnN1YW5nenFtd3Zwb3JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5Mzc4ODgsImV4cCI6MjA5OTUxMzg4OH0.2JzugyKQb_if2ZCXKXm7gTTcflmPflG_DwXpbQey8EA';
 const SB_KEYS = ['seg_checks','seg_frec','seg_notas','seg_hist','seg_alertas',
   'seg_tenencia','seg_dueno','seg_giras','seg_prospects','seg_grupos',
-  'seg_grupo_miembros','seg_manuales','seg_actividades','seg_tareas'];
+  'seg_grupo_miembros','seg_manuales','seg_actividades','seg_tareas','seg_deleted','seg_estado'];
 
 let sbSyncing=false;
 
@@ -1124,6 +1173,7 @@ const saveGrupoMiembros=()=>save('seg_grupo_miembros')(grupoMiembros);
 const saveManuales=()=>save('seg_manuales')(clientesManuales);
 const saveActividades=()=>save('seg_actividades')(actividades);
 const saveTareas=()=>save('seg_tareas')(tareas);
+const saveEstado=()=>save('seg_estado')(estadoCliente);
 
 function getFrecuencia(c){return (frecOverride[c.nombre]!==undefined?frecOverride[c.nombre]:c.frecuencia)||'';}
 function buildWeekBars(nombre,frec){
@@ -1345,12 +1395,182 @@ function guardarNuevoCliente(){
 }
 document.getElementById('nuevo-cliente-overlay').addEventListener('click',function(e){if(e.target===this)closeNuevoCliente();});
 
-function allClientes(){return [...RAW,...clientesManuales];}
+async function loadOperaciones(nombre){
+  const comitente=COMITENTE_MAP[nombre];
+  const loading=document.getElementById('op-loading');
+  const content=document.getElementById('op-content');
+  if(!loading||!content)return;
+  loading.style.display='block';content.style.display='none';
+
+  if(!comitente){
+    loading.innerHTML='<div style="color:#888;font-size:12px;padding:20px">Sin número de comitente registrado para este cliente.</div>';
+    return;
+  }
+
+  const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzbHFpdnN1YW5nenFtd3Zwb3JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5Mzc4ODgsImV4cCI6MjA5OTUxMzg4OH0.2JzugyKQb_if2ZCXKXm7gTTcflmPflG_DwXpbQey8EA';
+
+  try {
+    // Step 1: construct query
+    const cqRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6', max_tokens:1000,
+        mcp_servers:[{type:'url',url:'https://metabase.api.allaria.cloud/api/mcp',name:'allaria-metabase'}],
+        messages:[{role:'user',content:`Construi una query para la tabla 8617 (vwTituOperaciones) filtrando Comitente igual a ${comitente}. Solo campos: Fecha (t8617-1), DescOperacion (t8617-5), Especie (t8617-13), Total (t8617-6), Moneda (t8617-11). Limit 200. Respondé SOLO con el valor del campo "query" del resultado de construct_query, sin texto adicional.`}]
+      })
+    });
+    const cqData = await cqRes.json();
+    const queryToken = cqData.content?.filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+
+    if(!queryToken){
+      loading.innerHTML='<div style="color:#e74c3c;font-size:12px;padding:20px">Error al construir la consulta.</div>';
+      return;
+    }
+
+    // Step 2: execute query
+    const eqRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6', max_tokens:4000,
+        mcp_servers:[{type:'url',url:'https://metabase.api.allaria.cloud/api/mcp',name:'allaria-metabase'}],
+        messages:[{role:'user',content:`Ejecutá execute_query con este query token: ${queryToken}. Respondé SOLO con JSON con esta estructura exacta: {"rows": [[fecha, desc, especie, total, moneda], ...], "total": N}. Sin texto adicional.`}]
+      })
+    });
+    const eqData = await eqRes.json();
+    const raw = eqData.content?.filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    const rows = parsed.rows||[];
+
+    loading.style.display='none';
+    content.style.display='block';
+
+    const CANAL_OP={'Compra Contado':'#dcfce7','Venta Contado':'#fee2e2','Suscripción':'#dbeafe',
+      'Rescate':'#fef9c3','Amortización':'#f3e8ff','Renta':'#fef3c7','Compra Bilateral':'#dcfce7',
+      'Venta Bilateral':'#fee2e2','Recibo de Cobro':'#d1fae5'};
+    const CANAL_TEXT={'Compra Contado':'#166534','Venta Contado':'#991b1b','Suscripción':'#1e40af',
+      'Rescate':'#854d0e','Amortización':'#6b21a8','Renta':'#92400e','Compra Bilateral':'#166534',
+      'Venta Bilateral':'#991b1b','Recibo de Cobro':'#065f46'};
+
+    if(!rows.length){
+      content.innerHTML='<div style="color:#888;font-size:12px;padding:20px">Sin operaciones registradas.</div>';
+      return;
+    }
+
+    const sorted=[...rows].sort((a,b)=>b[0]?.localeCompare(a[0]||'')||0);
+    content.innerHTML=`
+      <div style="font-size:11px;color:#666;margin-bottom:10px">Comitente <b>${comitente}</b> · ${rows.length} operaciones</div>
+      <div style="max-height:340px;overflow-y:auto">
+      ${sorted.map(r=>{
+        const [fecha,desc,especie,total,moneda]=r;
+        const fd=fecha?fecha.split('T')[0].split('-').reverse().join('/'):'—';
+        const bg=CANAL_OP[desc]||'#f5f5f5', tx=CANAL_TEXT[desc]||'#333';
+        const tot=total!=null?`${moneda==='D'?'US$':'$'} ${Math.abs(total).toLocaleString('es-AR',{minimumFractionDigits:0})}`:'';;
+        const neg=total<0;
+        return `<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #f3f4f6;align-items:flex-start;font-size:11px">
+          <span style="color:#9ca3af;min-width:62px">${fd}</span>
+          <span style="background:${bg};color:${tx};padding:1px 7px;border-radius:5px;font-size:10px;font-weight:600;white-space:nowrap">${desc||'—'}</span>
+          <span style="color:#374151;flex:1;line-height:1.3">${especie||'—'}</span>
+          <span style="color:${neg?'#dc2626':'#166534'};font-weight:600;white-space:nowrap">${tot}</span>
+        </div>`;
+      }).join('')}
+      </div>`;
+  } catch(e) {
+    loading.innerHTML=`<div style="color:#e74c3c;font-size:12px;padding:20px">Error: ${e.message}</div>`;
+  }
+}
+
+function toggleEstadoCliente(){
+  if(!modalNombre) return;
+  const est=estadoCliente[modalNombre]||{estado:'activo'};
+  const esInactivo=est.estado==='inactivo';
+  if(esInactivo){
+    // reflotando
+    if(!confirm(`¿Marcar a "${modalNombre}" como REFLOTADO?\nAparecerá en la tabla con badge de reflotado.`)) return;
+    estadoCliente[modalNombre]={estado:'reflotado',fecha:new Date().toISOString().split('T')[0],oficial:est.oficial||''};
+  } else if(est.estado==='reflotado'){
+    // pasar a inactivo de nuevo
+    if(!confirm(`¿Marcar a "${modalNombre}" como INACTIVO?`)) return;
+    estadoCliente[modalNombre]={estado:'inactivo',fecha:new Date().toISOString().split('T')[0],oficial:getDueno(allClientes().find(c=>c.nombre===modalNombre)||{})};
+  } else {
+    // activo → inactivo
+    if(!confirm(`¿Marcar a "${modalNombre}" como INACTIVO?\nSe mostrará en gris con el oficial de cuenta.`)) return;
+    estadoCliente[modalNombre]={estado:'inactivo',fecha:new Date().toISOString().split('T')[0],oficial:getDueno(allClientes().find(c=>c.nombre===modalNombre)||{})};
+  }
+  saveEstado();
+  updateEstadoBtn();
+  render();
+}
+
+function updateEstadoBtn(){
+  const btn=document.getElementById('btn-toggle-estado');
+  if(!btn||!modalNombre) return;
+  const est=(estadoCliente[modalNombre]||{}).estado||'activo';
+  if(est==='inactivo'){
+    btn.textContent='♻ Reflotar';
+    btn.style.borderColor='rgba(34,197,94,.5)';
+    btn.style.color='#86efac';
+  } else if(est==='reflotado'){
+    btn.textContent='⏸ Inactivar';
+    btn.style.borderColor='rgba(255,255,255,.3)';
+    btn.style.color='#fde68a';
+  } else {
+    btn.textContent='⏸ Inactivar';
+    btn.style.borderColor='rgba(255,255,255,.3)';
+    btn.style.color='#fff';
+  }
+}
+
+function eliminarCliente(){
+  if(!modalNombre) return;
+  if(!confirm(`¿Eliminar a "${modalNombre}" del CRM?\n\nSe borrarán también sus tildes, historial, alertas y actividad guardados.\nEsta acción no se puede deshacer.`)) return;
+
+  // remove from RAW is not possible (it's hardcoded), so we mark it as deleted in localStorage
+  // For manually added clients, remove from clientesManuales
+  const eraManual=clientesManuales.some(c=>c.nombre===modalNombre);
+  if(eraManual){
+    clientesManuales=clientesManuales.filter(c=>c.nombre!==modalNombre);
+    saveManuales();
+  } else {
+    // For RAW clients, add to a "deleted" list so they're filtered out
+    const deleted=JSON.parse(localStorage.getItem('seg_deleted')||'[]');
+    if(!deleted.includes(modalNombre)) deleted.push(modalNombre);
+    localStorage.setItem('seg_deleted',JSON.stringify(deleted));
+    sbSet('seg_deleted',JSON.stringify(deleted));
+  }
+
+  // clean up all related data
+  delete historial[modalNombre];saveHist();
+  delete alertas[modalNombre];saveAlertas();
+  delete notas[modalNombre];saveNotas();
+  delete frecOverride[modalNombre];saveFrec();
+  delete tenenciaOverride[modalNombre];saveTen();
+  delete duenoOverride[modalNombre];saveDueno();
+  delete actividades[modalNombre];saveActividades();
+  // remove from all groups
+  grupos.forEach(g=>{
+    if(grupoMiembros[g.id]){
+      grupoMiembros[g.id]=grupoMiembros[g.id].filter(n=>n!==modalNombre);
+    }
+  });
+  saveGrupoMiembros();
+
+  closeModal();
+  populateFilter();
+  render();
+}
+
+function allClientes(){
+  const deleted=JSON.parse(localStorage.getItem('seg_deleted')||'[]');
+  return [...RAW,...clientesManuales].filter(c=>!deleted.includes(c.nombre));
+}
 function getClienteGrupos(nombre){return grupos.filter(g=>(grupoMiembros[g.id]||[]).includes(nombre));}
 
 // ===== TOP-LEVEL PAGE SWITCH =====
 function switchPage(p){
-  const pages=['seguimiento','agenda','giras','prospects','grupos','mapa'];
+  const pages=['seguimiento','agenda','giras','prospects','grupos','mapa','resumen'];
   document.querySelectorAll('.top-tab').forEach((t,i)=>t.classList.toggle('active',pages[i]===p));
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
@@ -1359,6 +1579,7 @@ function switchPage(p){
   if(p==='prospects')renderProspects();
   if(p==='grupos')renderGrupos();
   if(p==='mapa')renderMapa();
+  if(p==='resumen')renderResumen();
 }
 
 // ===== MODAL =====
@@ -1388,11 +1609,17 @@ function openModal(nombre){
   document.getElementById('modal-nota').value=notas[nombre]||'';
   document.getElementById('nota-saved-msg').style.display='none';
   switchTab('historial');
+  updateEstadoBtn();
   renderHistModal(nombre);
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
-function closeModal(){document.getElementById('modal-overlay').classList.remove('open');document.body.style.overflow='';modalNombre=null;}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+  modalNombre=null;modalClienteBase=null;
+  if(document.getElementById('page-seguimiento')?.classList.contains('active'))render();
+}
 
 function switchTab(tab){
   const tabs=['historial','alertas','actividad','grupos','tenencia','editar','nota'];
@@ -1410,6 +1637,7 @@ function switchTab(tab){
     document.getElementById('act-cargo').value=a.cargo||'';
     document.getElementById('act-saved-msg').style.display='none';
   }
+  if(tab==='operaciones') loadOperaciones(modalNombre);
   if(tab==='editar'&&modalClienteBase){
     const c=modalClienteBase;
     document.getElementById('edit-dueno').value=getDueno(c);
@@ -2054,6 +2282,9 @@ function render(){
   const filtered=allClientes().filter(r=>{
     if(filtroDueno&&getDueno(r)!==filtroDueno)return false;
     if(filtroCliente&&!r.nombre.toLowerCase().includes(filtroCliente))return false;
+    const filtroEst=document.getElementById('filtro-estado')?.value||'';
+    const estR=(estadoCliente[r.nombre]||{}).estado||'activo';
+    if(filtroEst&&estR!==filtroEst)return false;
     return true;
   });
   const byOwner={};
@@ -2176,14 +2407,23 @@ function render(){
   // helper: is period contacted (checks ALL days including weekends)
   const sections=Object.entries(byOwner).map(([dueno,clientes])=>{
     let ownerPending=0;
-    const sorted=[...clientes].sort((a,b)=>getFrecOrder(a)-getFrecOrder(b));
+    const sorted=[...clientes].sort((a,b)=>{
+      const eA=(estadoCliente[a.nombre]||{}).estado||'activo';
+      const eB=(estadoCliente[b.nombre]||{}).estado||'activo';
+      const inA=eA==='inactivo'?1:0, inB=eB==='inactivo'?1:0;
+      if(inA!==inB) return inA-inB;
+      return getFrecOrder(a)-getFrecOrder(b);
+    });
 
     const rows=sorted.map(c=>{
       const frec=getFrecuencia(c),isSemanal=frec.trim().toLowerCase()==='semanal';
+      const estC=(estadoCliente[c.nombre]||{}).estado||'activo';
+      const esInactivo=estC==='inactivo';
+      const esReflotado=estC==='reflotado';
       let rowAlert=false;
-      if(isSemanal){const pp=getSemanalPending(c.nombre);if(pp.length){rowAlert=true;ownerPending++;totalPending++;pendingList.push({nombre:c.nombre,dueno,semanas:pp});}}
+      if(isSemanal&&!esInactivo){const pp=getSemanalPending(c.nombre);if(pp.length){rowAlert=true;ownerPending++;totalPending++;pendingList.push({nombre:c.nombre,dueno,semanas:pp});}}
       const ten=getTenencia(c);
-      const pillMap=getPillInfo(c.nombre,frec);
+      const pillMap=esInactivo?{}:getPillInfo(c.nombre,frec);
       const dayCells=workDays.map(d=>{
         const chk=isChecked(c.nombre,d);
         const esGiraDay=isGiraDay(c.nombre,d);
@@ -2231,8 +2471,12 @@ function render(){
       const tenModificada=tenenciaOverride[c.nombre]!==undefined;
       const tenDisplay=`<span class="tenencia-val${tenModificada?' tenencia-modificada':''}" data-nombre="${c.nombre.replace(/"/g,'&quot;')}" title="${tenModificada?'Editado':'Click para editar'}">${fmtUSD(ten)}</span>`;
       const fid=`frec_${c.nombre.replace(/[^a-z0-9]/gi,'_')}`;
-      return `<tr class="${rowAlert?'alert-row':''}">
-        <td class="col-cliente"><span class="nombre-link" data-nombre="${c.nombre.replace(/"/g,'&quot;')}">${c.nombre}</span>${manualTag}${alertIcon}${dots}</td>
+      const rowClass=esInactivo?'row-inactivo':rowAlert?'alert-row':'';
+      const estadoBadge=esInactivo
+        ?`<span class="badge-inactivo">INACTIVO</span><span class="oficial-tag">${(estadoCliente[c.nombre]||{}).oficial||''}</span>`
+        :esReflotado?`<span class="badge-reflotado">♻ REFLOTADO</span>`:'';
+      return `<tr class="${rowClass}">
+        <td class="col-cliente"><span class="nombre-link" data-nombre="${c.nombre.replace(/"/g,'&quot;')}">${c.nombre}</span>${manualTag}${alertIcon}${dots}${estadoBadge}</td>
         <td class="col-grupo">${grupoSelect}</td>
         <td class="col-actividad">
           <input type="text" class="act-inline-sel" data-nombre="${c.nombre.replace(/"/g,'&quot;')}" data-field="tipo"
@@ -2274,11 +2518,20 @@ function render(){
         +`</th>`;
     }).join('');
 
+    const nInactivos=clientes.filter(c=>(estadoCliente[c.nombre]||{}).estado==='inactivo').length;
+    const nReflotados=clientes.filter(c=>(estadoCliente[c.nombre]||{}).estado==='reflotado').length;
+    const nActivos=clientes.length-nInactivos;
+    const pctActivos=clientes.length?Math.round(nActivos/clientes.length*100):0;
+    const pctInact=clientes.length?Math.round(nInactivos/clientes.length*100):0;
+
     return `<div class="owner-section">
       <div class="owner-header" onclick="toggleSection(this)">
-        <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <h2>${dueno}</h2>
-          <span style="font-size:11px;opacity:.6;font-weight:400">${clientes.length} cliente${clientes.length!==1?'s':''}</span>
+          <span style="font-size:11px;opacity:.55;font-weight:400">${clientes.length} total</span>
+          <span style="background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.35);padding:2px 10px;border-radius:10px;font-size:10px;color:#86efac">✓ ${nActivos} activos (${pctActivos}%)</span>
+          ${nInactivos?`<span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:2px 10px;border-radius:10px;font-size:10px;color:#d1d5db">⏸ ${nInactivos} inactivos (${pctInact}%)</span>`:''}
+          ${nReflotados?`<span style="background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.35);padding:2px 10px;border-radius:10px;font-size:10px;color:#fde68a">♻ ${nReflotados} reflotado${nReflotados!==1?'s':''}</span>`:''}
         </div>
         <span class="owner-meta">${ownerPending?`<span style="background:rgba(255,255,255,.15);padding:2px 10px;border-radius:10px">&#9888; ${ownerPending} pendiente${ownerPending>1?'s':''}</span>`:''}</span>
       </div>
@@ -2296,14 +2549,24 @@ function render(){
   });
 
   document.getElementById('main-content').innerHTML=sections.join('');
+  const totalClientes=allClientes().length;
+  const totalInactivos=allClientes().filter(c=>(estadoCliente[c.nombre]||{}).estado==='inactivo').length;
+  const totalReflotados=allClientes().filter(c=>(estadoCliente[c.nombre]||{}).estado==='reflotado').length;
+  const totalActivos=totalClientes-totalInactivos;
+  const pctActivos=totalClientes?Math.round(totalActivos/totalClientes*100):0;
+  const pctInact=totalClientes?Math.round(totalInactivos/totalClientes*100):0;
+
   document.getElementById('stats-bar').innerHTML=`
-    <div class="stat"><div class="stat-n">${filtered.length}</div><div class="stat-l">Clientes activos</div></div>
-    <div class="stat ok"><div class="stat-n">${totalChecked}</div><div class="stat-l">Contactos registrados</div></div>
+    <div class="stat ok"><div class="stat-n">${totalActivos}</div><div class="stat-l">Activos <span style="font-size:11px;color:#888">(${pctActivos}%)</span></div></div>
+    <div class="stat ${totalInactivos?'warn':''}"><div class="stat-n">${totalInactivos}</div><div class="stat-l">Inactivos <span style="font-size:11px;color:#888">(${pctInact}%)</span></div></div>
+    ${totalReflotados?`<div class="stat"><div class="stat-n" style="color:#f59e0b">${totalReflotados}</div><div class="stat-l">Reflotados</div></div>`:''}
+    <div class="stat ok"><div class="stat-n">${totalChecked}</div><div class="stat-l">Contactados este mes</div></div>
     <div class="stat ${totalPending?'warn':''}"><div class="stat-n">${totalPending}</div><div class="stat-l">Alertas pendientes</div></div>
     <div class="stat"><div class="stat-n">${workDays.length}</div><div class="stat-l">Días hábiles</div></div>`;
   // store for agenda use
   window._lastPendingList=pendingList;
 
+  document.getElementById('filtro-estado')?.addEventListener('change',render);
   document.querySelectorAll('input.day-chk').forEach(inp=>inp.addEventListener('change',function(){toggle(this.dataset.nombre,parseInt(this.dataset.day));render();}));
   document.querySelectorAll('select.frec-select').forEach(sel=>sel.addEventListener('change',function(){frecOverride[this.dataset.nombre]=this.value;saveFrec();render();}));
   document.querySelectorAll('.nombre-link').forEach(el=>el.addEventListener('click',function(){openModal(this.dataset.nombre);}));
@@ -2736,6 +2999,479 @@ function renderAgendaCalendario(){
   });
 })();
 // ===========================
+// ===== RESUMEN =====
+
+function renderResumen(){
+  const sel=document.getElementById('res-dueno');
+  if(sel){
+    const cur=sel.value;
+    sel.innerHTML='<option value="">Todos los asesores</option>'+[...new Set(allClientes().map(c=>getDueno(c)).filter(Boolean))].sort().map(d=>`<option value="${d}">${d}</option>`).join('');
+    sel.value=cur;
+  }
+
+  const periodo=document.getElementById('res-periodo')?.value||'mes';
+  const filtroDueno=document.getElementById('res-dueno')?.value||'';
+  const now=new Date();
+  let desde,hasta,desdeAnt,hastaAnt,labelPeriodo,labelMes;
+
+  if(periodo==='semana'){
+    const dow=now.getDay()===0?6:now.getDay()-1;
+    desde=new Date(now);desde.setDate(now.getDate()-dow);desde.setHours(0,0,0,0);
+    hasta=new Date(now);hasta.setHours(23,59,59,0);
+    desdeAnt=new Date(desde);desdeAnt.setDate(desdeAnt.getDate()-7);
+    hastaAnt=new Date(desde);hastaAnt.setDate(hastaAnt.getDate()-1);hastaAnt.setHours(23,59,59,0);
+    labelPeriodo='Semana actual';
+    labelMes=desde.toLocaleDateString('es-AR',{day:'2-digit',month:'long'})+' – '+hasta.toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+  } else if(periodo==='mes-ant'){
+    const d=new Date(now.getFullYear(),now.getMonth()-1,1);
+    desde=d;hasta=new Date(now.getFullYear(),now.getMonth(),0);hasta.setHours(23,59,59,0);
+    desdeAnt=new Date(now.getFullYear(),now.getMonth()-2,1);
+    hastaAnt=new Date(d);hastaAnt.setDate(hastaAnt.getDate()-1);hastaAnt.setHours(23,59,59,0);
+    labelPeriodo='Mes anterior';
+    labelMes=d.toLocaleDateString('es-AR',{month:'long',year:'numeric'}).replace(/^\w/,c=>c.toUpperCase());
+  } else {
+    desde=new Date(now.getFullYear(),now.getMonth(),1);
+    hasta=new Date(now);hasta.setHours(23,59,59,0);
+    desdeAnt=new Date(now.getFullYear(),now.getMonth()-1,1);
+    hastaAnt=new Date(desde);hastaAnt.setDate(hastaAnt.getDate()-1);hastaAnt.setHours(23,59,59,0);
+    labelPeriodo='Mes actual';
+    labelMes=now.toLocaleDateString('es-AR',{month:'long',year:'numeric'}).replace(/^\w/,c=>c.toUpperCase());
+  }
+
+  function toStr(d){return d.toISOString().split('T')[0];}
+  const ds=toStr(desde),hs=toStr(hasta),dsA=toStr(desdeAnt),hsA=toStr(hastaAnt);
+  const year=desde.getFullYear(),month=desde.getMonth();
+  const yearA=desdeAnt.getFullYear(),monthA=desdeAnt.getMonth();
+
+  const clientes=allClientes().filter(c=>!filtroDueno||getDueno(c)===filtroDueno);
+
+  function calcMetrics(cs,y,m,dsd,hst){
+    const contactados=new Set(),histTotal=[];let tildes=0;
+    cs.forEach(c=>{
+      for(let d=1;d<=daysInMonth(y,m);d++){
+        const dd=toStr(new Date(y,m,d));
+        if(dd>=dsd&&dd<=hst&&isChecked(c.nombre,d)){tildes++;contactados.add(c.nombre);}
+      }
+      (historial[c.nombre]||[]).filter(h=>h.fecha>=dsd&&h.fecha<=hst).forEach(h=>{
+        histTotal.push({...h,cliente:c.nombre,dueno:getDueno(c)});
+        contactados.add(c.nombre);
+      });
+    });
+    return {contactados,histTotal,tildes,total:cs.length};
+  }
+
+  const curr=calcMetrics(clientes,year,month,ds,hs);
+  const prev=calcMetrics(clientes,yearA,monthA,dsA,hsA);
+
+  const sinContacto=clientes.filter(c=>!curr.contactados.has(c.nombre));
+  const pct=curr.total?Math.round(curr.contactados.size/curr.total*100):0;
+  const pctPrev=prev.total?Math.round(prev.contactados.size/prev.total*100):0;
+
+  // prospects metrics
+  const estadoLabel={'primera-relacion':'Primera relación','interesado':'Interesado','en-proceso':'En proceso','convertido':'Convertido'};
+  const prFiltrados=filtroDueno?prospects.filter(p=>p.dueno===filtroDueno):prospects;
+  const prPorEstado={};Object.keys(estadoLabel).forEach(k=>prPorEstado[k]=prFiltrados.filter(p=>p.estado===k).length);
+  const prTotal=prFiltrados.length,prConvertidos=prPorEstado['convertido']||0;
+  const tasaConv=prTotal?Math.round(prConvertidos/prTotal*100):0;
+  const potencial=prFiltrados.filter(p=>p.estado!=='convertido').reduce((s,p)=>s+(p.potencial||0),0);
+
+  // canal breakdown
+  const canales={};curr.histTotal.forEach(h=>{canales[h.canal]=(canales[h.canal]||0)+1;});
+  const canalMax=Object.entries(canales).sort((a,b)=>b[1]-a[1]);
+
+  // by asesor
+  const porAsesor={};
+  clientes.forEach(c=>{
+    const d=getDueno(c)||'Sin asignar';
+    if(!porAsesor[d])porAsesor[d]={contactados:new Set(),total:0,hist:0,sin:0};
+    porAsesor[d].total++;
+    if(curr.contactados.has(c.nombre))porAsesor[d].contactados.add(c.nombre);
+    else porAsesor[d].sin++;
+    porAsesor[d].hist+=(historial[c.nombre]||[]).filter(h=>h.fecha>=ds&&h.fecha<=hs).length;
+  });
+  const asesorRanking=Object.entries(porAsesor).sort((a,b)=>b[1].contactados.size-a[1].contactados.size);
+
+  function delta(curr,prev,unit=''){
+    const d=curr-prev;
+    if(d===0)return `<span style="color:#888;font-size:10px">= sin cambio</span>`;
+    const up=d>0;
+    return `<span style="color:${up?'#16a34a':'#dc2626'};font-size:10px;font-weight:600">${up?'▲':'▼'} ${Math.abs(d)}${unit} vs período anterior</span>`;
+  }
+
+  const CANAL_C={'Llamada':'#dcfce7','WhatsApp':'#d1fae5','Email':'#dbeafe','Reunión':'#f3e8ff','Otro':'#f5f5f5'};
+  const CANAL_T={'Llamada':'#166534','WhatsApp':'#065f46','Email':'#1e40af','Reunión':'#6b21a8','Otro':'#374151'};
+
+  // nav tabs
+  const navTabs=`<div style="display:flex;gap:0;border-bottom:2px solid #e5e7eb;margin-bottom:20px">
+    ${['kpis','asesores','prospects','actividad','giras','proyeccion'].map((t,i)=>{
+      const labels=['📊 KPIs','👥 Asesores','🎯 Prospects','📋 Actividad','✈ Giras','🔭 Proyección'];
+      return `<div class="res-subtab${i===0?' res-subtab-active':''}" onclick="switchResTab('${t}')" id="restab-${t}"
+        style="padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer;color:${i===0?'#1a2e4a':'#6b7280'};border-bottom:${i===0?'2px solid #1a2e4a':'2px solid transparent'};margin-bottom:-2px;transition:all .15s">
+        ${labels[i]}</div>`;
+    }).join('')}
+  </div>`;
+
+  // --- KPIs section ---
+  const kpisHTML=`<div id="res-section-kpis">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px">
+      ${[
+        {label:'Cobertura de contacto',val:pct+'%',sub:delta(pct,pctPrev,'pp'),accent:'#1a2e4a'},
+        {label:'Clientes contactados',val:curr.contactados.size,sub:delta(curr.contactados.size,prev.contactados.size),accent:'#2563eb'},
+        {label:'Clientes sin contacto',val:sinContacto.length,sub:delta(sinContacto.length,clientes.length-prev.contactados.size),accent:sinContacto.length>10?'#dc2626':'#16a34a'},
+        {label:'Interacciones registradas',val:curr.histTotal.length,sub:delta(curr.histTotal.length,prev.histTotal.length),accent:'#7c3aed'},
+        {label:'Prospects en cartera',val:prTotal,sub:`${prConvertidos} convertidos (${tasaConv}%)`,accent:'#0891b2'},
+      ].map(k=>`
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px 20px;border-top:4px solid ${k.accent}">
+          <div style="font-size:11px;color:#6b7280;font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">${k.label}</div>
+          <div style="font-size:32px;font-weight:800;color:${k.accent};line-height:1">${k.val}</div>
+          <div style="margin-top:6px">${k.sub}</div>
+        </div>`).join('')}
+    </div>
+
+    <!-- cobertura visual -->
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px 20px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:12px">Cobertura global del período</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="flex:1;background:#f3f4f6;border-radius:99px;height:12px;overflow:hidden">
+          <div style="background:${pct>=80?'#16a34a':pct>=50?'#f59e0b':'#dc2626'};width:${pct}%;height:100%;border-radius:99px;transition:width .5s"></div>
+        </div>
+        <span style="font-size:14px;font-weight:700;color:#1a2e4a;min-width:40px">${pct}%</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-top:6px">
+        <span>${curr.contactados.size} contactados</span><span>${sinContacto.length} pendientes</span>
+      </div>
+    </div>
+
+    <!-- canal pie text -->
+    ${canalMax.length?`<div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px 20px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:12px">Canales de contacto utilizados</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${canalMax.map(([canal,n])=>`<div style="background:${CANAL_C[canal]||'#f5f5f5'};color:${CANAL_T[canal]||'#333'};border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600">${canal} <span style="font-size:18px;font-weight:800">${n}</span></div>`).join('')}
+      </div>
+    </div>`:''}
+  </div>`;
+
+  // --- Asesores section ---
+  const asesoresHTML=`<div id="res-section-asesores" style="display:none">
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden">
+      <div style="background:#1a2e4a;padding:12px 20px">
+        <span style="font-size:13px;font-weight:700;color:#fff">Ranking de asesores — ${labelPeriodo}</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:#f9fafb;border-bottom:1px solid #e5e7eb">
+          <th style="padding:10px 16px;font-size:11px;font-weight:600;color:#6b7280;text-align:left">#</th>
+          <th style="padding:10px 16px;font-size:11px;font-weight:600;color:#6b7280;text-align:left">Asesor</th>
+          <th style="padding:10px 16px;font-size:11px;font-weight:600;color:#6b7280;text-align:center">Cartera</th>
+          <th style="padding:10px 16px;font-size:11px;font-weight:600;color:#6b7280;text-align:center">Contactados</th>
+          <th style="padding:10px 16px;font-size:11px;font-weight:600;color:#6b7280;text-align:center">Registros</th>
+          <th style="padding:10px 16px;font-size:11px;font-weight:600;color:#6b7280;text-align:center">Sin contacto</th>
+          <th style="padding:10px 16px;font-size:11px;font-weight:600;color:#6b7280">Cobertura</th>
+        </tr></thead>
+        <tbody>
+          ${asesorRanking.map(([d,data],i)=>{
+            const p=data.total?Math.round(data.contactados.size/data.total*100):0;
+            const col=p>=80?'#16a34a':p>=50?'#f59e0b':'#dc2626';
+            const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':''+(i+1)+'.';
+            return `<tr style="border-bottom:1px solid #f3f4f6;${i%2===0?'':'background:#fafafa'}">
+              <td style="padding:10px 16px;font-size:13px">${medal}</td>
+              <td style="padding:10px 16px;font-size:12px;font-weight:600;color:#1a2e4a">${d}</td>
+              <td style="padding:10px 16px;font-size:12px;text-align:center;color:#6b7280">${data.total}</td>
+              <td style="padding:10px 16px;font-size:14px;font-weight:700;text-align:center;color:#1a2e4a">${data.contactados.size}</td>
+              <td style="padding:10px 16px;font-size:12px;text-align:center;color:#7c3aed;font-weight:600">${data.hist}</td>
+              <td style="padding:10px 16px;font-size:12px;text-align:center;color:${data.sin>0?'#dc2626':'#6b7280'};font-weight:${data.sin>0?'700':'400'}">${data.sin}</td>
+              <td style="padding:10px 16px">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="flex:1;background:#f3f4f6;border-radius:99px;height:8px;overflow:hidden;min-width:80px">
+                    <div style="background:${col};width:${p}%;height:100%;border-radius:99px"></div>
+                  </div>
+                  <span style="font-size:12px;font-weight:700;color:${col}">${p}%</span>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+
+  // --- Prospects section ---
+  const embudo=[
+    {key:'primera-relacion',label:'Primera relación',color:'#94a3b8'},
+    {key:'interesado',label:'Interesado',color:'#3b82f6'},
+    {key:'en-proceso',label:'En proceso',color:'#f59e0b'},
+    {key:'convertido',label:'Convertido',color:'#22c55e'},
+  ];
+  const prospectsHTML=`<div id="res-section-prospects" style="display:none">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px">
+      ${embudo.map(e=>{
+        const n=prPorEstado[e.key]||0;
+        const pctE=prTotal?Math.round(n/prTotal*100):0;
+        return `<div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;border-top:4px solid ${e.color}">
+          <div style="font-size:10px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${e.label}</div>
+          <div style="font-size:28px;font-weight:800;color:${e.color}">${n}</div>
+          <div style="font-size:10px;color:#9ca3af;margin-top:4px">${pctE}% del total</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <!-- funnel visual -->
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px 20px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:14px">Embudo de conversión</div>
+      ${embudo.map((e,i)=>{
+        const n=prPorEstado[e.key]||0;
+        const w=prTotal?Math.max(20,Math.round(n/prTotal*100)):0;
+        return `<div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-bottom:3px">
+            <span>${e.label}</span><span style="font-weight:700;color:${e.color}">${n} prospects</span>
+          </div>
+          <div style="background:#f3f4f6;border-radius:6px;height:22px;overflow:hidden">
+            <div style="background:${e.color};width:${w}%;height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px">
+              ${n>0?`<span style="font-size:10px;font-weight:700;color:#fff">${w}%</span>`:''}
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f3f4f6;display:flex;gap:20px;flex-wrap:wrap">
+        <div><div style="font-size:10px;color:#6b7280">Tasa de conversión</div><div style="font-size:20px;font-weight:800;color:#22c55e">${tasaConv}%</div></div>
+        <div><div style="font-size:10px;color:#6b7280">Potencial en cartera (USD)</div><div style="font-size:20px;font-weight:800;color:#0891b2">US$ ${potencial.toLocaleString('es-AR',{minimumFractionDigits:0})}</div></div>
+        <div><div style="font-size:10px;color:#6b7280">Total prospects</div><div style="font-size:20px;font-weight:800;color:#374151">${prTotal}</div></div>
+      </div>
+    </div>
+    <!-- lista prospects activos -->
+    ${prFiltrados.filter(p=>p.estado!=='convertido').length?`
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px">Prospects activos en pipeline</div>
+      ${prFiltrados.filter(p=>p.estado!=='convertido').map(p=>{
+        const ec=embudo.find(e=>e.key===p.estado);
+        return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f3f4f6;font-size:11px">
+          <span style="font-weight:600;color:#1a2e4a;flex:1">${p.nombre}</span>
+          <span style="background:${ec?ec.color+'22':'#f5f5f5'};color:${ec?ec.color:'#555'};padding:1px 8px;border-radius:6px;font-size:10px;font-weight:600">${ec?ec.label:p.estado}</span>
+          <span style="color:#6b7280;min-width:80px">${p.dueno||''}</span>
+          ${p.potencial?`<span style="color:#0891b2;font-weight:600;min-width:90px;text-align:right">US$ ${p.potencial.toLocaleString('es-AR',{minimumFractionDigits:0})}</span>`:'<span style="min-width:90px"></span>'}
+        </div>`;
+      }).join('')}
+    </div>`:''}
+  </div>`;
+
+  // --- Actividad section ---
+  const histSorted=[...curr.histTotal].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const actividadHTML=`<div id="res-section-actividad" style="display:none">
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin-bottom:14px">
+      <div style="background:#1a2e4a;padding:12px 20px">
+        <span style="font-size:13px;font-weight:700;color:#fff">Registro de interacciones — ${curr.histTotal.length} en el período</span>
+      </div>
+      <div style="max-height:420px;overflow-y:auto">
+        ${histSorted.length?histSorted.map(h=>{
+          const fd=h.fecha?h.fecha.split('-').reverse().join('/'):'—';
+          const bg=CANAL_C[h.canal]||'#f5f5f5',tx=CANAL_T[h.canal]||'#333';
+          return `<div style="display:flex;gap:12px;padding:10px 16px;border-bottom:1px solid #f3f4f6;align-items:flex-start">
+            <div style="min-width:60px;font-size:11px;color:#9ca3af;padding-top:1px">${fd}</div>
+            <div style="min-width:80px"><span style="background:${bg};color:${tx};font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px">${h.canal}</span></div>
+            <div style="min-width:160px;font-size:12px;font-weight:600;color:#1a2e4a">${h.cliente}</div>
+            <div style="min-width:100px;font-size:11px;color:#6b7280">${h.dueno||''}</div>
+            <div style="font-size:11px;color:#4b5563;flex:1">${h.comentario||'—'}</div>
+          </div>`;
+        }).join(''):`<div style="padding:40px;text-align:center;color:#9ca3af;font-size:12px">Sin interacciones registradas en el período</div>`}
+      </div>
+    </div>
+    <!-- clientes sin contacto -->
+    ${sinContacto.length?`
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px">
+      <div style="font-size:12px;font-weight:700;color:#dc2626;margin-bottom:10px">⚠ Clientes sin interacción registrada (${sinContacto.length})</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${sinContacto.map(c=>`<span style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:500">${c.nombre}</span>`).join('')}
+      </div>
+    </div>`:'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px;font-size:12px;color:#166534;font-weight:600">✓ Todos los clientes fueron contactados en el período.</div>'}
+  </div>`;
+
+
+  // --- Giras del período ---
+  const girasPeriodo=giras.filter(g=>g.desde&&g.desde>=ds&&g.desde<=hs);
+  const girasProximas=giras.filter(g=>g.desde&&g.desde>hs).sort((a,b)=>a.desde.localeCompare(b.desde));
+
+  const girasHTML=`<div id="res-section-giras" style="display:none">
+    ${girasPeriodo.length?`
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin-bottom:16px">
+      <div style="background:#1a2e4a;padding:12px 20px"><span style="font-size:13px;font-weight:700;color:#fff">✈ Giras realizadas en el período (${girasPeriodo.length})</span></div>
+      ${girasPeriodo.map(g=>{
+        const fd=d=>d?d.split('-').reverse().join('/'):'—';
+        const mems=g.clientes||[];
+        return `<div style="padding:16px 20px;border-bottom:1px solid #f3f4f6">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#1a2e4a">${g.nombre}</div>
+              <div style="font-size:11px;color:#6b7280;margin-top:2px">${fd(g.desde)}${g.hasta&&g.hasta!==g.desde?' al '+fd(g.hasta):''} · ${g.responsable||''}</div>
+            </div>
+            <span style="background:#e0f2fe;color:#0369a1;border-radius:8px;padding:4px 12px;font-size:11px;font-weight:600">${mems.length} cliente${mems.length!==1?'s':''}</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px">
+            ${mems.map(m=>`<span style="background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;border-radius:6px;padding:2px 9px;font-size:10px;font-weight:500">${m}</span>`).join('')}
+          </div>
+          ${g.obs?`<div style="margin-top:8px;font-size:11px;color:#6b7280;background:#f9fafb;border-radius:6px;padding:8px 10px;line-height:1.5">${g.obs.slice(0,300)}${g.obs.length>300?'...':''}</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`:`<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:24px;text-align:center;color:#9ca3af;font-size:12px;margin-bottom:16px">Sin giras registradas en el período</div>`}
+
+    ${girasProximas.length?`
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden">
+      <div style="background:#7c3aed;padding:12px 20px"><span style="font-size:13px;font-weight:700;color:#fff">🗓 Próximas giras planificadas (${girasProximas.length})</span></div>
+      ${girasProximas.map(g=>{
+        const fd=d=>d?d.split('-').reverse().join('/'):'—';
+        const diasFaltan=Math.ceil((new Date(g.desde)-now)/(1000*60*60*24));
+        return `<div style="padding:14px 20px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <div style="background:#f3e8ff;color:#7c3aed;border-radius:8px;padding:6px 12px;text-align:center;min-width:70px">
+            <div style="font-size:18px;font-weight:800">${diasFaltan}</div>
+            <div style="font-size:9px;font-weight:600">días</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:#1a2e4a">${g.nombre}</div>
+            <div style="font-size:11px;color:#6b7280">${fd(g.desde)}${g.hasta&&g.hasta!==g.desde?' al '+fd(g.hasta):''} · ${g.responsable||''} · ${(g.clientes||[]).length} clientes</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`:''}
+  </div>`;
+
+  // --- Proyección próximo período ---
+  const mesProx=new Date(hasta.getFullYear(),hasta.getMonth()+1,1);
+  const mesProxFin=new Date(hasta.getFullYear(),hasta.getMonth()+2,0);
+  const dsProx=toStr(mesProx),hsProx=toStr(mesProxFin);
+  const labelProx=mesProx.toLocaleDateString('es-AR',{month:'long',year:'numeric'}).replace(/^\w/,c=>c.toUpperCase());
+
+  // alertas del próximo período
+  const alertasProx=[];
+  clientes.forEach(c=>{
+    (alertas[c.nombre]||[]).filter(a=>!a.done&&a.fecha>=dsProx&&a.fecha<=hsProx).forEach(a=>{
+      alertasProx.push({cliente:c.nombre,dueno:getDueno(c),fecha:a.fecha,prio:a.prio,msg:a.msg});
+    });
+  });
+  alertasProx.sort((a,b)=>a.fecha.localeCompare(b.fecha)||['alta','media','baja'].indexOf(a.prio)-['alta','media','baja'].indexOf(b.prio));
+
+  // clientes con frecuencia semanal sin contacto reciente (proyectados como pendientes)
+  const semPendProx=clientes.filter(c=>getFrecuencia(c).toLowerCase()==='semanal'&&!curr.contactados.has(c.nombre));
+  const qPendProx=clientes.filter(c=>getFrecuencia(c).toLowerCase()==='quincenal'&&!curr.contactados.has(c.nombre));
+
+  // giras próximo mes
+  const girasProxMes=giras.filter(g=>g.desde&&g.desde>=dsProx&&g.desde<=hsProx);
+
+  const prioCol={alta:'#dc2626',media:'#f59e0b',baja:'#2563eb'};
+
+  const proyeccionHTML=`<div id="res-section-proyeccion" style="display:none">
+    <!-- header próximo mes -->
+    <div style="background:linear-gradient(135deg,#1a2e4a,#2563eb);border-radius:12px;padding:18px 24px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:10px;color:#93c5fd;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Proyección</div>
+        <div style="font-size:20px;font-weight:800;color:#fff">${labelProx}</div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="text-align:center"><div style="font-size:24px;font-weight:800;color:#fff">${alertasProx.length}</div><div style="font-size:10px;color:#93c5fd">alertas prog.</div></div>
+        <div style="text-align:center"><div style="font-size:24px;font-weight:800;color:#fff">${girasProxMes.length}</div><div style="font-size:10px;color:#93c5fd">giras planif.</div></div>
+        <div style="text-align:center"><div style="font-size:24px;font-weight:800;color:#fbbf24">${semPendProx.length+qPendProx.length}</div><div style="font-size:10px;color:#93c5fd">a retomar</div></div>
+      </div>
+    </div>
+
+    <!-- alertas programadas -->
+    ${alertasProx.length?`
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin-bottom:16px">
+      <div style="background:#f9fafb;border-bottom:1px solid #e5e7eb;padding:10px 16px;font-size:12px;font-weight:700;color:#374151">📅 Alertas programadas para ${labelProx}</div>
+      ${alertasProx.slice(0,15).map(a=>{
+        const fd=a.fecha.split('-').reverse().join('/');
+        return `<div style="display:flex;align-items:center;gap:12px;padding:8px 16px;border-bottom:1px solid #f9fafb;font-size:11px">
+          <span style="color:#6b7280;min-width:60px">${fd}</span>
+          <span style="background:${prioCol[a.prio]}22;color:${prioCol[a.prio]};border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;min-width:50px;text-align:center">${a.prio}</span>
+          <span style="font-weight:600;color:#1a2e4a;flex:1">${a.cliente}</span>
+          <span style="color:#6b7280;min-width:100px">${a.dueno||''}</span>
+          <span style="color:#4b5563;flex:1">${a.msg||''}</span>
+        </div>`;
+      }).join('')}
+      ${alertasProx.length>15?`<div style="padding:8px 16px;font-size:10px;color:#9ca3af">...y ${alertasProx.length-15} más</div>`:''}
+    </div>`:`<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 16px;font-size:12px;color:#166534;margin-bottom:16px">✓ Sin alertas programadas para el próximo mes</div>`}
+
+    <!-- giras próximo mes -->
+    ${girasProxMes.length?`
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin-bottom:16px">
+      <div style="background:#f9fafb;border-bottom:1px solid #e5e7eb;padding:10px 16px;font-size:12px;font-weight:700;color:#374151">✈ Giras planificadas para ${labelProx}</div>
+      ${girasProxMes.map(g=>{
+        const fd=d=>d?d.split('-').reverse().join('/'):'—';
+        return `<div style="padding:12px 16px;border-bottom:1px solid #f9fafb;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:700;color:#1a2e4a;flex:1">${g.nombre}</span>
+          <span style="font-size:11px;color:#6b7280">${fd(g.desde)}${g.hasta&&g.hasta!==g.desde?' al '+fd(g.hasta):''}</span>
+          <span style="font-size:11px;color:#6b7280">${g.responsable||''}</span>
+          <span style="background:#e0f2fe;color:#0369a1;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:600">${(g.clientes||[]).length} clientes</span>
+        </div>`;
+      }).join('')}
+    </div>`:''}
+
+    <!-- clientes a retomar -->
+    ${semPendProx.length+qPendProx.length>0?`
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px">⚠ Clientes que requieren retomar contacto</div>
+      ${semPendProx.length?`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Frecuencia semanal (${semPendProx.length})</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">${semPendProx.map(c=>`<span style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:6px;padding:2px 9px;font-size:10px">${c.nombre}</span>`).join('')}</div></div>`:''}
+      ${qPendProx.length?`<div><div style="font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Frecuencia quincenal (${qPendProx.length})</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">${qPendProx.map(c=>`<span style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:6px;padding:2px 9px;font-size:10px">${c.nombre}</span>`).join('')}</div></div>`:''}
+    </div>`:'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 16px;font-size:12px;color:#166534">✓ Sin clientes críticos pendientes de retomar</div>'}
+  </div>`;
+
+  document.getElementById('resumen-content').innerHTML=`
+    <div id="resumen-pdf-area" style="background:#f8fafc;padding:4px">
+      <!-- header ejecutivo -->
+      <div style="background:#1a2e4a;border-radius:12px;padding:20px 24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Informe de Seguimiento</div>
+          <div style="font-size:20px;font-weight:800;color:#fff">${labelMes}</div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:2px">${filtroDueno?'Asesor: '+filtroDueno:'Todos los asesores'} · ${clientes.length} clientes</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:36px;font-weight:800;color:#fff">${pct}%</div>
+          <div style="font-size:11px;color:#94a3b8">cobertura de contacto</div>
+        </div>
+      </div>
+      ${navTabs}
+      ${kpisHTML}${asesoresHTML}${prospectsHTML}${actividadHTML}${girasHTML}${proyeccionHTML}
+    </div>`;
+
+  // activate tab switching
+  window.switchResTab=function(tab){
+    ['kpis','asesores','prospects','actividad','giras','proyeccion'].forEach(t=>{
+      const s=document.getElementById('res-section-'+t);
+      const tb=document.getElementById('restab-'+t);
+      if(s) s.style.display=t===tab?'block':'none';
+      if(tb){
+        tb.style.color=t===tab?'#1a2e4a':'#6b7280';
+        tb.style.borderBottom=t===tab?'2px solid #1a2e4a':'2px solid transparent';
+      }
+    });
+  };
+}
+
+function exportResumenPDF(){
+  const area=document.getElementById('resumen-pdf-area');
+  if(!area){alert('Generá el resumen primero.');return;}
+  // show all sections for PDF
+  ['kpis','asesores','prospects','actividad'].forEach(t=>{
+    const s=document.getElementById('res-section-'+t);
+    if(s)s.style.display='block';
+  });
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Informe Allaria</title>
+    <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:#fff;color:#222;padding:0}
+    table{width:100%;border-collapse:collapse}td,th{padding:8px 12px;border-bottom:1px solid #f3f4f6;font-size:11px}
+    th{background:#f9fafb;font-weight:600;color:#6b7280}
+    @media print{@page{margin:15mm}}</style></head><body>`);
+  win.document.write(area.innerHTML);
+  win.document.write(`<script>document.querySelectorAll('[id^=res-section]').forEach(e=>e.style.display='block');document.querySelectorAll('.res-subtab').forEach(e=>e.style.display='none');<\/script>`);
+  win.document.write('</body></html>');
+  win.document.close();
+  setTimeout(()=>win.print(),1000);
+  // restore tabs
+  setTimeout(()=>{
+    ['asesores','prospects','actividad'].forEach(t=>{
+      const s=document.getElementById('res-section-'+t);
+      if(s)s.style.display='none';
+    });
+  },500);
+}
+
 // ===== MAPA DE RELACIONES =====
 const MAPA_TIPO_COLOR={agropecuaria:'#22c55e',pyme:'#f59e0b',empresa:'#3b82f6',economico:'#8b5cf6',otro:'#64748b'};
 let mapaSimulation=null, mapaInitialized=false;
