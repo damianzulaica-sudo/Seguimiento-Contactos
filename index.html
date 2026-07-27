@@ -94,7 +94,7 @@ label.day-lbl.gira-lbl{border-color:#d8c0ee}
 /* ===== MODAL ===== */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,20,50,.45);z-index:1000;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:14px;width:min(720px,96vw);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.22)}
+.modal{background:#fff;border-radius:14px;width:min(860px,96vw);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.22)}
 .modal-header{background:#1a2e4a;color:#fff;padding:14px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .modal-header-info{flex:1;min-width:0}
 .modal-title{font-size:14px;font-weight:700;margin-bottom:3px;word-break:break-word}
@@ -338,6 +338,51 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
 .mapa-info-row{font-size:11px;color:#94a3b8;margin-bottom:5px}
 .mapa-info-row span{color:#e2e8f0;font-weight:600}
 .mapa-info-mem{font-size:10px;color:#cbd5e1;padding:2px 7px;background:rgba(255,255,255,.06);border-radius:4px;margin-bottom:3px}
+
+/* ===== INTELIGENCIA COMERCIAL ===== */
+.intel-page{padding:20px 24px}
+.intel-source{background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:14px;overflow:hidden}
+.intel-source-hdr{background:#f8fafc;border-bottom:1px solid #e5e7eb;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.intel-source-hdr h3{font-size:13px;font-weight:700;color:#1a2e4a;margin:0}
+.intel-empresa{display:grid;grid-template-columns:minmax(160px,1.2fr) minmax(100px,.7fr) minmax(70px,.5fr) minmax(100px,.6fr) minmax(110px,.7fr) 80px auto;gap:6px;align-items:center;padding:7px 12px;border-bottom:1px solid #f3f4f6;font-size:11px;transition:background .1s}
+.intel-empresa:hover{background:#f0f4ff}
+.intel-empresa .nombre{font-weight:600;color:#1a2e4a;cursor:pointer}
+.intel-empresa .nombre:hover{text-decoration:underline}
+.intel-empresa .localidad{color:#6b7280}
+.intel-empresa .rubro{color:#6b7280}
+.intel-empresa input.intel-inline{font-size:10px;border:1px solid #d1d5db;border-radius:5px;padding:4px 7px;width:100%;background:#f9fafb;color:#333;transition:border .15s;box-shadow:inset 0 1px 2px rgba(0,0,0,.04)}
+.intel-empresa input.intel-inline:focus{border-color:#3b82f6;background:#fff;outline:none;box-shadow:0 0 0 2px rgba(59,130,246,.15)}
+.intel-empresa input.intel-inline::placeholder{color:#bbb}
+.intel-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.3px}
+.intel-status.nuevo{background:#dbeafe;color:#1e40af}
+.intel-status.contactado{background:#dcfce7;color:#166534}
+.intel-status.descartado{background:#f3f4f6;color:#9ca3af;text-decoration:line-through}
+.intel-status.en-gestion{background:#e0e7ff;color:#4338ca}
+.intel-status.prospect{background:#fef3c7;color:#92400e}
+.intel-status.cliente{background:#d1fae5;color:#065f46}
+.intel-actions{display:flex;gap:4px}
+.intel-actions button{font-size:10px;border:1px solid #ddd;background:#fff;border-radius:4px;padding:2px 7px;cursor:pointer;color:#555}
+.intel-actions button:hover{background:#f0f0f0}
+.intel-actions button.promote{background:#1a2e4a;color:#fff;border-color:#1a2e4a}
+
+
+/* ===== SGR ===== */
+.sgr-page{padding:20px 24px}
+.sgr-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden}
+.sgr-table thead{background:#f1f5f9}
+.sgr-table th{padding:8px 12px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;text-align:left;border-bottom:1px solid #e2e8f0}
+.sgr-table td{padding:8px 12px;font-size:11px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+.sgr-table tr:hover{background:#f8fafc}
+.sgr-table input,.sgr-table select{font-size:11px;border:1px solid #e5e7eb;border-radius:5px;padding:3px 7px;background:#fafafa;width:100%}
+.sgr-table input:focus,.sgr-table select:focus{border-color:#3b82f6;background:#fff;outline:none}
+.sgr-status{font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+.sgr-status.iniciado{background:#dbeafe;color:#1e40af}
+.sgr-status.en-analisis{background:#fef3c7;color:#92400e}
+.sgr-status.aprobado{background:#dcfce7;color:#166534}
+.sgr-status.rechazado{background:#fee2e2;color:#991b1b}
+.sgr-status.vigente{background:#d1fae5;color:#065f46}
+.sgr-status.vencido{background:#f3f4f6;color:#6b7280}
+.sgr-status.en-poder-cliente{background:#e0e7ff;color:#4338ca}
 /* ===== INACTIVO / REFLOTADO ===== */
 .row-inactivo td{background:#f3f4f6!important;color:#9ca3af}
 .row-inactivo .nombre-link{color:#9ca3af!important;border-bottom-color:#ccc!important}
@@ -383,6 +428,8 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
   <div class="top-tab" onclick="switchPage('grupos')">&#128101; Grupos</div>
   <div class="top-tab" onclick="switchPage('mapa')">&#127760; Mapa</div>
   <div class="top-tab" onclick="switchPage('resumen')">&#128202; Resumen</div>
+  <div class="top-tab" onclick="switchPage('intel')">&#128269; Inteligencia</div>
+  <div class="top-tab" onclick="switchPage('sgr')">&#127974; SGR</div>
 </div>
 
 <!-- ===== PÁGINA SEGUIMIENTO ===== -->
@@ -794,6 +841,223 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
 </div>
 </div>
 
+<!-- ===== PÁGINA SGR ===== -->
+<div class="page" id="page-sgr">
+<div class="sgr-page">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div>
+      <h2 style="font-size:15px;font-weight:700;color:#1a2e4a;margin:0">&#127974; SGR — Sociedad de Garantía Recíproca</h2>
+      <div style="font-size:11px;color:#888;margin-top:2px">Seguimiento de casos elevados</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <select id="sgr-filtro-sgr" onchange="renderSGR()" style="font-size:11px;border:1px solid #ccd;border-radius:6px;padding:5px 8px">
+        <option value="">Todas las SGR</option>
+      </select>
+      <select id="sgr-filtro-estado" onchange="renderSGR()" style="font-size:11px;border:1px solid #ccd;border-radius:6px;padding:5px 8px">
+        <option value="">Todos</option>
+        <option value="iniciado">Iniciado</option>
+        <option value="en-analisis">En análisis</option>
+        <option value="aprobado">Aprobado</option>
+        <option value="rechazado">Rechazado</option>
+        <option value="vigente">Vigente</option>
+        <option value="vencido">Vencido</option>
+        <option value="en-poder-cliente">En poder del cliente</option>
+      </select>
+      <input type="text" id="sgr-buscar" placeholder="Buscar..." oninput="renderSGR()" style="font-size:11px;border:1px solid #ccd;border-radius:6px;padding:5px 10px;width:150px">
+      <button class="btn" onclick="addSGRCaso()" style="background:#1a2e4a;color:#fff;border-color:#1a2e4a;font-size:11px">&#43; Nuevo caso</button>
+    </div>
+  </div>
+  <div id="sgr-stats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px"></div>
+  <datalist id="dl-sgrs">
+    <option value="Garantizar"><option value="Acindar Pymes"><option value="Cardinal">
+    <option value="Aval Federal"><option value="Cuyo Aval"><option value="Don Mario">
+    <option value="Fogaba"><option value="Macroaval"><option value="Campo Aval">
+  </datalist>
+  <div id="sgr-content"></div>
+</div>
+</div>
+
+<!-- ===== PÁGINA INTELIGENCIA ===== -->
+<div class="page" id="page-intel">
+<div class="intel-page">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div>
+      <h2 style="font-size:15px;font-weight:700;color:#1a2e4a;margin:0">&#128269; Inteligencia Comercial</h2>
+      <div style="font-size:11px;color:#888;margin-top:2px">Radar de empresas para prospectar</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div style="position:relative;display:inline-block">
+        <input type="text" id="intel-buscar" placeholder="Buscar empresa..." oninput="renderIntel()" style="font-size:11px;border:1px solid #ccd;border-radius:6px;padding:5px 28px 5px 10px;width:180px">
+        <span onclick="document.getElementById('intel-buscar').value='';renderIntel();" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);cursor:pointer;color:#aaa;font-size:14px;display:inline" title="Limpiar filtro">✕</span>
+      </div>
+      <select id="intel-filtro-estado" onchange="renderIntel()" style="font-size:11px;border:1px solid #ccd;border-radius:6px;padding:5px 8px">
+        <option value="">Todos</option>
+        <option value="nuevo">Nuevo</option>
+        <option value="contactado">Contactado</option>
+        <option value="en-gestion">En gestión</option>
+        <option value="prospect">→ Prospect</option>
+        <option value="descartado">Descartado</option>
+        <option value="cliente">Ya cliente</option>
+      </select>
+      <select id="intel-filtro-fuente" onchange="renderIntel()" style="font-size:11px;border:1px solid #ccd;border-radius:6px;padding:5px 8px">
+        <option value="">Todas las fuentes</option>
+      </select>
+      <button class="btn" onclick="openIntelAdd()" style="background:#1a2e4a;color:#fff;border-color:#1a2e4a;font-size:11px">&#43; Agregar empresa</button>
+    </div>
+  </div>
+  <div id="intel-stats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px"></div>
+  <div id="intel-content"></div>
+
+  <!-- Modal agregar empresa -->
+  <div id="intel-add-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:12px;padding:24px;width:min(440px,90vw);box-shadow:0 8px 40px rgba(0,0,0,.2)">
+      <div style="font-size:14px;font-weight:700;color:#1a2e4a;margin-bottom:14px">Agregar empresa al radar</div>
+      <label style="font-size:11px;color:#555;display:block;margin-bottom:8px">Empresa *
+        <input type="text" id="intel-add-nombre" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+      </label>
+      <div style="display:flex;gap:10px;margin-bottom:8px">
+        <label style="font-size:11px;color:#555;flex:1">Localidad
+          <input type="text" id="intel-add-localidad" placeholder="Ej: Casilda" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+        </label>
+        <label style="font-size:11px;color:#555;flex:1">Provincia
+          <input type="text" id="intel-add-provincia" placeholder="Ej: Santa Fe" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+        </label>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:8px">
+        <label style="font-size:11px;color:#555;flex:1">Rubro
+          <input type="text" id="intel-add-rubro" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+        </label>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:8px">
+        <label style="font-size:11px;color:#555;flex:1">Fuente
+          <input type="text" id="intel-add-fuente" placeholder="Ej: CAFRISA, LinkedIn..." style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+        </label>
+        <label style="font-size:11px;color:#555;flex:1">Sitio web
+          <input type="text" id="intel-add-web" placeholder="https://..." style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+        </label>
+      </div>
+      <label style="font-size:11px;color:#555;display:block;margin-bottom:12px">Notas
+        <input type="text" id="intel-add-notas" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+      </label>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn" onclick="closeIntelAdd()">Cancelar</button>
+        <button class="btn" onclick="saveIntelAdd()" style="background:#1a2e4a;color:#fff;border-color:#1a2e4a">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal detalle empresa radar -->
+  <div id="intel-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:14px;width:min(780px,96vw);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.22)">
+      <div style="background:linear-gradient(135deg,#0f172a,#1e3a5f);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div id="intel-modal-nombre" style="font-size:15px;font-weight:700"></div>
+          <div id="intel-modal-sub" style="font-size:11px;opacity:.7;margin-top:2px"></div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button id="intel-modal-promote" onclick="intelModalPromote()" style="background:none;border:1px solid rgba(255,255,255,.3);color:#fde68a;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px">→ Prospect</button>
+          <button onclick="closeIntelModal()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:18px">✕</button>
+        </div>
+      </div>
+      <div style="display:flex;border-bottom:1px solid #e5e7eb">
+        <div class="modal-tab" onclick="switchIntelTab('info')" id="itab-info" style="border-bottom:2px solid #1a2e4a;color:#1a2e4a">📋 Info</div>
+        <div class="modal-tab" onclick="switchIntelTab('personas')" id="itab-personas">👤 Personas</div>
+        <div class="modal-tab" onclick="switchIntelTab('historial')" id="itab-historial">📞 Historial</div>
+        <div class="modal-tab" onclick="switchIntelTab('notas')" id="itab-notas">📝 Notas</div>
+      </div>
+      <div style="padding:16px 20px;overflow-y:auto;flex:1">
+        <!-- Info tab -->
+        <div id="intel-tab-info">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+            <label style="font-size:11px;color:#555">Empresa
+              <input type="text" id="ie-nombre" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+            </label>
+            <label style="font-size:11px;color:#555">Sector / Rubro
+              <input type="text" id="ie-rubro" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+            </label>
+            <label style="font-size:11px;color:#555">Localidad (Ciudad, Provincia)
+              <input type="text" id="ie-localidad" placeholder="Ej: Casilda, Santa Fe" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+            </label>
+            <label style="font-size:11px;color:#555">Teléfono
+              <input type="text" id="ie-telefono" placeholder="Ej: 0341-4714048" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+            </label>
+            <label style="font-size:11px;color:#555">Fuente
+              <input type="text" id="ie-fuente" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+            </label>
+            <label style="font-size:11px;color:#555">Sitio web
+              <div style="display:flex;gap:4px;margin-top:2px">
+                <input type="text" id="ie-web" placeholder="https://..." style="flex:1;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px">
+                <button onclick="const u=document.getElementById('ie-web').value;if(u)window.open(u.startsWith('http')?u:'https://'+u,'_blank')" style="background:#1a2e4a;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px">🔗</button>
+              </div>
+            </label>
+            <label style="font-size:11px;color:#555">Estado
+              <select id="ie-estado" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px">
+                <option value="nuevo">Nuevo</option>
+                <option value="contactado">Contactado</option>
+                <option value="en-gestion">En gestión</option>
+                <option value="prospect">→ Prospect</option>
+                <option value="descartado">Descartado</option>
+              </select>
+            </label>
+            <label style="font-size:11px;color:#555">Potencial estimado (USD)
+              <input type="number" id="ie-potencial" style="width:100%;padding:6px 10px;border:1px solid #ccd;border-radius:6px;font-size:12px;margin-top:2px" min="0">
+            </label>
+          </div>
+          <button class="btn" onclick="saveIntelInfo()" style="background:#1a2e4a;color:#fff;border-color:#1a2e4a;font-size:11px">💾 Guardar cambios</button>
+          <span id="ie-saved" style="color:#22c55e;font-size:11px;margin-left:8px;display:none">✓ Guardado</span>
+        </div>
+        <!-- Personas tab -->
+        <div id="intel-tab-personas" style="display:none">
+          <div style="font-size:11px;color:#888;margin-bottom:10px">Personas de contacto en la empresa — quién conocés, a quién llegar</div>
+          <div id="ie-personas-list"></div>
+          <div style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-top:10px">
+            <div style="font-size:11px;font-weight:700;color:#1a2e4a;margin-bottom:8px">+ Agregar persona</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <input type="text" id="iep-nombre" placeholder="Nombre" style="padding:5px 8px;border:1px solid #ccd;border-radius:5px;font-size:11px">
+              <input type="text" id="iep-cargo" placeholder="Cargo / Rol" style="padding:5px 8px;border:1px solid #ccd;border-radius:5px;font-size:11px">
+              <input type="text" id="iep-telefono" placeholder="Teléfono" style="padding:5px 8px;border:1px solid #ccd;border-radius:5px;font-size:11px">
+              <input type="text" id="iep-email" placeholder="Email" style="padding:5px 8px;border:1px solid #ccd;border-radius:5px;font-size:11px">
+              <input type="text" id="iep-vinculo" placeholder="Cómo llegás (referido, LinkedIn...)" style="padding:5px 8px;border:1px solid #ccd;border-radius:5px;font-size:11px;grid-column:span 2">
+            </div>
+            <button class="btn" onclick="addIntelPersona()" style="margin-top:8px;background:#1a2e4a;color:#fff;border-color:#1a2e4a;font-size:11px">Agregar</button>
+          </div>
+        </div>
+        <!-- Historial tab -->
+        <div id="intel-tab-historial" style="display:none">
+          <div style="font-size:11px;color:#888;margin-bottom:10px">Registro de contactos y gestiones con esta empresa</div>
+          <div id="ie-hist-list"></div>
+          <div style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-top:10px">
+            <div style="font-size:11px;font-weight:700;color:#1a2e4a;margin-bottom:8px">+ Registrar contacto</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+              <input type="date" id="ieh-fecha" style="padding:5px 8px;border:1px solid #ccd;border-radius:5px;font-size:11px">
+              <select id="ieh-medio" style="padding:5px 8px;border:1px solid #ccd;border-radius:5px;font-size:11px">
+                <option value="Llamada">Llamada</option>
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Email">Email</option>
+                <option value="Reunión">Reunión</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Referido">Referido</option>
+                <option value="Evento">Evento</option>
+                <option value="Otro">Otro</option>
+              </select>
+              <input type="text" id="ieh-con" placeholder="Con quién" style="padding:5px 8px;border:1px solid #ccd;border-radius:5px;font-size:11px;flex:1;min-width:120px">
+            </div>
+            <input type="text" id="ieh-comentario" placeholder="Comentario..." style="width:100%;padding:5px 8px;border:1px solid #ccd;border-radius:5px;font-size:11px;margin-bottom:8px">
+            <button class="btn" onclick="addIntelHist()" style="background:#1a2e4a;color:#fff;border-color:#1a2e4a;font-size:11px">Registrar</button>
+          </div>
+        </div>
+        <!-- Notas tab -->
+        <div id="intel-tab-notas" style="display:none">
+          <textarea id="ie-notas" style="width:100%;min-height:150px;border:1px solid #ccd;border-radius:8px;padding:10px;font-size:12px;font-family:inherit;resize:vertical" placeholder="Notas libres sobre la empresa, estrategia de approach, etc."></textarea>
+          <button class="btn" onclick="saveIntelNotas()" style="margin-top:8px;background:#1a2e4a;color:#fff;border-color:#1a2e4a;font-size:11px">💾 Guardar notas</button>
+          <span id="ie-notas-saved" style="color:#22c55e;font-size:11px;margin-left:8px;display:none">✓ Guardado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
 <!-- ===== PÁGINA MAPA ===== -->
 <div class="page" id="page-mapa">
 <div class="mapa-page">
@@ -871,6 +1135,7 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
       <div class="modal-tab" onclick="switchTab('tenencia')">&#128181; Tenencia</div>
       <div class="modal-tab" onclick="switchTab('editar')">&#9998; Editar</div>
       <div class="modal-tab" onclick="switchTab('nota')">&#128196; Observación</div>
+      <div class="modal-tab" onclick="switchTab('operaciones')">&#128200; Operaciones</div>
     </div>
     <div class="modal-body">
       <div class="tab-panel active" id="tab-historial"><div id="hist-list"></div></div>
@@ -990,6 +1255,9 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
           <span class="nota-saved" id="nota-saved-msg">&#10003; Guardado</span>
         </div>
       </div>
+      <div class="tab-panel" id="tab-operaciones">
+        <div id="op-content"></div>
+      </div>
     </div>
     <div class="new-contact-form" id="new-contact-form">
       <div style="font-size:11px;font-weight:700;color:#1a2e4a;margin-bottom:10px">&#43; Registrar contacto</div>
@@ -1044,6 +1312,10 @@ let grupoMiembros={};  // grupoId -> [nombre]
 
 // Pre-load PF/PJ classifications if actividades not yet saved
 const ACTIVIDADES_DEFAULT = {"SERRA LUIS ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "PETIT FOURS  SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "MACARIO LUIS ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "NICOLAU JAVIER NESTOR  931826": {"tipo": "PF", "rubro": "", "cargo": ""}, "SERRA CLARA": {"tipo": "PF", "rubro": "", "cargo": ""}, "SANDRONI MARIA ISABEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "SERRA PALOMA": {"tipo": "PF", "rubro": "", "cargo": ""}, "MILESY BERNARDO  931819": {"tipo": "PF", "rubro": "", "cargo": ""}, "BOZZER ELSO ALEJANDRO  932041": {"tipo": "PF", "rubro": "", "cargo": ""}, "PASCUAL MARIA FERNANDA  - 944744": {"tipo": "PF", "rubro": "", "cargo": ""}, "REALE DANIELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ROZADILLA BLAS OMAR  - 944988": {"tipo": "PF", "rubro": "", "cargo": ""}, "MUGICA DIAZ PATRICIO MATIAS  - 946330": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACQUARONE FERNANDO OSCAR": {"tipo": "PF", "rubro": "", "cargo": ""}, "MERONI NORA ELENA": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI JORGE ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI MARIA FLORENCIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACQUARONE IGNACIO FERNANDO": {"tipo": "PF", "rubro": "", "cargo": ""}, "FRUMENTO ANA MARIA  - 944634": {"tipo": "PF", "rubro": "", "cargo": ""}, "RIART JOSE LUIS": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOBERTTI ALEJANDRO DAVID": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALBAJARI KAISER MARTIN ERNESTO  - 944388": {"tipo": "PF", "rubro": "", "cargo": ""}, "DOMINGUEZ CINTIA VERONICA": {"tipo": "PF", "rubro": "", "cargo": ""}, "DEL PAPA ANA LEA  931905": {"tipo": "PF", "rubro": "", "cargo": ""}, "PEREYRA MARIA SOL": {"tipo": "PF", "rubro": "", "cargo": ""}, "REPIZO JAVIER ALEJANDRO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CROSA FERNANDO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CADIROLA GISELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "BEVILACQUA GUSTAVO OMAR": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACCORINTI BELLORINI MARIA DELFINA": {"tipo": "PF", "rubro": "", "cargo": ""}, "VENA GIULIANO  931837": {"tipo": "PF", "rubro": "", "cargo": ""}, "MANCIONI JOAQUIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ROMON DIEGO CARLOS": {"tipo": "PF", "rubro": "", "cargo": ""}, "FIDEICOMISO PARQUE INDUSTRIAL VACA MUERTA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PASTOR ISABEL ADELA": {"tipo": "PF", "rubro": "", "cargo": ""}, "NIEDFELD PATRICIA BERNARDA": {"tipo": "PF", "rubro": "", "cargo": ""}, "BERLINGIERI MARIA LAURA": {"tipo": "PF", "rubro": "", "cargo": ""}, "LINERA MARIA BELEN  - 946710": {"tipo": "PF", "rubro": "", "cargo": ""}, "ULLOA OMAR WENCESLAO  931972": {"tipo": "PF", "rubro": "", "cargo": ""}, "CELAA ALEJANDRA": {"tipo": "PF", "rubro": "", "cargo": ""}, "GERLERO FLAVIO ADRIAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ACOPIAR SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PROAGRO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROTECNOLOGIA Y SERVICIOS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CARIDE MAURICIO ALBERTO  931887": {"tipo": "PF", "rubro": "", "cargo": ""}, "MELO ANIBAL HORACIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "PROCESS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "RIENZI IGNACIO BENJAMIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALOE SALVADOR CRISTIAN  931727": {"tipo": "PF", "rubro": "", "cargo": ""}, "INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GALEAZZI EDUARDO RICHARD": {"tipo": "PF", "rubro": "", "cargo": ""}, "NICOLINO ENRRE LUIS E HIJO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "VARESI JUAN CRUZ": {"tipo": "PF", "rubro": "", "cargo": ""}, "NIERO TOMAS  931792": {"tipo": "PF", "rubro": "", "cargo": ""}, "PIERELLA SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PRIMON EZEQUIEL FEDERICO  931937": {"tipo": "PF", "rubro": "", "cargo": ""}, "CORSI ALEJANDRO HUMBERTO  932078": {"tipo": "PF", "rubro": "", "cargo": ""}, "D Y M CANTARINI SS": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FIORNOVELLI MARIA LUJAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "SCARAFONI PABLO ANDRES  - 1821": {"tipo": "PF", "rubro": "", "cargo": ""}, "ALICER SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROIDEAS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AG TRUCKS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROPECUARIA SAN ANTONIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "ROLDAN JULIO ALEJANDRO  931847": {"tipo": "PF", "rubro": "", "cargo": ""}, "FUHR DIEGO MATIAS  932091": {"tipo": "PF", "rubro": "", "cargo": ""}, "VILLEGAS CESAR HERNAN  931941": {"tipo": "PF", "rubro": "", "cargo": ""}, "LORENZO MARIANO ANDRES  932105": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOPEZ FEDERICO NICOLAS  931974": {"tipo": "PF", "rubro": "", "cargo": ""}, "FERIAS DEL NORTE SACIA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SCILINGO HNOS SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SELLART IGNACIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "MENZIO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SIEMBRAS ASOCIADAS REGION NUCLEO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FRATTINI MARIA JULIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "FAITELLA FERNANDES ANDREA CAROLINA": {"tipo": "PF", "rubro": "", "cargo": ""}, "PRODUCIR INTEGRAL SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "DESIGN QUALITY AND DEVELOPMENT SAS": {"tipo": "PJ", "rubro": "", "cargo": ""}, "BENAVIDEZ LOLA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ABUELO JULIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SYNERGIA IT GROUP SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PI GROUP SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GARCIA CARRARA EMILIO MANUEL  - 947142": {"tipo": "PF", "rubro": "", "cargo": ""}, "GARCIA CARRARA JOSEFINA INES": {"tipo": "PF", "rubro": "", "cargo": ""}, "GARCIA CARRARA EMILIO MANUEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "LAS COLONIAS DISTRIBUCIONES SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PAMPINFIER    SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "COOPAR": {"tipo": "PJ", "rubro": "", "cargo": ""}, "LA CAMBICHA SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CASADO JUAN MANUEL  931989": {"tipo": "PF", "rubro": "", "cargo": ""}, "BERTICHE GUSTAVO  932051": {"tipo": "PF", "rubro": "", "cargo": ""}, "RIGHI RAQUEL MARTA  931825": {"tipo": "PF", "rubro": "", "cargo": ""}, "PRATTA GRACIELA SUSANA  - 946153": {"tipo": "PF", "rubro": "", "cargo": ""}, "BURANI ANDRES OSCAR  931908": {"tipo": "PF", "rubro": "", "cargo": ""}, "VEIGA JUAN MANUEL  931970": {"tipo": "PF", "rubro": "", "cargo": ""}, "ZEBALLOS SERGIO GABRIEL  931933": {"tipo": "PF", "rubro": "", "cargo": ""}, "GALEAZZI S A  - DARUMA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "GALEAZZI S A": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CALISA COMPLEJO ALIMENTARIO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AGROPECUARIA LA RESERVA SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "ARBANIT FELLOW SAS": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SILVIA LOMBARDI SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SALOMONE SANTIAGO MIGUEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "BASCULAS GAMA SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "INDUSTRIAS SAVINI SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "PRINTEMPS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "VELLA ROGELIO DANIEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "CIUCCI MIGUEL ANGEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "GUNEGONDI ALBERTO FEDERICO": {"tipo": "PF", "rubro": "", "cargo": ""}, "AGROGANADERA SAN SEBASTIAN ELAM SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SELVA AGROPECUARIA SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SANCHEZ MARIA ELISA": {"tipo": "PF", "rubro": "", "cargo": ""}, "DE VICENZO MARIANO JOSE": {"tipo": "PF", "rubro": "", "cargo": ""}, "CIDONI EZEQUIEL RAMIRO": {"tipo": "PF", "rubro": "", "cargo": ""}, "LOAL SERVICIOS INTEGRALES S R L": {"tipo": "PJ", "rubro": "", "cargo": ""}, "TRANSPORTE ALEM EXPRESS S A S": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SCARPATTI AMOBLAMIENTOS SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SALDUTTI FEDERICO MARTIN  931841": {"tipo": "PF", "rubro": "", "cargo": ""}, "BAUDRACCO MATIAS  931904": {"tipo": "PF", "rubro": "", "cargo": ""}, "SACCONE BRUNO DAVID": {"tipo": "PF", "rubro": "", "cargo": ""}, "STANGAFERRO RAMIRO  - 943055": {"tipo": "PF", "rubro": "", "cargo": ""}, "SILOCCHI JUAN MANUEL  - 943129": {"tipo": "PF", "rubro": "", "cargo": ""}, "VAZQUES PABLO  - 944270": {"tipo": "PF", "rubro": "", "cargo": ""}, "STAMPFLI GERMAN CARLOS  - 945831": {"tipo": "PF", "rubro": "", "cargo": ""}, "PALOMBARINI LUISINA  - 946021": {"tipo": "PF", "rubro": "", "cargo": ""}, "FABIAN ANDRES SPESOT Y WALTER ANDRES SPESOT SOC CAPITULO I SECCION IV": {"tipo": "PJ", "rubro": "", "cargo": ""}, "RODRIGUEZ MAURICIO  931828": {"tipo": "PF", "rubro": "", "cargo": ""}, "NINA JUAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "DOLCE BRUNO AGUSTIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "LEGUIZAMON LUCAS LAUTARO": {"tipo": "PF", "rubro": "", "cargo": ""}, "DEMARCHI OSCAR GERMAN  - 946315": {"tipo": "PF", "rubro": "", "cargo": ""}, "BENDAHAN GUSTAVO NICOLAS": {"tipo": "PF", "rubro": "", "cargo": ""}, "BIOLATO CEREALES SC": {"tipo": "PJ", "rubro": "", "cargo": ""}, "COOP AGROPECUARIA DE LA VIOLETA    LTDA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "BENEDETTO IVAN EDUARDO  931999": {"tipo": "PF", "rubro": "", "cargo": ""}, "FRANCISCO SELLART S A": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SHOCRON ANDRES- 947706": {"tipo": "PF", "rubro": "", "cargo": ""}, "LAZARO EMANUEL JUAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "MURRO OSCAR ALBERTO": {"tipo": "PF", "rubro": "", "cargo": ""}, "CONTRERAS FRANCO CARLOS": {"tipo": "PF", "rubro": "", "cargo": ""}, "MOLINOS JUAN SEMINO SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "VARESI ANGEL CARLOS JOSE": {"tipo": "PF", "rubro": "", "cargo": ""}, "COUZIER ENRIQUE": {"tipo": "PF", "rubro": "", "cargo": ""}, "FIORNOVELLI MARIA CECILIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "FANDINO SERGIO GASTON  931818": {"tipo": "PF", "rubro": "", "cargo": ""}, "DON BRANDINO LOGISTICA SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FYCSA  S A  - DARUMA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "FYCSA  S A": {"tipo": "PJ", "rubro": "", "cargo": ""}, "SAISI GABRIEL": {"tipo": "PF", "rubro": "", "cargo": ""}, "QUINTANA RAQUEL MERCEDES": {"tipo": "PF", "rubro": "", "cargo": ""}, "RAPETTI EZEQUIEL MAURICIO": {"tipo": "PF", "rubro": "", "cargo": ""}, "IVO BENJAMIN BLANC": {"tipo": "PF", "rubro": "", "cargo": ""}, "BLANC IVO SEGUNDO  - 2306": {"tipo": "PF", "rubro": "", "cargo": ""}, "PONS MARIANO SEBASTIAN": {"tipo": "PF", "rubro": "", "cargo": ""}, "PONTET MARTA INES": {"tipo": "PF", "rubro": "", "cargo": ""}, "KINSELLA MARIA ALEJANDRA": {"tipo": "PF", "rubro": "", "cargo": ""}, "PAREJA DUARTE ESTANISLAO FACUNDO": {"tipo": "PF", "rubro": "", "cargo": ""}, "LANTIA CAPITAL SA": {"tipo": "PJ", "rubro": "", "cargo": ""}, "CASTILLO SEBASTIAN CRUZ  - 947356": {"tipo": "PF", "rubro": "", "cargo": ""}, "LINERA MARIA EMILIA": {"tipo": "PF", "rubro": "", "cargo": ""}, "ZAPATA MARTIN": {"tipo": "PF", "rubro": "", "cargo": ""}, "MORALES FERNANDO DIEGO": {"tipo": "PF", "rubro": "", "cargo": ""}, "SOLUCIONES ALDEBARAN AGRO SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "LES FRERES SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}, "AFRAL SRL": {"tipo": "PJ", "rubro": "", "cargo": ""}};
+const OPS_DATA = {"NICOLAU JAVIER NESTOR  931826": [{"f": "01/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 24496095.46, "q": "Damian"}, {"f": "02/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 4497397.57, "q": "Damian"}, {"f": "03/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 4498843.33, "q": "Max"}, {"f": "06/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 4504105.24, "q": "Tini"}, {"f": "07/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 4505598.64, "q": "Tini"}, {"f": "08/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 4507824.65, "q": "Tini"}, {"f": "13/07/2026", "op": "Venta", "inst": "PAMP", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "13/07/2026", "op": "Venta", "inst": "S30O6", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "13/07/2026", "op": "Venta", "inst": "D30S6", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "13/07/2026", "op": "Dolarizacion (MEP)", "inst": "MESA", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "14/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 879035.44, "q": "Max"}, {"f": "14/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 70850.0, "q": "Max"}, {"f": "15/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 879399.9, "q": "Tini"}, {"f": "16/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 879805.46, "q": "Tini"}, {"f": "17/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 880073.83, "q": "Tini"}, {"f": "20/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 881356.28, "q": "Tini"}, {"f": "21/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 881777.22, "q": "Tini"}, {"f": "22/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 882193.54, "q": "Tini"}, {"f": "23/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 882600.38, "q": "Tini"}, {"f": "24/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 883026.75, "q": "Max"}], "CELAA ALEJANDRA": [{"f": "01/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 19713970.31, "q": "Damian"}, {"f": "02/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 19722089.91, "q": "Damian"}, {"f": "02/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 9800000.0, "q": "Damian"}, {"f": "02/07/2026", "op": "Compra", "inst": "TXMJO", "mon": "PESOS", "mto": 9800000.0, "q": "Damian"}, {"f": "03/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 216655.58, "q": "Max"}], "GALEAZZI EDUARDO RICHARD": [{"f": "01/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 9031274.68, "q": "Damian"}, {"f": "02/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 9035019.13, "q": "Max"}, {"f": "02/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 9035019.13, "q": "Max"}, {"f": "16/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "CCL", "mto": 734.19, "q": "Max"}], "CASADO JUAN MANUEL  931989": [{"f": "01/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 4493564.99, "q": "Damian"}, {"f": "02/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 4495341.89, "q": "Max"}, {"f": "02/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 4495341.89, "q": "Max"}], "RIGHI RAQUEL MARTA  931825": [{"f": "01/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 3386853.45, "q": "Damian"}, {"f": "02/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 3388062.83, "q": "Damian"}, {"f": "03/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 1389207.0, "q": "Max"}, {"f": "03/07/2026", "op": "Compra", "inst": "TXMJ0", "mon": "PESOS", "mto": 2000000.0, "q": "Max"}, {"f": "03/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 3389207.67, "q": "Max"}], "VILLEGAS CESAR HERNAN  931941": [{"f": "01/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 3264487.85, "q": "Damian"}, {"f": "02/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 3265653.54, "q": "Max"}, {"f": "02/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 3265653.54, "q": "Max"}], "PRIMON EZEQUIEL FEDERICO  931937": [{"f": "01/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 2152167.29, "q": "Damian"}, {"f": "02/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 2152953.48, "q": "Max"}, {"f": "02/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 2152953.48, "q": "Max"}], "LINERA MARIA BELEN  - 946710": [{"f": "01/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 1507690.0, "q": "Damian"}, {"f": "03/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 1675.33, "q": "Max"}, {"f": "07/07/2026", "op": "Rescate", "inst": "Allaria Ahorro Plus MEP", "mon": "MEP", "mto": 0, "q": "Max"}, {"f": "16/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 350.97, "q": "Max"}], "BEVILACQUA GUSTAVO OMAR": [{"f": "01/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 588473.03, "q": "Damian"}, {"f": "02/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 588707.35, "q": "Max"}, {"f": "02/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 588707.35, "q": "Max"}], "CADIROLA GISELA": [{"f": "01/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 581140.92, "q": "Damian"}], "MENZIO SRL": [{"f": "01/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 290781.02, "q": "Damian"}, {"f": "02/07/2026", "op": "Rescate", "inst": "AHORRO B", "mon": "PESOS", "mto": 4048755.17, "q": "Damian"}, {"f": "02/07/2026", "op": "Rescate", "inst": "DINAMICO III", "mon": "PESOS", "mto": 22669751.27, "q": "Damian"}, {"f": "02/07/2026", "op": "Venta", "inst": "S30O6", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "06/07/2026", "op": "Transferencia", "inst": "NACION CONSIGNACION", "mon": "PESOS", "mto": 49767968.25, "q": "Max"}, {"f": "06/07/2026", "op": "E-cheq", "inst": "", "mon": "PESOS", "mto": 39421999.91, "q": "Max"}, {"f": "08/07/2026", "op": "Suscripcion", "inst": "AHORRO T0", "mon": "PESOS", "mto": 130452.66, "q": "Max"}, {"f": "23/07/2026", "op": "Compra", "inst": "S30N6", "mon": "PESOS", "mto": 150000000.0, "q": "Max"}, {"f": "24/07/2026", "op": "Rescate", "inst": "AHORRO", "mon": "PESOS", "mto": 149402989.84, "q": "Max"}], "MANCIONI MARIA FLORENCIA": [{"f": "01/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 172024.63, "q": "Damian"}, {"f": "02/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 172090.77, "q": "Damian"}, {"f": "03/07/2026", "op": "Suscripcion", "inst": "AHORRO B", "mon": "PESOS", "mto": 172151.28, "q": "Max"}, {"f": "07/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 25397.11, "q": "Max"}, {"f": "14/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 25423.69, "q": "Max"}, {"f": "15/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 25426.76, "q": "Damian"}, {"f": "16/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 25429.62, "q": "Damian"}, {"f": "17/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 25432.76, "q": "Max"}, {"f": "20/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 25441.97, "q": "Max"}], "CORSI ALEJANDRO HUMBERTO  932078": [{"f": "01/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 3489220.73, "q": "Damian"}, {"f": "01/07/2026", "op": "Rescate", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 3489220.0, "q": "Damian"}, {"f": "13/07/2026", "op": "Rescate", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 2500000.0, "q": "Max"}, {"f": "13/07/2026", "op": "Compra", "inst": "TZV27", "mon": "PESOS", "mto": 500000.0, "q": "Max"}, {"f": "13/07/2026", "op": "Compra", "inst": "CEPU", "mon": "PESOS", "mto": 350000.0, "q": "Max"}, {"f": "13/07/2026", "op": "Compra", "inst": "PAMP", "mon": "PESOS", "mto": 350000.0, "q": "Max"}, {"f": "13/07/2026", "op": "Compra", "inst": "GOOGL", "mon": "PESOS", "mto": 500000.0, "q": "Max"}, {"f": "14/07/2026", "op": "Suscripcion", "inst": "DIVERSIFICADO", "mon": "PESOS", "mto": 862359.57, "q": "Max"}, {"f": "15/07/2026", "op": "Licitación", "inst": "AO29", "mon": "MEP", "mto": 1000.0, "q": "Mauro"}, {"f": "16/07/2026", "op": "Rescate", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 1600000.0, "q": "Max"}, {"f": "17/07/2026", "op": "Dolarizacion (MEP)", "inst": "", "mon": "PESOS", "mto": 1600000.02, "q": "Max"}], "MANCIONI JORGE ALBERTO": [{"f": "01/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 1271815.04, "q": "Damian"}, {"f": "06/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 10000000.0, "q": "Max"}, {"f": "07/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 1271815.0, "q": "Max"}, {"f": "07/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 85273.36, "q": "Max"}, {"f": "08/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 10038141.73, "q": "Max"}, {"f": "13/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 10072486.58, "q": "Damian"}, {"f": "14/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 1309535.7, "q": "Max"}, {"f": "14/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 85361.8, "q": "Max"}, {"f": "15/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 85371.87, "q": "Damian"}, {"f": "16/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 85381.48, "q": "Damian"}, {"f": "16/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "CCL", "mto": 301.85, "q": "Max"}, {"f": "17/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 85392.02, "q": "Max"}, {"f": "20/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 10147455.28, "q": "Max"}, {"f": "20/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 85422.95, "q": "Max"}, {"f": "21/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 1316261.7, "q": "Tini"}, {"f": "22/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 1317162.03, "q": "Max"}, {"f": "23/07/2026", "op": "Venta", "inst": "VIST", "mon": "PESOS", "mto": 25000000.0, "q": "Max"}, {"f": "23/07/2026", "op": "Venta", "inst": "MELI", "mon": "PESOS", "mto": 8000000.0, "q": "Max"}, {"f": "23/07/2026", "op": "Compra", "inst": "YPFD", "mon": "PESOS", "mto": 8000000.0, "q": "Max"}, {"f": "23/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 1320000.0, "q": "Max"}, {"f": "24/07/2026", "op": "Venta", "inst": "MELI", "mon": "PESOS", "mto": 8000000.0, "q": "Max"}, {"f": "24/07/2026", "op": "Compra", "inst": "VIST", "mon": "PESOS", "mto": 31000000.0, "q": "Max"}], "RIART JOSE LUIS": [{"f": "01/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 9394.45, "q": "Damian"}, {"f": "08/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 9405.27, "q": "Max"}, {"f": "13/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 9410.95, "q": "Damian"}], "PETIT FOURS  SA": [{"f": "01/07/2026", "op": "Rescate", "inst": "MONEY MARKET", "mon": "PESOS", "mto": 0, "q": "Juanma"}, {"f": "01/07/2026", "op": "Transferencia", "inst": "GALICIA", "mon": "PESOS", "mto": 32510353.0, "q": "Juanma"}, {"f": "16/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "CCL", "mto": 399.88, "q": "Max"}, {"f": "24/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 845.19, "q": "Max"}, {"f": "24/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "CCL", "mto": 787.64, "q": "Max"}], "PRATTA GRACIELA SUSANA  - 946153": [{"f": "01/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 5000000.0, "q": "Damian"}, {"f": "03/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 5019901.27, "q": "Max"}, {"f": "03/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 5019901.27, "q": "Max"}, {"f": "22/07/2026", "op": "Compra", "inst": "S13N6", "mon": "PESOS", "mto": 4477751.19, "q": "Max"}], "FUHR DIEGO MATIAS  932091": [{"f": "01/07/2026", "op": "Venta", "inst": "CGPA2", "mon": "PESOS", "mto": 0, "q": "Damian"}, {"f": "01/07/2026", "op": "Venta", "inst": "AGRO", "mon": "PESOS", "mto": 0, "q": "Damian"}, {"f": "01/07/2026", "op": "Compra", "inst": "VIST", "mon": "PESOS", "mto": 2300000.0, "q": "Damian"}, {"f": "01/07/2026", "op": "Venta", "inst": "GOOGL", "mon": "PESOS", "mto": 1600000.0, "q": "Damian"}, {"f": "01/07/2026", "op": "Compra", "inst": "META", "mon": "PESOS", "mto": 1600000.0, "q": "Damian"}], "BURANI ANDRES OSCAR  931908": [{"f": "01/07/2026", "op": "Compra", "inst": "vist", "mon": "PESOS", "mto": 100000.0, "q": "Damian"}, {"f": "02/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 1400471.35, "q": "Max"}, {"f": "02/07/2026", "op": "Compra", "inst": "TXMJ0", "mon": "PESOS", "mto": 350000.0, "q": "Max"}, {"f": "02/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 1050000.0, "q": "Max"}, {"f": "03/07/2026", "op": "Compra", "inst": "TXMJ0", "mon": "PESOS", "mto": 355091.0, "q": "Max"}, {"f": "03/07/2026", "op": "Rescate", "inst": "AHORRO", "mon": "MEP", "mto": 1575.5, "q": "Max"}, {"f": "06/07/2026", "op": "Rescate", "inst": "AHORRO", "mon": "MEP", "mto": 0, "q": ""}, {"f": "06/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 2575.5, "q": "Max"}, {"f": "08/07/2026", "op": "Compra", "inst": "VIST", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "15/07/2026", "op": "Compra", "inst": "S13N6", "mon": "PESOS", "mto": 1200000.0, "q": "Max"}, {"f": "15/07/2026", "op": "Rescate", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 1200000.0, "q": "Max"}, {"f": "21/07/2026", "op": "Compra", "inst": "S13N6", "mon": "PESOS", "mto": 94000.0, "q": "Max"}], "PI GROUP SRL": [{"f": "02/07/2026", "op": "Rescate", "inst": "AHORRO B", "mon": "PESOS", "mto": 39855797.0, "q": "Damian"}, {"f": "02/07/2026", "op": "Transferencia", "inst": "BBVA", "mon": "PESOS", "mto": 39855797.0, "q": "Damian"}, {"f": "23/07/2026", "op": "Suscripcion", "inst": "AHORRO", "mon": "PESOS", "mto": 1023031.52, "q": "Max"}], "VENA GIULIANO  931837": [{"f": "02/07/2026", "op": "Compra", "inst": "S30S6", "mon": "PESOS", "mto": 300000.0, "q": "Max"}, {"f": "02/07/2026", "op": "Compra", "inst": "VIST", "mon": "PESOS", "mto": 700000.0, "q": "Max"}, {"f": "02/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 1000000.0, "q": "Max"}], "BASCULAS GAMA SRL": [{"f": "02/07/2026", "op": "Suscripcion", "inst": "AHORRO B", "mon": "PESOS", "mto": 122232.64, "q": "Max"}], "FRUMENTO ANA MARIA  - 944634": [{"f": "02/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 555925.02, "q": "Damian"}, {"f": "13/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 559675.92, "q": "Damian"}, {"f": "20/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 562454.0, "q": "Max"}], "FRATTINI MARIA JULIA": [{"f": "02/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 31932680.57, "q": "Damian"}, {"f": "07/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 12942059.99, "q": "Max"}, {"f": "13/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 32168372.11, "q": "Damian"}, {"f": "14/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 13009281.17, "q": "Max"}, {"f": "20/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 32350893.9, "q": "Max"}, {"f": "21/07/2026", "op": "Toma Caucion", "inst": "", "mon": "PESOS", "mto": 13078351.4, "q": "Tini"}], "INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -": [{"f": "03/07/2026", "op": "Suscripcion", "inst": "AHORRO", "mon": "PESOS", "mto": 1187610.73, "q": "Max"}, {"f": "13/07/2026", "op": "Rescate", "inst": "AHORRO B", "mon": "PESOS", "mto": 199999999.98, "q": "Damian"}, {"f": "14/07/2026", "op": "Rescate", "inst": "AHORRO", "mon": "", "mto": 200000000.0, "q": "Max"}, {"f": "14/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 100000000.0, "q": "Max"}, {"f": "14/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 100000000.0, "q": "Max"}, {"f": "15/07/2026", "op": "E-cheq", "inst": "", "mon": "PESOS", "mto": 100000000.0, "q": "Max"}, {"f": "15/07/2026", "op": "Rescate", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 200000000.0, "q": "Max"}, {"f": "16/07/2026", "op": "Suscripcion", "inst": "SOJA B", "mon": "PESOS", "mto": 50000000.0, "q": "Max"}, {"f": "21/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 100355210.1, "q": "Damian"}, {"f": "22/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 100403141.55, "q": "Max"}], "NIEDFELD PATRICIA BERNARDA": [{"f": "03/07/2026", "op": "Rescate", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 0, "q": "Max"}, {"f": "03/07/2026", "op": "Venta", "inst": "PLTR", "mon": "MEP", "mto": 0, "q": "Max"}, {"f": "03/07/2026", "op": "Venta", "inst": "TSLA", "mon": "MEP", "mto": 0, "q": "Max"}, {"f": "03/07/2026", "op": "Venta", "inst": "TZV27", "mon": "MEP", "mto": 0, "q": "Max"}, {"f": "03/07/2026", "op": "Venta", "inst": "IRSA", "mon": "MEP", "mto": 0, "q": "Max"}, {"f": "06/07/2026", "op": "Dolarizacion (MEP)", "inst": "", "mon": "PESOS", "mto": 7466600.0, "q": "Max"}, {"f": "06/07/2026", "op": "Rescate", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 4025219.33, "q": "Max"}, {"f": "06/07/2026", "op": "Transferencia", "inst": "", "mon": "MEP", "mto": 39506.15, "q": "Damian"}, {"f": "07/07/2026", "op": "Dolarizacion (MEP)", "inst": "", "mon": "PESOS", "mto": 4027336.74, "q": "Max"}, {"f": "07/07/2026", "op": "Transferencia", "inst": "", "mon": "MEP", "mto": 7473.0, "q": "Max"}, {"f": "24/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 6000.0, "q": "Max"}, {"f": "24/07/2026", "op": "Suscripcion", "inst": "RETORNO TOTAL", "mon": "MEP", "mto": 4000.0, "q": "Max"}], "MACARIO LUIS ALBERTO": [{"f": "03/07/2026", "op": "Rescate", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 30000000.0, "q": "Max"}, {"f": "03/07/2026", "op": "Compra", "inst": "D30S6", "mon": "PESOS", "mto": 30000000.0, "q": "Tini"}, {"f": "06/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 124311.67, "q": "Max"}, {"f": "07/07/2026", "op": "Rescate", "inst": "Ahorro Plus", "mon": "", "mto": 50100000.0, "q": "Max"}, {"f": "07/07/2026", "op": "Dolarizacion (MEP)", "inst": "MESA : MEP", "mon": "PESOS", "mto": 50000000.0, "q": "Tini"}, {"f": "07/07/2026", "op": "Rescate", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 50100000.0, "q": "Max"}, {"f": "08/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 101130.61, "q": "Max"}, {"f": "08/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 32733.36, "q": "Max"}], "LORENZO MARIANO ANDRES  932105": [{"f": "03/07/2026", "op": "Venta", "inst": "ALUA", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "03/07/2026", "op": "Venta", "inst": "YPFD", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "03/07/2026", "op": "Venta", "inst": "TXAR", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "06/07/2026", "op": "Venta", "inst": "CEPU", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "06/07/2026", "op": "Venta", "inst": "ECOG", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "06/07/2026", "op": "Venta", "inst": "MIRG", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "06/07/2026", "op": "Venta", "inst": "GCDI", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "06/07/2026", "op": "Compra", "inst": "VIST", "mon": "PESOS", "mto": 471792.75, "q": "Max"}, {"f": "06/07/2026", "op": "Compra", "inst": "VIST", "mon": "PESOS", "mto": 0, "q": "Max"}], "VARESI JUAN CRUZ": [{"f": "06/07/2026", "op": "Rescate", "inst": "AHORRO", "mon": "PESOS", "mto": 5501231.0, "q": "Max"}, {"f": "06/07/2026", "op": "Transferencia", "inst": "", "mon": "PESOS", "mto": 5500000.0, "q": "Tini"}, {"f": "24/07/2026", "op": "Suscripcion", "inst": "DIVERSIFICADO", "mon": "PESOS", "mto": 174704.17, "q": "Max"}], "FIORNOVELLI MARIA LUJAN": [{"f": "06/07/2026", "op": "Rescate", "inst": "AHORRO", "mon": "PESOS", "mto": 55300000.0, "q": "Tini"}, {"f": "06/07/2026", "op": "Transferencia", "inst": "NACION", "mon": "PESOS", "mto": 55300000.0, "q": "Tini"}, {"f": "22/07/2026", "op": "Suscripcion", "inst": "Ahorro MM", "mon": "PESOS", "mto": 16985556.0, "q": "Tini"}], "STANGAFERRO RAMIRO  - 943055": [{"f": "06/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 4996500.0, "q": "Tini"}, {"f": "06/07/2026", "op": "Suscripcion", "inst": "DIVERSIFICADO", "mon": "PESOS", "mto": 3000000.0, "q": "Tini"}], "ROLDAN JULIO ALEJANDRO  931847": [{"f": "06/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 6000000.0, "q": "Ivo"}], "ROZADILLA BLAS OMAR  - 944988": [{"f": "07/07/2026", "op": "Venta", "inst": "AMD", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "07/07/2026", "op": "Venta", "inst": "SNDK", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "07/07/2026", "op": "Venta", "inst": "INTC", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "07/07/2026", "op": "Venta", "inst": "SCCO", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "07/07/2026", "op": "Venta", "inst": "IREN", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "07/07/2026", "op": "Venta", "inst": "TRAN", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "07/07/2026", "op": "Venta", "inst": "DIA", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "07/07/2026", "op": "Venta", "inst": "QQQ", "mon": "PESOS", "mto": 0, "q": "Tini"}, {"f": "07/07/2026", "op": "Compra", "inst": "MSFT", "mon": "PESOS", "mto": 600000.0, "q": "Tini"}, {"f": "07/07/2026", "op": "Compra", "inst": "GOOGL", "mon": "PESOS", "mto": 600000.0, "q": "Tini"}, {"f": "07/07/2026", "op": "Compra", "inst": "AMZN", "mon": "PESOS", "mto": 1000000.0, "q": "Tini"}, {"f": "08/07/2026", "op": "Suscripcion", "inst": "DIVERSIFICADO", "mon": "PESOS", "mto": 3677624.91, "q": "Max"}, {"f": "13/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 1000000.0, "q": "Ivo"}], "PRODUCIR INTEGRAL SA": [{"f": "07/07/2026", "op": "Suscripcion", "inst": "AHORRO", "mon": "PESOS", "mto": 28396198.85, "q": "Max"}, {"f": "08/07/2026", "op": "Rescate", "inst": "AHORRO", "mon": "PESOS", "mto": 28750000.0, "q": "Tini"}, {"f": "08/07/2026", "op": "Transferencia", "inst": "BBVA", "mon": "PESOS", "mto": 28750000.0, "q": "Tini"}, {"f": "22/07/2026", "op": "Rescate", "inst": "AHORRO", "mon": "", "mto": 59822997.0, "q": "Damian"}, {"f": "22/07/2026", "op": "Transferencia", "inst": "BBVA", "mon": "", "mto": 59822997.0, "q": "Max"}, {"f": "23/07/2026", "op": "Rescate", "inst": "AHORRO B", "mon": "PESOS", "mto": 16400000.0, "q": "Mauro"}], "LOBERTTI ALEJANDRO DAVID": [{"f": "07/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 2243.53, "q": "Max"}, {"f": "14/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 2245.82, "q": "Max"}, {"f": "21/07/2026", "op": "Toma Caucion", "inst": "", "mon": "MEP", "mto": 2248.06, "q": "Tini"}], "GUNEGONDI ALBERTO FEDERICO": [{"f": "08/07/2026", "op": "Dolarizacion (MEP)", "inst": "", "mon": "PESOS", "mto": 30750000.0, "q": "Tini"}, {"f": "14/07/2026", "op": "Dolarizacion (MEP)", "inst": "", "mon": "", "mto": 30400000.0, "q": "Max"}], "BOZZER ELSO ALEJANDRO  932041": [{"f": "08/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 3000.0, "q": "Max"}, {"f": "22/07/2026", "op": "Compra", "inst": "S13N6", "mon": "PESOS", "mto": 7000000.0, "q": "Max"}, {"f": "22/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 7000000.0, "q": "Max"}], "FERIAS DEL NORTE SACIA": [{"f": "13/07/2026", "op": "Rescate", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "13/07/2026", "op": "Venta", "inst": "MELI", "mon": "PESOS", "mto": 2029350.0, "q": "Max"}, {"f": "13/07/2026", "op": "Suscripcion", "inst": "DIVERSIFICADO", "mon": "PESOS", "mto": 2029350.0, "q": "Max"}, {"f": "14/07/2026", "op": "Suscripcion", "inst": "FCI SOJA", "mon": "PESOS", "mto": 0, "q": "Max"}], "MUGICA DIAZ PATRICIO MATIAS  - 946330": [{"f": "13/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "PESOS", "mto": 2000000.0, "q": "Max"}, {"f": "13/07/2026", "op": "Compra", "inst": "GOOGL", "mon": "PESOS", "mto": 500000.0, "q": "Max"}, {"f": "13/07/2026", "op": "Compra", "inst": "CEPU", "mon": "PESOS", "mto": 750000.0, "q": "Max"}, {"f": "13/07/2026", "op": "Compra", "inst": "PAMPA", "mon": "PESOS", "mto": 750000.0, "q": "Max"}, {"f": "13/07/2026", "op": "Venta", "inst": "MELI", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "14/07/2026", "op": "Compra", "inst": "TXMJ0", "mon": "PESOS", "mto": 638796.99, "q": "Max"}], "D Y M CANTARINI SS": [{"f": "14/07/2026", "op": "Rescate", "inst": "AHORRO", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "14/07/2026", "op": "Transferencia", "inst": "MACRO", "mon": "PESOS", "mto": 1814266.42, "q": "Max"}], "ALOE SALVADOR CRISTIAN  931727": [{"f": "14/07/2026", "op": "Transferencia", "inst": "MACRO", "mon": "PESOS", "mto": 147115.58, "q": "Max"}], "SAISI GABRIEL": [{"f": "14/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 551.0, "q": "Max"}, {"f": "14/07/2026", "op": "Suscripcion", "inst": "DINAMICO", "mon": "MEP", "mto": 500.0, "q": "Max"}, {"f": "14/07/2026", "op": "Suscripcion", "inst": "RETORNO TOTAL", "mon": "MEP", "mto": 500.0, "q": "Max"}], "RIENZI IGNACIO BENJAMIN": [{"f": "14/07/2026", "op": "Suscripcion", "inst": "AHORRO", "mon": "MEP", "mto": 500.0, "q": "Max"}], "AGROTECNOLOGIA Y SERVICIOS SA": [{"f": "15/07/2026", "op": "Rescate", "inst": "DESARROLLO B", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "15/07/2026", "op": "Suscripcion", "inst": "AHORRO", "mon": "PESOS", "mto": 241898923.15, "q": "Max"}, {"f": "16/07/2026", "op": "Suscripcion", "inst": "AHORRO B", "mon": "PESOS", "mto": 235454848.78, "q": "Max"}, {"f": "16/07/2026", "op": "Suscripcion", "inst": "AHORRO B", "mon": "PESOS", "mto": 10315000.0, "q": "Max"}, {"f": "17/07/2026", "op": "Rescate", "inst": "AHORRO B", "mon": "PESOS", "mto": 0, "q": "Max"}, {"f": "17/07/2026", "op": "Transferencia", "inst": "GALICIA", "mon": "PESOS", "mto": 477466786.74, "q": "Max"}, {"f": "20/07/2026", "op": "Transferencia", "inst": "", "mon": "PESOS", "mto": 222229.17, "q": "Max"}], "COOPAR": [{"f": "15/07/2026", "op": "Suscripcion", "inst": "AHORRO", "mon": "PESOS", "mto": 3618325.02, "q": "Max"}, {"f": "24/07/2026", "op": "Suscripcion", "inst": "AHORRO", "mon": "PESOS", "mto": 609330040.0, "q": "Max"}], "SERRA CLARA": [{"f": "16/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 555.42, "q": "Max"}], "ACQUARONE FERNANDO OSCAR": [{"f": "16/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 283.66, "q": "Max"}], "BERTICHE GUSTAVO  932051": [{"f": "16/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 160.0, "q": "Max"}, {"f": "16/07/2026", "op": "Compra", "inst": "TXMJ0", "mon": "PESOS", "mto": 7500000.0, "q": "Max"}, {"f": "17/07/2026", "op": "Rescate", "inst": "AHORRO", "mon": "PESOS", "mto": 7500000.0, "q": "Max"}], "ZAPATA MARTIN": [{"f": "16/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "CCL", "mto": 3880.35, "q": "Max"}], "DOMINGUEZ CINTIA VERONICA": [{"f": "16/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "CCL", "mto": 918.57, "q": "Max"}], "FAITELLA FERNANDES ANDREA CAROLINA": [{"f": "20/07/2026", "op": "Suscripcion", "inst": "AHORRO", "mon": "PESOS", "mto": 10008905.75, "q": "Max"}, {"f": "22/07/2026", "op": "Compra", "inst": "TXMJ0", "mon": "", "mto": 6000000.0, "q": "Max"}, {"f": "22/07/2026", "op": "Compra", "inst": "S13N6", "mon": "", "mto": 4000000.0, "q": "Max"}, {"f": "23/07/2026", "op": "Rescate", "inst": "AHORRO", "mon": "PESOS", "mto": 9960297.81, "q": "Max"}], "ALBAJARI KAISER MARTIN ERNESTO  - 944388": [{"f": "21/07/2026", "op": "Toma Caucion", "inst": "", "mon": "", "mto": 2270000.0, "q": "Max"}, {"f": "21/07/2026", "op": "Rescate", "inst": "DINAMICO", "mon": "MEP", "mto": 1510.0, "q": "Max"}, {"f": "21/07/2026", "op": "Transferencia", "inst": "MIRTA", "mon": "PESOS", "mto": 2270000.0, "q": "Max"}, {"f": "22/07/2026", "op": "Pesificacion", "inst": "", "mon": "MEP", "mto": 1510.0, "q": "Max"}], "QUINTANA RAQUEL MERCEDES": [{"f": "21/07/2026", "op": "Compra", "inst": "SMH", "mon": "", "mto": 100000.0, "q": "Max"}, {"f": "21/07/2026", "op": "Compra", "inst": "EWZ", "mon": "", "mto": 100000.0, "q": "Max"}, {"f": "21/07/2026", "op": "Compra", "inst": "XLV", "mon": "", "mto": 100000.0, "q": "Max"}, {"f": "21/07/2026", "op": "Compra", "inst": "PAMP", "mon": "", "mto": 100000.0, "q": "Max"}, {"f": "21/07/2026", "op": "Compra", "inst": "YPFD", "mon": "", "mto": 200000.0, "q": "Max"}, {"f": "21/07/2026", "op": "Compra", "inst": "S13N6", "mon": "", "mto": 400000.0, "q": "Max"}, {"f": "21/07/2026", "op": "Coloca Caucion", "inst": "", "mon": "", "mto": 1000000.0, "q": "Max"}], "SCARAFONI PABLO ANDRES  - 1821": [{"f": "22/07/2026", "op": "Suscripcion", "inst": "AHORRO", "mon": "CCL", "mto": 6019.55, "q": "Max"}], "VAZQUES PABLO  - 944270": [{"f": "24/07/2026", "op": "Suscripcion", "inst": "AHORRO", "mon": "MEP", "mto": 287.45, "q": "Max"}], "CROSA FERNANDO": [{"f": "24/07/2026", "op": "Rescate", "inst": "AHORRO PLUS", "mon": "MEP", "mto": 0, "q": "Max"}], "MILESY BERNARDO  931819": [{"f": "24/07/2026", "op": "Venta", "inst": "VIST", "mon": "PESOS", "mto": 2500000.0, "q": "Max"}, {"f": "24/07/2026", "op": "Compra", "inst": "GOOGL", "mon": "PESOS", "mto": 2500000.0, "q": "Max"}], "NINA JUAN": [{"f": "24/07/2026", "op": "Suscripcion", "inst": "AHORRO PLUS", "mon": "PESOS", "mto": 2000000.0, "q": "Max"}, {"f": "24/07/2026", "op": "Suscripcion", "inst": "DIVERSIFICADO", "mon": "PESOS", "mto": 2000000.0, "q": "Max"}], "NICOLINO ENRRE LUIS E HIJO SRL": [{"f": "24/07/2026", "op": "Venta", "inst": "TZV27", "mon": "", "mto": 0, "q": "Max"}]};
+
+function getVolumen(nombre){if(typeof OPS_DATA==='undefined'||!OPS_DATA[nombre])return 0;return OPS_DATA[nombre].filter(o=>o.op!=='Rescate'&&o.op!=='Toma Caucion'&&o.op!=='Coloca Caucion'&&o.op!=='Transferencia '&&o.op!=='Transferencia').reduce((s,o)=>s+Math.abs(o.mto),0);}
+function getOperado(nombre){if(typeof OPS_DATA==='undefined'||!OPS_DATA[nombre])return 0;return OPS_DATA[nombre].filter(o=>o.op!=='Rescate'&&o.op!=='Transferencia '&&o.op!=='Transferencia').reduce((s,o)=>s+Math.abs(o.mto),0);}
 const COMITENTE_MAP = {"VILLEGAS CESAR HERNAN  931941": "600931941", "LOPEZ FEDERICO NICOLAS  931974": "600931974", "GALEAZZI S A  - DARUMA": "100274439", "GALEAZZI S A": "650000364", "SERRA PALOMA": "600931577", "MACARIO LUIS ALBERTO": "600931585", "SERRA LUIS ALBERTO": "600931694", "SERRA CLARA": "600931695", "SANDRONI MARIA ISABEL": "600931696", "MILESY BERNARDO  931819": "600931819", "NICOLAU JAVIER NESTOR  931826": "600931826", "PETIT FOURS  SA": "650000226", "BOZZER ELSO ALEJANDRO  932041": "600932041", "CALISA COMPLEJO ALIMENTARIO SA": "302704", "AGROPECUARIA LA RESERVA SA": "102161", "PEREYRA MARIA SOL": "171918", "PASTOR ISABEL ADELA": "600000389", "LOBERTTI ALEJANDRO DAVID": "600000484", "REPIZO JAVIER ALEJANDRO": "600000486", "ARBANIT FELLOW SAS": "102245", "DOMINGUEZ CINTIA VERONICA": "600000591", "ACQUARONE FERNANDO OSCAR": "600000595", "SILVIA LOMBARDI SRL": "2002625", "CROSA FERNANDO": "600000663", "ACQUARONE IGNACIO FERNANDO": "600000729", "MANCIONI MARIA FLORENCIA": "600000784", "MANCIONI JORGE ALBERTO": "600000791", "SALOMONE SANTIAGO MIGUEL": "600000819", "BASCULAS GAMA SRL": "202414", "INDUSTRIAS SAVINI SRL": "9784", "PRINTEMPS SRL": "171993", "VELLA ROGELIO DANIEL": "600000923", "CIUCCI MIGUEL ANGEL": "600001111", "GUNEGONDI ALBERTO FEDERICO": "600001290", "AGROGANADERA SAN SEBASTIAN ELAM SRL": "102271", "BEVILACQUA GUSTAVO OMAR": "600001507", "SELVA AGROPECUARIA SRL": "2002642", "SANCHEZ MARIA ELISA": "600001572", "MANCIONI JOAQUIN": "600001583", "MERONI NORA ELENA": "600001594", "CADIROLA GISELA": "600001958", "RIART JOSE LUIS": "600001976", "ROMON DIEGO CARLOS": "600931314", "DE VICENZO MARIANO JOSE": "600931360", "CIDONI EZEQUIEL RAMIRO": "600931520", "LOAL SERVICIOS INTEGRALES S R L": "650000030", "TRANSPORTE ALEM EXPRESS S A S": "650000043", "ALBAJARI KAISER MARTIN ERNESTO  - 944388": "25944388", "FIDEICOMISO PARQUE INDUSTRIAL VACA MUERTA": "35000074", "NIEDFELD PATRICIA BERNARDA": "600931609", "FRUMENTO ANA MARIA  - 944634": "25944634", "ACCORINTI BELLORINI MARIA DELFINA": "600931712", "SCARPATTI AMOBLAMIENTOS SRL": "35000142", "SALDUTTI FEDERICO MARTIN  931841": "600931841", "BAUDRACCO MATIAS  931904": "600931904", "DEL PAPA ANA LEA  931905": "600931905", "BERLINGIERI MARIA LAURA": "600931715", "SACCONE BRUNO DAVID": "903212", "STANGAFERRO RAMIRO  - 943055": "25943055", "SILOCCHI JUAN MANUEL  - 943129": "25943129", "VAZQUES PABLO  - 944270": "25944270", "STAMPFLI GERMAN CARLOS  - 945831": "25945831", "PALOMBARINI LUISINA  - 946021": "25946021", "ALOE SALVADOR CRISTIAN  931727": "600931727", "FABIAN ANDRES SPESOT Y WALTER ANDRES SPESOT SOC CAPITULO I SECCION IV": "601353", "FRATTINI MARIA JULIA": "601311", "RODRIGUEZ MAURICIO  931828": "600931828", "NINA JUAN": "600932118", "SOLUCIONES ALDEBARAN AGRO SRL": "35000503", "REALE DANIELA": "191081", "PASCUAL MARIA FERNANDA  - 944744": "25944744", "ROZADILLA BLAS OMAR  - 944988": "25944988", "DEMARCHI OSCAR GERMAN  - 946315": "25946315", "MUGICA DIAZ PATRICIO MATIAS  - 946330": "25946330", "VENA GIULIANO  931837": "600931837", "QUINTANA RAQUEL MERCEDES": "600931349", "LINERA MARIA EMILIA": "120518", "LINERA MARIA BELEN  - 946710": "25946710", "AGROTECNOLOGIA Y SERVICIOS SA": "100873", "ACOPIAR SA": "102258", "PROAGRO SRL": "171995", "CELAA ALEJANDRA": "600931300", "GERLERO FLAVIO ADRIAN": "600931583", "BENDAHAN GUSTAVO NICOLAS": "600931644", "ULLOA OMAR WENCESLAO  931972": "600931972", "RAPETTI EZEQUIEL MAURICIO": "191599", "CARIDE MAURICIO ALBERTO  931887": "600931887", "ZAPATA MARTIN": "27147", "MORALES FERNANDO DIEGO": "132272", "MELO ANIBAL HORACIO": "132398", "PROCESS SRL": "650000042", "RIENZI IGNACIO BENJAMIN": "191592", "IVO BENJAMIN BLANC": "903141", "BLANC IVO SEGUNDO  - 2306": "25002306", "INDEPENDIENTE ATLETIC CLUB MUTUAL, SOCIAL Y BIBLIOTECA -": "9373", "GALEAZZI EDUARDO RICHARD": "700853", "FIORNOVELLI MARIA LUJAN": "601124", "VARESI ANGEL CARLOS JOSE": "2300272", "COUZIER ENRIQUE": "303326", "FIORNOVELLI MARIA CECILIA": "601194", "D Y M CANTARINI SS": "401330", "VARESI JUAN CRUZ": "2300384", "NIERO TOMAS  931792": "600931792", "FANDINO SERGIO GASTON  931818": "600931818", "PIERELLA SRL": "35000357", "DON BRANDINO LOGISTICA SRL": "35000379", "PRIMON EZEQUIEL FEDERICO  931937": "600931937", "NICOLINO ENRRE LUIS E HIJO SRL": "650000254", "CORSI ALEJANDRO HUMBERTO  932078": "600932078", "FYCSA  S A  - DARUMA": "100274024", "FYCSA  S A": "650000362", "SCARAFONI PABLO ANDRES  - 1821": "25001821", "ALICER SRL": "650000265", "AGROPECUARIA SAN ANTONIO SA": "100903", "AGROIDEAS SA": "101822", "AG TRUCKS SRL": "102184", "BIOLATO CEREALES SC": "202456", "COOP AGROPECUARIA DE LA VIOLETA    LTDA": "650000026", "LES FRERES SRL": "121622", "PONS MARIANO SEBASTIAN": "171811", "AFRAL SRL": "102295", "ROLDAN JULIO ALEJANDRO  931847": "600931847", "BENEDETTO IVAN EDUARDO  931999": "600931999", "FUHR DIEGO MATIAS  932091": "600932091", "LORENZO MARIANO ANDRES  932105": "600932105", "FERIAS DEL NORTE SACIA": "6639", "MENZIO SRL": "650000001", "FRANCISCO SELLART S A": "650000021", "SELLART IGNACIO": "600931576", "SIEMBRAS ASOCIADAS REGION NUCLEO SA": "650000296", "SCILINGO HNOS SA": "650000307", "ABUELO JULIO SA": "100893", "PONTET MARTA INES": "171529", "BENAVIDEZ LOLA": "201953", "FAITELLA FERNANDES ANDREA CAROLINA": "600965", "KINSELLA MARIA ALEJANDRA": "11497", "PAREJA DUARTE ESTANISLAO FACUNDO": "171880", "DESIGN QUALITY AND DEVELOPMENT SAS": "401341", "PI GROUP SRL": "171988", "SYNERGIA IT GROUP SRL": "2002634", "PRODUCIR INTEGRAL SA": "171996", "LANTIA CAPITAL SA": "35000467", "CASTILLO SEBASTIAN CRUZ  - 947356": "25947356", "PAMPINFIER    SA": "650000245", "LA CAMBICHA SA": "121642", "CASADO JUAN MANUEL  931989": "600931989", "COOPAR": "650000264", "RIGHI RAQUEL MARTA  931825": "600931825", "PRATTA GRACIELA SUSANA  - 946153": "25946153", "BERTICHE GUSTAVO  932051": "600932051", "BURANI ANDRES OSCAR  931908": "600931908", "ZEBALLOS SERGIO GABRIEL  931933": "600931933", "VEIGA JUAN MANUEL  931970": "600931970", "SHOCRON ANDRES- 947706": "25947706", "LAZARO EMANUEL JUAN": "600932122", "MURRO OSCAR ALBERTO": "600932108", "CONTRERAS FRANCO CARLOS": "25947422", "DOLCE BRUNO AGUSTIN": "25947321", "LEGUIZAMON LUCAS LAUTARO": "25947296", "MOLINOS JUAN SEMINO SA": "650000259", "SAISI GABRIEL": "600931950"};
 function load(){
   try{
@@ -1077,7 +1349,7 @@ const SB_URL = 'https://dslqivsuangzqmwvporf.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzbHFpdnN1YW5nenFtd3Zwb3JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5Mzc4ODgsImV4cCI6MjA5OTUxMzg4OH0.2JzugyKQb_if2ZCXKXm7gTTcflmPflG_DwXpbQey8EA';
 const SB_KEYS = ['seg_checks','seg_frec','seg_notas','seg_hist','seg_alertas',
   'seg_tenencia','seg_dueno','seg_giras','seg_prospects','seg_grupos',
-  'seg_grupo_miembros','seg_manuales','seg_actividades','seg_tareas','seg_deleted','seg_estado'];
+  'seg_grupo_miembros','seg_manuales','seg_actividades','seg_tareas','seg_deleted','seg_estado','seg_radar','seg_sgr'];
 
 let sbSyncing=false;
 
@@ -1391,6 +1663,64 @@ function guardarNuevoCliente(){
 document.getElementById('nuevo-cliente-overlay').addEventListener('click',function(e){if(e.target===this)closeNuevoCliente();});
 
 
+function renderOperaciones(nombre){
+  const el=document.getElementById('op-content');
+  if(!el)return;
+  const ops=(typeof OPS_DATA!=='undefined')?OPS_DATA[nombre]:null;
+  if(!ops||!ops.length){
+    el.innerHTML='<div style="color:#888;font-size:12px;padding:20px;text-align:center">Sin operaciones registradas para este cliente.</div>';
+    return;
+  }
+  // sort by date desc
+  const sorted=[...ops].sort((a,b)=>{
+    const dA=a.f.split('/').reverse().join(''),dB=b.f.split('/').reverse().join('');
+    return dB.localeCompare(dA);
+  });
+  // summary
+  const totalOps=ops.length;
+  const totalMonto=ops.reduce((s,o)=>s+Math.abs(o.mto),0);
+  const byType={};ops.forEach(o=>{const k=o.op||'Otro';if(!byType[k])byType[k]=0;byType[k]+=Math.abs(o.mto);});
+  const typeRanking=Object.entries(byType).sort((a,b)=>b[1]-a[1]);
+  const opTypes={};ops.forEach(o=>{const k=o.op||'Otro';opTypes[k]=(opTypes[k]||0)+1;});
+  const topOps=Object.entries(opTypes).sort((a,b)=>b[1]-a[1]);
+
+  const OP_COLORS={'Compra':'#dcfce7','Venta ':'#fee2e2','Venta':'#fee2e2','Suscripcion':'#dbeafe','Rescate':'#fef9c3',
+    'Toma Caucion':'#f3e8ff','Coloca Caucion':'#ede9fe','Dolarizacion (MEP)':'#e0f2fe','Dolarizacion (CCL)':'#e0f2fe',
+    'Pesificacion ':'#fff7ed','Canje ':'#f0fdf4','Transferencia ':'#f5f5f5','Licitación':'#fef3c7'};
+  const OP_TEXT={'Compra':'#166534','Venta ':'#991b1b','Venta':'#991b1b','Suscripcion':'#1e40af','Rescate':'#854d0e',
+    'Toma Caucion':'#6b21a8','Coloca Caucion':'#5b21b6','Dolarizacion (MEP)':'#0369a1','Dolarizacion (CCL)':'#0369a1',
+    'Pesificacion ':'#9a3412','Canje ':'#166534','Transferencia ':'#374151','Licitación':'#92400e'};
+
+  el.innerHTML=`
+    <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;flex:1;min-width:100px">
+        <div style="font-size:10px;color:#6b7280">Operaciones</div>
+        <div style="font-size:20px;font-weight:800;color:#166534">${totalOps}</div>
+      </div>
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 14px;flex:1;min-width:100px">
+        <div style="font-size:10px;color:#6b7280">Volumen operado</div>
+        <div style="font-size:14px;font-weight:700;color:#1e40af">$ ${totalMonto.toLocaleString('es-AR',{minimumFractionDigits:0})}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">
+      ${topOps.map(([op,n])=>`<span style="background:${OP_COLORS[op]||'#f5f5f5'};color:${OP_TEXT[op]||'#333'};padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600">${op} (${n})</span>`).join('')}
+    </div>
+    <div style="max-height:280px;overflow-y:auto;border:1px solid #f3f4f6;border-radius:8px">
+      ${sorted.map(o=>{
+        const bg=OP_COLORS[o.op]||'#f5f5f5',tx=OP_TEXT[o.op]||'#333';
+        const mto=o.mto?'$ '+Math.abs(o.mto).toLocaleString('es-AR',{minimumFractionDigits:0}):'';
+        return `<div style="display:flex;gap:8px;padding:6px 10px;border-bottom:1px solid #f9fafb;align-items:center;font-size:11px">
+          <span style="color:#9ca3af;min-width:62px">${o.f}</span>
+          <span style="background:${bg};color:${tx};padding:1px 7px;border-radius:5px;font-size:10px;font-weight:600;white-space:nowrap;min-width:90px">${o.op||'—'}</span>
+          <span style="color:#374151;flex:1">${o.inst||'—'}</span>
+          <span style="color:#6b7280;font-size:10px;min-width:40px">${o.mon||''}</span>
+          <span style="color:#1a2e4a;font-weight:600;white-space:nowrap">${mto}</span>
+          ${o.q?`<span style="color:#9ca3af;font-size:9px;min-width:40px">${o.q}</span>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
 function toggleEstadoCliente(){
   if(!modalNombre) return;
   const est=estadoCliente[modalNombre]||{estado:'activo'};
@@ -1479,7 +1809,7 @@ function getClienteGrupos(nombre){return grupos.filter(g=>(grupoMiembros[g.id]||
 
 // ===== TOP-LEVEL PAGE SWITCH =====
 function switchPage(p){
-  const pages=['seguimiento','agenda','giras','prospects','grupos','mapa','resumen'];
+  const pages=['seguimiento','agenda','giras','prospects','grupos','mapa','resumen','intel','sgr'];
   document.querySelectorAll('.top-tab').forEach((t,i)=>t.classList.toggle('active',pages[i]===p));
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
@@ -1489,6 +1819,8 @@ function switchPage(p){
   if(p==='grupos')renderGrupos();
   if(p==='mapa')renderMapa();
   if(p==='resumen')renderResumen();
+  if(p==='intel')renderIntel();
+  if(p==='sgr')renderSGR();
 }
 
 // ===== MODAL =====
@@ -1546,6 +1878,7 @@ function switchTab(tab){
     document.getElementById('act-cargo').value=a.cargo||'';
     document.getElementById('act-saved-msg').style.display='none';
   }
+  if(tab==='operaciones') renderOperaciones(modalNombre);
   if(tab==='editar'&&modalClienteBase){
     const c=modalClienteBase;
     document.getElementById('edit-dueno').value=getDueno(c);
@@ -2402,6 +2735,7 @@ function render(){
             style="font-size:10px;border:1px solid #ccd;border-radius:6px;padding:2px 6px;width:80px;background:#fff;color:#333">
         </td>
         <td class="col-tenencia">${tenDisplay}</td>
+        <td class="col-tenencia" style="font-size:10px;color:#2563eb;font-weight:600;text-align:right;padding-right:8px;cursor:pointer" onclick="openModal('${c.nombre.replace(/'/g,"\\'")}');setTimeout(()=>switchTab('operaciones'),100)">${getVolumen(c.nombre)?'$ '+getVolumen(c.nombre).toLocaleString('es-AR',{minimumFractionDigits:0}):'—'}</td>
         <td class="col-frec"><select class="frec-select" id="${fid}" data-nombre="${c.nombre.replace(/"/g,'&quot;')}">${FREC_OPTS.map(o=>`<option value="${o}"${o===frec?' selected':''}>${o||'—'}</option>`).join('')}</select></td>
         ${dayCells}
       </tr>`;
@@ -2431,6 +2765,7 @@ function render(){
     const nActivos=clientes.length-nInactivos;
     const pctActivos=clientes.length?Math.round(nActivos/clientes.length*100):0;
     const pctInact=clientes.length?Math.round(nInactivos/clientes.length*100):0;
+    const volAsesor=clientes.reduce((s,c)=>s+getVolumen(c.nombre),0);
 
     return `<div class="owner-section">
       <div class="owner-header" onclick="toggleSection(this)">
@@ -2440,6 +2775,7 @@ function render(){
           <span style="background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.35);padding:2px 10px;border-radius:10px;font-size:10px;color:#86efac">✓ ${nActivos} activos (${pctActivos}%)</span>
           ${nInactivos?`<span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:2px 10px;border-radius:10px;font-size:10px;color:#d1d5db">⏸ ${nInactivos} inactivos (${pctInact}%)</span>`:''}
           ${nReflotados?`<span style="background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.35);padding:2px 10px;border-radius:10px;font-size:10px;color:#fde68a">♻ ${nReflotados} reflotado${nReflotados!==1?'s':''}</span>`:''}
+          ${volAsesor?`<span style="background:rgba(37,99,235,.2);border:1px solid rgba(37,99,235,.35);padding:2px 10px;border-radius:10px;font-size:10px;color:#93c5fd">💰 $ ${volAsesor.toLocaleString('es-AR',{minimumFractionDigits:0})}</span>`:''}
         </div>
         <span class="owner-meta">${ownerPending?`<span style="background:rgba(255,255,255,.15);padding:2px 10px;border-radius:10px">&#9888; ${ownerPending} pendiente${ownerPending>1?'s':''}</span>`:''}</span>
       </div>
@@ -2450,6 +2786,7 @@ function render(){
         <th class="col-actividad" style="font-size:11px;color:#1a2e4a">Actividad</th>
         <th class="col-actividad" style="font-size:11px;color:#1a2e4a">Rol</th>
         <th class="col-tenencia" style="font-size:11px;color:#1a2e4a">Tenencia USD</th>
+        <th class="col-tenencia" style="font-size:11px;color:#1a2e4a">Volumen mes</th>
         <th class="col-frec" style="font-size:11px;color:#1a2e4a">Frecuencia</th>
         ${dayHeaders}
       </tr></thead><tbody>${rows}</tbody></table></div>
@@ -2907,6 +3244,536 @@ function renderAgendaCalendario(){
   });
 })();
 // ===========================
+// ===== SGR =====
+let sgrCasos=[];
+const saveSGR=()=>save('seg_sgr')(sgrCasos);
+
+function loadSGR(){
+  const d=localStorage.getItem('seg_sgr');
+  if(d) sgrCasos=JSON.parse(d);
+}
+
+function renderSGR(){
+  loadSGR();
+  const buscar=(document.getElementById('sgr-buscar')?.value||'').toLowerCase();
+  const filtroEst=document.getElementById('sgr-filtro-estado')?.value||'';
+
+  // populate SGR filter
+  const sgrSel=document.getElementById('sgr-filtro-sgr');
+  if(sgrSel){
+    const curSgr=sgrSel.value;
+    const allSgrs=[...new Set(sgrCasos.map(c=>c.sgr).filter(Boolean))].sort();
+    sgrSel.innerHTML='<option value="">Todas las SGR</option>'+allSgrs.map(s=>`<option value="${s}"${s===curSgr?' selected':''}>${s}</option>`).join('');
+  }
+  const filtroSgr=document.getElementById('sgr-filtro-sgr')?.value||'';
+
+  let filtered=sgrCasos.filter(c=>{
+    if(buscar&&!c.cliente.toLowerCase().includes(buscar)&&!(c.referente||'').toLowerCase().includes(buscar)&&!(c.observaciones||'').toLowerCase().includes(buscar)&&!(c.sgr||'').toLowerCase().includes(buscar))return false;
+    if(filtroSgr&&c.sgr!==filtroSgr)return false;
+    if(filtroEst&&c.estado!==filtroEst)return false;
+    return true;
+  });
+
+  // KPIs
+  const total=sgrCasos.length;
+  const porEstado={};sgrCasos.forEach(c=>{porEstado[c.estado]=(porEstado[c.estado]||0)+1;});
+  const totalPropias=sgrCasos.reduce((s,c)=>s+(c.lineasPropias||0),0);
+  const totalTerceros=sgrCasos.reduce((s,c)=>s+(c.lineasTerceros||0),0);
+  const aprobadas=sgrCasos.filter(c=>c.estado==='aprobado'||c.estado==='vigente');
+  const montoAprobado=aprobadas.reduce((s,c)=>s+(c.lineasPropias||0)+(c.lineasTerceros||0),0);
+
+  document.getElementById('sgr-stats').innerHTML=`
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#1a2e4a">${total}</div><div style="font-size:10px;color:#888">Casos totales</div></div>
+    ${porEstado['iniciado']?`<div style="background:#dbeafe;border:1px solid #93c5fd;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#1e40af">${porEstado['iniciado']}</div><div style="font-size:10px;color:#1e40af">Iniciados</div></div>`:''}
+    ${porEstado['en-analisis']?`<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#92400e">${porEstado['en-analisis']}</div><div style="font-size:10px;color:#92400e">En análisis</div></div>`:''}
+    ${porEstado['aprobado']?`<div style="background:#dcfce7;border:1px solid #86efac;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#166534">${porEstado['aprobado']}</div><div style="font-size:10px;color:#166534">Aprobados</div></div>`:''}
+    ${porEstado['vigente']?`<div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#065f46">${porEstado['vigente']}</div><div style="font-size:10px;color:#065f46">Vigentes</div></div>`:''}
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 16px;min-width:100px;flex:1"><div style="font-size:16px;font-weight:800;color:#1e40af">$ ${totalPropias.toLocaleString('es-AR')}</div><div style="font-size:10px;color:#1e40af">Líneas propias</div></div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 16px;min-width:100px;flex:1"><div style="font-size:16px;font-weight:800;color:#166534">$ ${totalTerceros.toLocaleString('es-AR')}</div><div style="font-size:10px;color:#166534">Líneas terceros</div></div>`;
+
+  if(!filtered.length){
+    document.getElementById('sgr-content').innerHTML='<div style="text-align:center;padding:40px;color:#888;font-size:12px">Sin casos registrados. Hacé click en "+ Nuevo caso" para empezar.</div>';
+    return;
+  }
+
+  const ESTADOS=[
+    {v:'iniciado',l:'Iniciado'},{v:'en-analisis',l:'En análisis'},{v:'aprobado',l:'Aprobado'},
+    {v:'rechazado',l:'Rechazado'},{v:'vigente',l:'Vigente'},{v:'vencido',l:'Vencido'},{v:'en-poder-cliente',l:'En poder del cliente'}
+  ];
+
+  document.getElementById('sgr-content').innerHTML=`
+    <div style="overflow-x:auto"><table class="sgr-table">
+      <thead><tr>
+        <th>Cliente</th>
+        <th>SGR</th>
+        <th>Referente</th>
+        <th>Estado</th>
+        <th>Fecha inicio</th>
+        <th>Entrada riesgos</th>
+        <th>Fecha aprobada</th>
+        <th style="text-align:right">Líneas propias</th>
+        <th style="text-align:right">Líneas terceros</th>
+        <th style="text-align:right">Total</th>
+        <th>Observaciones</th>
+        <th></th>
+      </tr></thead>
+      <tbody>
+        ${filtered.map(c=>{
+          const totalLineas=(c.lineasPropias||0)+(c.lineasTerceros||0);
+          return `<tr>
+            <td><input value="${(c.cliente||'').replace(/"/g,'&quot;')}" onchange="sgrUpdate('${c.id}','cliente',this.value)" style="font-weight:600;color:#1a2e4a;min-width:140px"></td>
+            <td><input value="${(c.sgr||'').replace(/"/g,'&quot;')}" onchange="sgrUpdate('${c.id}','sgr',this.value)" placeholder="—" list="dl-sgrs" style="min-width:90px"></td>
+            <td><input value="${(c.referente||'').replace(/"/g,'&quot;')}" onchange="sgrUpdate('${c.id}','referente',this.value)" placeholder="—" style="min-width:100px"></td>
+            <td><select onchange="sgrUpdate('${c.id}','estado',this.value)" style="font-size:10px">
+              ${ESTADOS.map(e=>`<option value="${e.v}"${c.estado===e.v?' selected':''}>${e.l}</option>`).join('')}
+            </select></td>
+            <td><input type="date" value="${c.fecha||''}" onchange="sgrUpdate('${c.id}','fecha',this.value)" style="font-size:10px"></td>
+            <td><input type="date" value="${c.fechaRiesgos||''}" onchange="sgrUpdate('${c.id}','fechaRiesgos',this.value)" style="font-size:10px"></td>
+            <td><input type="date" value="${c.fechaAprobada||''}" onchange="sgrUpdate('${c.id}','fechaAprobada',this.value)" style="font-size:10px"></td>
+            <td><input type="number" value="${c.lineasPropias||''}" onchange="sgrUpdate('${c.id}','lineasPropias',parseFloat(this.value)||0)" placeholder="0" style="text-align:right;color:#1e40af;font-weight:600;min-width:90px"></td>
+            <td><input type="number" value="${c.lineasTerceros||''}" onchange="sgrUpdate('${c.id}','lineasTerceros',parseFloat(this.value)||0)" placeholder="0" style="text-align:right;color:#166534;font-weight:600;min-width:90px"></td>
+            <td style="text-align:right;font-weight:700;color:#1a2e4a;font-size:11px;white-space:nowrap">$ ${totalLineas.toLocaleString('es-AR')}</td>
+            <td><input value="${(c.observaciones||'').replace(/"/g,'&quot;')}" onchange="sgrUpdate('${c.id}','observaciones',this.value)" placeholder="—" style="color:#555;min-width:150px"></td>
+            <td><button onclick="deleteSGR('${c.id}')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:12px">🗑</button></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table></div>`;
+}
+
+function addSGRCaso(){
+  sgrCasos.push({
+    id:'sgr_'+Date.now().toString(36),
+    cliente:'',
+    sgr:'',
+    referente:'',
+    estado:'iniciado',
+    fecha:new Date().toISOString().split('T')[0],
+    fechaRiesgos:'',
+    fechaAprobada:'',
+    lineasPropias:0,
+    lineasTerceros:0,
+    observaciones:''
+  });
+  saveSGR();renderSGR();
+}
+
+function sgrUpdate(id,field,value){
+  const c=sgrCasos.find(x=>x.id===id);
+  if(c){c[field]=value;saveSGR();renderSGR();}
+}
+
+function deleteSGR(id){
+  if(!confirm('¿Eliminar este caso SGR?'))return;
+  sgrCasos=sgrCasos.filter(x=>x.id!==id);
+  saveSGR();renderSGR();
+}
+
+// ===== INTELIGENCIA COMERCIAL =====
+let radarEmpresas=[];
+const saveRadar=()=>save('seg_radar')(radarEmpresas);
+
+const RADAR_PRELOAD=[
+  {id:'r001',nombre:'COOP. GDERA.LTDA.MANUEL GREGORET',localidad:'Gdor. Crespo, Santa Fe',rubro:'Frigorífico',fuente:'CAFRISA',estado:'nuevo',notas:'',fecha_alta:'2026-07-25',web:'',telefono:''},
+  {id:'r002',nombre:'FINLAR S.A (Frigorífico Larrauri)',localidad:'Gdero. Baigorria, Santa Fe',rubro:'Frigorífico',fuente:'CAFRISA',estado:'nuevo',notas:'5 plantas, exportador. Contacto: raul.cagliero@sodecar.com',fecha_alta:'2026-07-25',web:'finlar.com.ar',telefono:'0341-4714048'},
+  {id:'r003',nombre:'DISTRIBUIDORA ALFER S.R.L',localidad:'Pérez, Santa Fe',rubro:'Frigorífico / Distribuidora',fuente:'CAFRISA',estado:'nuevo',notas:'',fecha_alta:'2026-07-25',web:'',telefono:''},
+  {id:'r004',nombre:'DISTRIMEAT',localidad:'Venado Tuerto, Santa Fe',rubro:'Frigorífico / Distribuidora',fuente:'CAFRISA',estado:'nuevo',notas:'',fecha_alta:'2026-07-25',web:'',telefono:''},
+  {id:'r005',nombre:'FRIGORIFICO MARU S.A.',localidad:'Rufino, Santa Fe',rubro:'Frigorífico',fuente:'CAFRISA',estado:'nuevo',notas:'',fecha_alta:'2026-07-25',web:'',telefono:'03382-427502'},
+  {id:'r006',nombre:'IND.FRIG. RECREO S.A.I.C.',localidad:'Recreo Sur, Santa Fe',rubro:'Frigorífico',fuente:'CAFRISA',estado:'nuevo',notas:'+50 años, 5000 cabezas propias, 2M kg/mes producción',fecha_alta:'2026-07-25',web:'frigorificorecreo.com',telefono:'0342-4905111'},
+  {id:'r007',nombre:'INTEGRADOS S.R.L',localidad:'V. Gdor. Gálvez, Santa Fe',rubro:'Frigorífico',fuente:'CAFRISA',estado:'nuevo',notas:'',fecha_alta:'2026-07-25',web:'',telefono:''},
+  {id:'r008',nombre:'LA PELLEGRINENSE S.A.',localidad:'Carlos Pellegrini, Santa Fe',rubro:'Frigorífico',fuente:'CAFRISA',estado:'nuevo',notas:'',fecha_alta:'2026-07-25',web:'',telefono:''},
+  {id:'r009',nombre:'MATADERO FRIGORIFICO DON RAUL S.A.',localidad:'Vera, Santa Fe',rubro:'Frigorífico',fuente:'CAFRISA',estado:'nuevo',notas:'Planta en Santa Fe: Blas Parera 9551',fecha_alta:'2026-07-25',web:'',telefono:'0342-4893890'},
+  {id:'r010',nombre:'MATADERO FRIGORIFICO UNION S.A.',localidad:'Villa Trinidad, Santa Fe',rubro:'Frigorífico',fuente:'CAFRISA',estado:'nuevo',notas:'',fecha_alta:'2026-07-25',web:'',telefono:''},
+  {id:'r011',nombre:'MATTIEVICH S.A.',localidad:'Casilda, Santa Fe',rubro:'Frigorífico',fuente:'CAFRISA',estado:'nuevo',notas:'+600 empleados, 5 plantas (Casilda, Carcarañá, Arroyo Seco, V.G.Gálvez), exportador 20+ destinos',fecha_alta:'2026-07-25',web:'mattievich.com.ar',telefono:'03464-422650'},
+  {id:'r012',nombre:'SODECAR S.A.',localidad:'Rafaela, Santa Fe',rubro:'Frigorífico / Fiambres',fuente:'CAFRISA',estado:'nuevo',notas:'+400 empleados, +25 años. Contacto: Raúl Cagliero raul.cagliero@sodecar.com',fecha_alta:'2026-07-25',web:'sodecar.com',telefono:'03492-440720'},
+  {id:'r013',nombre:'SUBPRODUCTOS GANADEROS ROSARIO S.A',localidad:'V. Gdor. Gálvez, Santa Fe',rubro:'Frigorífico / Subproductos',fuente:'CAFRISA',estado:'nuevo',notas:'',fecha_alta:'2026-07-25',web:'',telefono:''},
+  {id:'r014',nombre:'TUTTO PORKYS S.R.L',localidad:'Reconquista, Santa Fe',rubro:'Frigorífico / Porcino',fuente:'CAFRISA',estado:'nuevo',notas:'',fecha_alta:'2026-07-25',web:'',telefono:''},
+  {id:'r015',nombre:'ZORRCHAC S.R.L',localidad:'Santa Fe',rubro:'Frigorífico',fuente:'CAFRISA',estado:'nuevo',notas:'',fecha_alta:'2026-07-25',web:'',telefono:''},
+];
+
+function loadRadar(){
+  const d=localStorage.getItem('seg_radar');
+  if(d) radarEmpresas=JSON.parse(d);
+  if(!radarEmpresas.length){radarEmpresas=[...RADAR_PRELOAD];saveRadar();return;}
+  // merge enriched fields from PRELOAD into existing entries
+  RADAR_PRELOAD.forEach(p=>{
+    const existing=radarEmpresas.find(e=>e.id===p.id);
+    if(existing){
+      if(!existing.telefono&&p.telefono) existing.telefono=p.telefono;
+      if(!existing.web&&p.web) existing.web=p.web;
+      if(!existing.notas&&p.notas) existing.notas=p.notas;
+      if(!existing.fecha_alta&&p.fecha_alta) existing.fecha_alta=p.fecha_alta;
+      if(p.nombre&&p.nombre!==existing.nombre&&p.nombre.length>existing.nombre.length) existing.nombre=p.nombre;
+    }
+  });
+  saveRadar();
+}
+
+function isClienteCRM(nombre){
+  const n=nombre.toUpperCase();
+  return allClientes().some(c=>c.nombre.toUpperCase().includes(n)||n.includes(c.nombre.toUpperCase().split('  ')[0]));
+}
+
+function renderIntel(){
+  loadRadar();
+  const buscar=(document.getElementById('intel-buscar')?.value||'').toLowerCase();
+  const filtroEst=document.getElementById('intel-filtro-estado')?.value||'';
+
+  // populate fuente filter
+  const fuenteSel=document.getElementById('intel-filtro-fuente');
+  if(fuenteSel){
+    const curFuente=fuenteSel.value;
+    const allFuentes=[...new Set(radarEmpresas.map(e=>e.fuente||'Sin fuente').filter(Boolean))].sort();
+    fuenteSel.innerHTML='<option value="">Todas las fuentes</option>'+allFuentes.map(f=>`<option value="${f}"${f===curFuente?' selected':''}>${f}</option>`).join('');
+  }
+  const filtroFuente=document.getElementById('intel-filtro-fuente')?.value||'';
+
+  let filtered=radarEmpresas.filter(e=>{
+    if(buscar&&!e.nombre.toLowerCase().includes(buscar)&&!(e.localidad||'').toLowerCase().includes(buscar)&&!(e.rubro||'').toLowerCase().includes(buscar)&&!(e.fuente||'').toLowerCase().includes(buscar))return false;
+    if(filtroFuente&&(e.fuente||'Sin fuente')!==filtroFuente) return false;
+    if(filtroEst==='cliente') return isClienteCRM(e.nombre);
+    if(filtroEst&&e.estado!==filtroEst) return false;
+    return true;
+  });
+
+  // stats
+  const total=radarEmpresas.length;
+  const nuevos=radarEmpresas.filter(e=>e.estado==='nuevo').length;
+  const contactados=radarEmpresas.filter(e=>e.estado==='contactado').length;
+  const prosp=radarEmpresas.filter(e=>e.estado==='prospect').length;
+  const descartados=radarEmpresas.filter(e=>e.estado==='descartado').length;
+  const clientes=radarEmpresas.filter(e=>isClienteCRM(e.nombre)).length;
+  const fuentes=[...new Set(radarEmpresas.map(e=>e.fuente).filter(Boolean))];
+
+  const enGestion=radarEmpresas.filter(e=>e.estado==='en-gestion').length;
+  // by locality
+  const byLoc={};radarEmpresas.forEach(e=>{const l=(e.localidad||'Sin localidad').trim();byLoc[l]=(byLoc[l]||0)+1;});
+  const topLocs=Object.entries(byLoc).sort((a,b)=>b[1]-a[1]);
+  // by rubro
+  const byRubro={};radarEmpresas.forEach(e=>{const r=e.rubro||'Sin rubro';byRubro[r]=(byRubro[r]||0)+1;});
+  const topRubros=Object.entries(byRubro).sort((a,b)=>b[1]-a[1]);
+  // this month additions
+  const mesActual=new Date().toISOString().slice(0,7);
+  const agregadosMes=radarEmpresas.filter(e=>(e.fecha_alta||'').startsWith(mesActual)).length;
+  const contactadosMes=radarEmpresas.filter(e=>(e.historial||[]).some(h=>(h.fecha||'').startsWith(mesActual))).length;
+
+  document.getElementById('intel-stats').innerHTML=`
+    <div style="width:100%">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#1a2e4a">${total}</div><div style="font-size:10px;color:#888">En radar</div></div>
+        <div style="background:#dbeafe;border:1px solid #93c5fd;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#1e40af">${nuevos}</div><div style="font-size:10px;color:#1e40af">Nuevos</div></div>
+        <div style="background:#dcfce7;border:1px solid #86efac;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#166534">${contactados}</div><div style="font-size:10px;color:#166534">Contactados</div></div>
+        <div style="background:#e0e7ff;border:1px solid #a5b4fc;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#4338ca">${enGestion}</div><div style="font-size:10px;color:#4338ca">En gestión</div></div>
+        <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#92400e">${prosp}</div><div style="font-size:10px;color:#92400e">→ Prospect</div></div>
+        ${clientes?`<div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#065f46">${clientes}</div><div style="font-size:10px;color:#065f46">Ya clientes</div></div>`:''}
+        <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#6b7280">${fuentes.length}</div><div style="font-size:10px;color:#888">Fuentes</div></div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px 16px;flex:1;min-width:200px;max-height:220px;overflow-y:auto">
+          <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:8px;position:sticky;top:0;background:#fff;padding-bottom:4px">📍 Por localidad (${topLocs.length})</div>
+          ${topLocs.map(([loc,n])=>`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;cursor:pointer;padding:2px 4px;border-radius:4px" onclick="document.getElementById('intel-buscar').value='${loc}';renderIntel();" onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background=''">
+            <span style="font-size:11px;color:#1a2e4a">${loc}</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="background:#e5e7eb;border-radius:99px;height:6px;width:60px;overflow:hidden"><div style="background:#3b82f6;height:100%;width:${Math.round(n/total*100)}%;border-radius:99px"></div></div>
+              <span style="font-size:10px;font-weight:700;color:#3b82f6;min-width:20px;text-align:right">${n}</span>
+            </div>
+          </div>`).join('')}
+        </div>
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px 16px;flex:1;min-width:200px">
+          <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:8px">🏭 Por sector</div>
+          ${topRubros.map(([rub,n])=>`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;cursor:pointer;padding:2px 4px;border-radius:4px" onclick="document.getElementById('intel-buscar').value='${rub}';renderIntel();" onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background=''">
+            <span style="font-size:11px;color:#1a2e4a">${rub}</span>
+            <span style="font-size:10px;font-weight:700;color:#6b7280">${n}</span>
+          </div>`).join('')}
+        </div>
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px 16px;flex:1;min-width:200px">
+          <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:8px">📊 Este mes</div>
+          <div style="display:flex;gap:16px">
+            <div><div style="font-size:22px;font-weight:800;color:#2563eb">${agregadosMes}</div><div style="font-size:10px;color:#888">Agregados</div></div>
+            <div><div style="font-size:22px;font-weight:800;color:#16a34a">${contactadosMes}</div><div style="font-size:10px;color:#888">Contactados</div></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  // group by source
+  const bySource={};
+  filtered.forEach(e=>{const f=e.fuente||'Sin fuente';if(!bySource[f])bySource[f]=[];bySource[f].push(e);});
+
+  let html='';
+  Object.entries(bySource).sort((a,b)=>b[1].length-a[1].length).forEach(([fuente,empresas])=>{
+    html+=`<div class="intel-source">
+      <div class="intel-source-hdr" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">
+        <div style="display:flex;align-items:center;gap:10px">
+          <h3>${fuente}</h3>
+          <span style="font-size:11px;color:#888">${empresas.length} empresa${empresas.length!==1?'s':''}</span>
+        </div>
+        <span style="font-size:11px;color:#aaa">▼</span>
+      </div>
+      <div>
+        ${empresas.map(e=>{
+          const esCli=isClienteCRM(e.nombre);
+          const statusClass=esCli?'cliente':e.estado;
+          const statusLabel=esCli?'CLIENTE':e.estado==='nuevo'?'NUEVO':e.estado==='contactado'?'CONTACTADO':e.estado==='en-gestion'?'EN GESTIÓN':e.estado==='prospect'?'→ PROSPECT':e.estado==='descartado'?'DESCARTADO':'';
+          return `<div class="intel-empresa">
+            <div class="nombre" onclick="openIntelModal('${e.id}')">${e.nombre}${esCli?' <span style="font-size:9px;color:#065f46">✓ CRM</span>':''}</div>
+            <div class="localidad">${e.localidad||'—'}</div>
+            <div class="rubro">${e.rubro||'—'}</div>
+            <input class="intel-inline" type="text" value="${(e.telefono||'').replace(/"/g,'&quot;')}" placeholder="—" onchange="intelUpdateField('${e.id}','telefono',this.value)" onclick="event.stopPropagation()">
+            <div style="display:flex;align-items:center;gap:3px">
+              <input class="intel-inline" type="text" value="${(e.web||'').replace(/"/g,'&quot;')}" placeholder="—" onchange="intelUpdateField('${e.id}','web',this.value)" onclick="event.stopPropagation()" style="color:#2563eb">
+              ${e.web?`<a href="${e.web.startsWith('http')?e.web:'https://'+e.web}" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;text-decoration:none">🔗</a>`:''}
+            </div>
+            <span class="intel-status ${statusClass}">${statusLabel}</span>
+            <div class="intel-actions">
+              ${!esCli&&e.estado!=='prospect'?`<button class="promote" onclick="intelPromote('${e.id}')">→ Prospect</button>`:''}
+              ${e.estado==='nuevo'?`<button onclick="intelSetEstado('${e.id}','contactado')">Contactado</button>`:''}
+              ${e.estado!=='descartado'?`<button onclick="intelSetEstado('${e.id}','descartado')">✗</button>`:''}
+              ${e.estado==='descartado'?`<button onclick="intelSetEstado('${e.id}','nuevo')">Reactivar</button>`:''}
+              <button onclick="intelDelete('${e.id}')" style="color:#dc2626">🗑</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+
+  if(!html) html='<div style="text-align:center;padding:40px;color:#888;font-size:12px">Sin empresas en el radar. Agregá una o pedile a Claude que extraiga de una URL.</div>';
+  document.getElementById('intel-content').innerHTML=html;
+}
+
+function intelUpdateField(id,field,value){
+  const e=radarEmpresas.find(x=>x.id===id);
+  if(e){e[field]=value.trim();saveRadar();}
+}
+
+function intelSetEstado(id,estado){
+  const e=radarEmpresas.find(x=>x.id===id);
+  if(e){e.estado=estado;saveRadar();renderIntel();}
+}
+
+function intelPromote(id){
+  const e=radarEmpresas.find(x=>x.id===id);
+  if(!e)return;
+  e.estado='prospect';
+  // also add to prospects list
+  const pid='p_'+Date.now().toString(36);
+  prospects.push({id:pid,nombre:e.nombre,estado:'primera-relacion',dueno:'',potencial:0,notas:'Fuente: '+e.fuente+(e.localidad?' | '+e.localidad:''),fecha:new Date().toISOString().split('T')[0]});
+  saveProspects();saveRadar();renderIntel();
+  alert('✓ '+e.nombre+' agregado a Prospects');
+}
+
+function intelDelete(id){
+  if(!confirm('¿Eliminar del radar?'))return;
+  radarEmpresas=radarEmpresas.filter(x=>x.id!==id);
+  saveRadar();renderIntel();
+}
+
+function openIntelAdd(){
+  document.getElementById('intel-add-overlay').style.display='flex';
+  document.getElementById('intel-add-nombre').value='';
+  document.getElementById('intel-add-localidad').value='';
+  document.getElementById('intel-add-rubro').value='';
+  document.getElementById('intel-add-fuente').value='';
+  document.getElementById('intel-add-notas').value='';
+  document.getElementById('intel-add-nombre').focus();
+}
+function closeIntelAdd(){document.getElementById('intel-add-overlay').style.display='none';}
+
+function saveIntelAdd(){
+  const nombre=document.getElementById('intel-add-nombre').value.trim();
+  if(!nombre){alert('Ingresá el nombre');return;}
+  radarEmpresas.push({
+    id:'r_'+Date.now().toString(36),
+    nombre,
+    localidad:(document.getElementById('intel-add-localidad').value.trim()+(document.getElementById('intel-add-provincia').value.trim()?', '+document.getElementById('intel-add-provincia').value.trim():'')),
+    rubro:document.getElementById('intel-add-rubro').value.trim(),
+    fuente:document.getElementById('intel-add-fuente').value.trim(),
+    web:document.getElementById('intel-add-web')?.value.trim()||'',
+    estado:'nuevo',
+    notas:document.getElementById('intel-add-notas').value.trim(),
+    fecha_alta:new Date().toISOString().split('T')[0]
+  });
+  saveRadar();closeIntelAdd();renderIntel();
+}
+document.getElementById('intel-add-overlay')?.addEventListener('click',function(e){if(e.target===this)closeIntelAdd();});
+document.getElementById('intel-modal-overlay')?.addEventListener('click',function(e){if(e.target===this)closeIntelModal();});
+
+let intelModalId=null;
+
+function openIntelModal(id){
+  const e=radarEmpresas.find(x=>x.id===id);
+  if(!e)return;
+  intelModalId=id;
+  document.getElementById('intel-modal-overlay').style.display='flex';
+  document.getElementById('intel-modal-nombre').textContent=e.nombre;
+  document.getElementById('intel-modal-sub').textContent=[e.rubro,e.localidad,e.fuente].filter(Boolean).join(' · ');
+  // populate info
+  document.getElementById('ie-nombre').value=e.nombre||'';
+  document.getElementById('ie-rubro').value=e.rubro||'';
+  document.getElementById('ie-localidad').value=e.localidad||'';
+  document.getElementById('ie-fuente').value=e.fuente||'';
+  document.getElementById('ie-estado').value=e.estado||'nuevo';
+  document.getElementById('ie-potencial').value=e.potencial||'';
+  document.getElementById('ie-web').value=e.web||'';
+  document.getElementById('ie-telefono').value=e.telefono||'';
+  document.getElementById('ie-notas').value=e.notas||'';
+  document.getElementById('ie-saved').style.display='none';
+  document.getElementById('ie-notas-saved').style.display='none';
+  // set today for hist date
+  document.getElementById('ieh-fecha').value=new Date().toISOString().split('T')[0];
+  switchIntelTab('info');
+  renderIntelPersonas();
+  renderIntelHist();
+}
+
+function closeIntelModal(){
+  document.getElementById('intel-modal-overlay').style.display='none';
+  intelModalId=null;
+  renderIntel();
+}
+
+function switchIntelTab(tab){
+  ['info','personas','historial','notas'].forEach(t=>{
+    const el=document.getElementById('intel-tab-'+t);
+    const tb=document.getElementById('itab-'+t);
+    if(el) el.style.display=t===tab?'':'none';
+    if(tb){tb.style.borderBottom=t===tab?'2px solid #1a2e4a':'2px solid transparent';tb.style.color=t===tab?'#1a2e4a':'#6b7280';}
+  });
+}
+
+function saveIntelInfo(){
+  const e=radarEmpresas.find(x=>x.id===intelModalId);
+  if(!e)return;
+  e.nombre=document.getElementById('ie-nombre').value.trim();
+  e.rubro=document.getElementById('ie-rubro').value.trim();
+  e.localidad=document.getElementById('ie-localidad').value.trim();
+  e.fuente=document.getElementById('ie-fuente').value.trim();
+  e.estado=document.getElementById('ie-estado').value;
+  e.potencial=parseFloat(document.getElementById('ie-potencial').value)||0;
+  e.web=document.getElementById('ie-web').value.trim();
+  e.telefono=document.getElementById('ie-telefono').value.trim();
+  document.getElementById('intel-modal-nombre').textContent=e.nombre;
+  document.getElementById('intel-modal-sub').textContent=[e.rubro,e.localidad,e.fuente].filter(Boolean).join(' · ');
+  saveRadar();
+  document.getElementById('ie-saved').style.display='inline';
+  setTimeout(()=>document.getElementById('ie-saved').style.display='none',2000);
+}
+
+function saveIntelNotas(){
+  const e=radarEmpresas.find(x=>x.id===intelModalId);
+  if(!e)return;
+  e.notas=document.getElementById('ie-notas').value;
+  saveRadar();
+  document.getElementById('ie-notas-saved').style.display='inline';
+  setTimeout(()=>document.getElementById('ie-notas-saved').style.display='none',2000);
+}
+
+// Personas
+function renderIntelPersonas(){
+  const e=radarEmpresas.find(x=>x.id===intelModalId);
+  if(!e)return;
+  const personas=e.personas||[];
+  const el=document.getElementById('ie-personas-list');
+  if(!personas.length){el.innerHTML='<div style="color:#888;font-size:11px;padding:10px">Sin personas registradas aún.</div>';return;}
+  const VINC_COLORS={'Referido':'#dcfce7','LinkedIn':'#dbeafe','Directo':'#fef3c7','Evento':'#f3e8ff'};
+  const VINC_TEXT={'Referido':'#166534','LinkedIn':'#1e40af','Directo':'#92400e','Evento':'#6b21a8'};
+  el.innerHTML=personas.map((p,i)=>`
+    <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;align-items:flex-start;font-size:11px">
+      <div style="flex:1">
+        <div style="font-weight:700;color:#1a2e4a;font-size:12px">${p.nombre}</div>
+        ${p.cargo?`<div style="color:#6b7280">${p.cargo}</div>`:''}
+      </div>
+      <div style="min-width:120px">
+        ${p.telefono?`<div style="color:#333">📞 ${p.telefono}</div>`:''}
+        ${p.email?`<div style="color:#333">✉ ${p.email}</div>`:''}
+      </div>
+      ${p.vinculo?`<span style="background:${VINC_COLORS[p.vinculo]||'#f5f5f5'};color:${VINC_TEXT[p.vinculo]||'#555'};padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600">${p.vinculo}</span>`:''}
+      <button onclick="deleteIntelPersona(${i})" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:11px">✕</button>
+    </div>`).join('');
+}
+
+function addIntelPersona(){
+  const e=radarEmpresas.find(x=>x.id===intelModalId);
+  if(!e)return;
+  const nombre=document.getElementById('iep-nombre').value.trim();
+  if(!nombre){alert('Ingresá el nombre');return;}
+  if(!e.personas) e.personas=[];
+  e.personas.push({
+    nombre,
+    cargo:document.getElementById('iep-cargo').value.trim(),
+    telefono:document.getElementById('iep-telefono').value.trim(),
+    email:document.getElementById('iep-email').value.trim(),
+    vinculo:document.getElementById('iep-vinculo').value.trim()
+  });
+  saveRadar();renderIntelPersonas();
+  document.getElementById('iep-nombre').value='';
+  document.getElementById('iep-cargo').value='';
+  document.getElementById('iep-telefono').value='';
+  document.getElementById('iep-email').value='';
+  document.getElementById('iep-vinculo').value='';
+}
+
+function deleteIntelPersona(idx){
+  const e=radarEmpresas.find(x=>x.id===intelModalId);
+  if(!e||!e.personas)return;
+  e.personas.splice(idx,1);
+  saveRadar();renderIntelPersonas();
+}
+
+// Historial
+function renderIntelHist(){
+  const e=radarEmpresas.find(x=>x.id===intelModalId);
+  if(!e)return;
+  const hist=e.historial||[];
+  const el=document.getElementById('ie-hist-list');
+  if(!hist.length){el.innerHTML='<div style="color:#888;font-size:11px;padding:10px">Sin contactos registrados aún.</div>';return;}
+  const MEDIO_C={'Llamada':'#dcfce7','WhatsApp':'#d1fae5','Email':'#dbeafe','Reunión':'#f3e8ff','LinkedIn':'#e0f2fe','Referido':'#fef3c7','Evento':'#fef9c3','Otro':'#f5f5f5'};
+  const MEDIO_T={'Llamada':'#166534','WhatsApp':'#065f46','Email':'#1e40af','Reunión':'#6b21a8','LinkedIn':'#0369a1','Referido':'#92400e','Evento':'#854d0e','Otro':'#374151'};
+  const sorted=[...hist].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+  el.innerHTML=sorted.map((h,i)=>{
+    const fd=h.fecha?h.fecha.split('-').reverse().join('/'):'—';
+    return `<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;align-items:flex-start;font-size:11px">
+      <span style="color:#9ca3af;min-width:62px">${fd}</span>
+      <span style="background:${MEDIO_C[h.medio]||'#f5f5f5'};color:${MEDIO_T[h.medio]||'#333'};padding:1px 7px;border-radius:5px;font-size:10px;font-weight:600;white-space:nowrap">${h.medio}</span>
+      ${h.con?`<span style="font-weight:600;color:#1a2e4a;min-width:100px">${h.con}</span>`:''}
+      <span style="color:#4b5563;flex:1">${h.comentario||'—'}</span>
+      <button onclick="deleteIntelHist(${i})" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:11px">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function addIntelHist(){
+  const e=radarEmpresas.find(x=>x.id===intelModalId);
+  if(!e)return;
+  if(!e.historial) e.historial=[];
+  e.historial.push({
+    fecha:document.getElementById('ieh-fecha').value,
+    medio:document.getElementById('ieh-medio').value,
+    con:document.getElementById('ieh-con').value.trim(),
+    comentario:document.getElementById('ieh-comentario').value.trim()
+  });
+  // auto update estado if still nuevo
+  if(e.estado==='nuevo'){e.estado='contactado';document.getElementById('ie-estado').value='contactado';}
+  saveRadar();renderIntelHist();
+  document.getElementById('ieh-comentario').value='';
+  document.getElementById('ieh-con').value='';
+}
+
+function deleteIntelHist(idx){
+  const e=radarEmpresas.find(x=>x.id===intelModalId);
+  if(!e||!e.historial)return;
+  e.historial.splice(idx,1);
+  saveRadar();renderIntelHist();
+}
+
+function intelModalPromote(){
+  const e=radarEmpresas.find(x=>x.id===intelModalId);
+  if(!e)return;
+  intelPromote(e.id);
+  closeIntelModal();
+}
+
 // ===== RESUMEN =====
 
 function renderResumen(){
