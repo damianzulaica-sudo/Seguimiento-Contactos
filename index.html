@@ -603,6 +603,7 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
       </select>
     </label>
   </div>
+  <div id="pr-kpis" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"></div>
   <div id="prospects-list"></div>
 </div>
 </div>
@@ -1813,6 +1814,7 @@ function switchPage(p){
   document.querySelectorAll('.top-tab').forEach((t,i)=>t.classList.toggle('active',pages[i]===p));
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
+  if(p==='seguimiento'){populateFilter();render();}
   if(p==='agenda')renderAgenda();
   if(p==='giras'){populateGiraClientes();populateGiraProspects();renderGiras();}
   if(p==='prospects')renderProspects();
@@ -2233,10 +2235,36 @@ function updateEstado(id,val){
 }
 function convertirProspect(id){
   const p=prospects.find(x=>x.id===id);
-  if(p){p.estado='convertido';saveProspects();renderProspects();}
+  if(!p)return;
+  if(!confirm(`¿Convertir "${p.nombre}" a cliente?\nSe agregará al panel de Seguimiento.`))return;
+  p.estado='convertido';
+  p.fecha_conversion=new Date().toISOString().split('T')[0];
+  // Add to main panel as manual client
+  const yaExiste=allClientes().some(c=>c.nombre.toUpperCase()===p.nombre.toUpperCase());
+  if(!yaExiste){
+    clientesManuales.push({nombre:p.nombre,tenencia:0,pct:'',dueno:p.dueno||'',frecuencia:''});
+    saveManuales();
+    // set activity
+    actividades[p.nombre]={tipo:'',rubro:p.origen||'',cargo:''};
+    saveActividades();
+  }
+  saveProspects();renderProspects();
+  alert('✓ '+p.nombre+' agregado al panel de Seguimiento');
 }
 function renderProspects(){
-  const filtro=document.getElementById('pr-filtro-estado').value;
+  const filtro=document.getElementById('pr-filtro-estado')?.value||'';
+  const mesActual=new Date().toISOString().slice(0,7);
+  const convertidosMes=prospects.filter(p=>p.estado==='convertido'&&(p.fecha_conversion||'').startsWith(mesActual)).length;
+  const totalPr=prospects.length;
+  const activos=prospects.filter(p=>p.estado!=='convertido').length;
+  const porEstadoPr={};prospects.forEach(p=>{porEstadoPr[p.estado]=(porEstadoPr[p.estado]||0)+1;});
+  const potencialTotal=prospects.filter(p=>p.estado!=='convertido').reduce((s,p)=>s+(p.potencial||0),0);
+  const kpiEl=document.getElementById('pr-kpis');
+  if(kpiEl) kpiEl.innerHTML=`
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#1a2e4a">${totalPr}</div><div style="font-size:10px;color:#888">Total prospects</div></div>
+    <div style="background:#dbeafe;border:1px solid #93c5fd;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#1e40af">${activos}</div><div style="font-size:10px;color:#1e40af">Activos</div></div>
+    <div style="background:#dcfce7;border:1px solid #86efac;border-radius:10px;padding:10px 16px;min-width:80px;flex:1"><div style="font-size:22px;font-weight:800;color:#166534">${convertidosMes}</div><div style="font-size:10px;color:#166534">Convertidos este mes</div></div>
+    ${potencialTotal?`<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 16px;min-width:100px;flex:1"><div style="font-size:16px;font-weight:800;color:#1e40af">US$ ${potencialTotal.toLocaleString('es-AR')}</div><div style="font-size:10px;color:#1e40af">Potencial pipeline</div></div>`:''}`;
   const el=document.getElementById('prospects-list');
   const lista=prospects.filter(p=>!filtro||p.estado===filtro);
   if(!lista.length){el.innerHTML='<div style="text-align:center;color:#aaa;padding:32px;font-size:12px">No hay prospects'+(filtro?' con ese estado':'')+' registrados.</div>';return;}
@@ -2244,7 +2272,7 @@ function renderProspects(){
     const fd=p.fecha?p.fecha.split('-').reverse().join('/'):'';
     return `<div class="prospect-card">
       <div class="prospect-card-header">
-        <div class="prospect-nombre">${p.nombre}</div>
+        <input type="text" value="${(p.nombre||'').replace(/"/g,'&quot;')}" onchange="updateProspectNombre('${p.id}',this.value)" style="font-size:14px;font-weight:700;color:#1a2e4a;border:1px solid transparent;border-radius:6px;padding:2px 6px;background:transparent;flex:1" onfocus="this.style.borderColor='#3b82f6';this.style.background='#fff'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">
         <span class="prospect-estado ${p.estado}">${estadoLabel[p.estado]||p.estado}</span>
       </div>
       <div class="prospect-meta">
@@ -2258,11 +2286,16 @@ function renderProspects(){
         <select onchange="updateEstado('${p.id}',this.value)" style="font-size:10px;border:1px solid #ccd;border-radius:5px;padding:3px 6px">
           ${Object.entries(estadoLabel).map(([v,l])=>`<option value="${v}"${v===p.estado?' selected':''}>${l}</option>`).join('')}
         </select>
-        ${p.estado!=='convertido'?`<button class="conv" onclick="convertirProspect('${p.id}')">Convertir &#10003;</button>`:''}
+        ${p.estado!=='convertido'?`<button class="conv" onclick="convertirProspect('${p.id}')">Convertir &#10003;</button>`:'<span style="font-size:10px;color:#166534;font-weight:600">✓ En panel de Seguimiento'+(p.fecha_conversion?' ('+p.fecha_conversion.split('-').reverse().join('/')+')':'')+'</span>'}
         <button class="del" onclick="deleteProspect('${p.id}')">Eliminar</button>
       </div>
     </div>`;
   }).join('');
+}
+
+function updateProspectNombre(id,val){
+  const p=prospects.find(x=>x.id===id);
+  if(p){p.nombre=val.trim();saveProspects();}
 }
 
 // ===== GRUPOS =====
@@ -2736,6 +2769,13 @@ function render(){
         </td>
         <td class="col-tenencia">${tenDisplay}</td>
         <td class="col-tenencia" style="font-size:10px;color:#2563eb;font-weight:600;text-align:right;padding-right:8px;cursor:pointer" onclick="openModal('${c.nombre.replace(/'/g,"\\'")}');setTimeout(()=>switchTab('operaciones'),100)">${getVolumen(c.nombre)?'$ '+getVolumen(c.nombre).toLocaleString('es-AR',{minimumFractionDigits:0}):'—'}</td>
+        <td class="col-frec"><select class="perfil-select" data-nombre="${c.nombre.replace(/"/g,'&quot;')}" onchange="var n=this.dataset.nombre;if(!actividades[n])actividades[n]={tipo:'',rubro:'',cargo:''};actividades[n].perfil=this.value;saveActividades();var cm={'Conservador':['#dbeafe','#1e40af'],'Moderado':['#fef3c7','#92400e'],'Agresivo':['#fee2e2','#991b1b'],'Discrecional':['#f3e8ff','#6b21a8']};var cc=cm[this.value]||['#fff','#999'];this.style.background=cc[0];this.style.color=cc[1];" style="font-size:10px;border:1px solid #ccd;border-radius:5px;padding:2px 4px;background:${(actividades[c.nombre]||{}).perfil==='Conservador'?'#dbeafe':(actividades[c.nombre]||{}).perfil==='Moderado'?'#fef3c7':(actividades[c.nombre]||{}).perfil==='Agresivo'?'#fee2e2':(actividades[c.nombre]||{}).perfil==='Discrecional'?'#f3e8ff':'#fff'};color:${(actividades[c.nombre]||{}).perfil==='Conservador'?'#1e40af':(actividades[c.nombre]||{}).perfil==='Moderado'?'#92400e':(actividades[c.nombre]||{}).perfil==='Agresivo'?'#991b1b':(actividades[c.nombre]||{}).perfil==='Discrecional'?'#6b21a8':'#999'}">
+          <option value=""${!(actividades[c.nombre]||{}).perfil?' selected':''}>—</option>
+          <option value="Conservador"${(actividades[c.nombre]||{}).perfil==='Conservador'?' selected':''}>Conservador</option>
+          <option value="Moderado"${(actividades[c.nombre]||{}).perfil==='Moderado'?' selected':''}>Moderado</option>
+          <option value="Agresivo"${(actividades[c.nombre]||{}).perfil==='Agresivo'?' selected':''}>Agresivo</option>
+          <option value="Discrecional"${(actividades[c.nombre]||{}).perfil==='Discrecional'?' selected':''}>Discrecionalidad total</option>
+        </select></td>
         <td class="col-frec"><select class="frec-select" id="${fid}" data-nombre="${c.nombre.replace(/"/g,'&quot;')}">${FREC_OPTS.map(o=>`<option value="${o}"${o===frec?' selected':''}>${o||'—'}</option>`).join('')}</select></td>
         ${dayCells}
       </tr>`;
@@ -2787,6 +2827,7 @@ function render(){
         <th class="col-actividad" style="font-size:11px;color:#1a2e4a">Rol</th>
         <th class="col-tenencia" style="font-size:11px;color:#1a2e4a">Tenencia USD</th>
         <th class="col-tenencia" style="font-size:11px;color:#1a2e4a">Volumen mes</th>
+        <th class="col-frec" style="font-size:11px;color:#1a2e4a">Perfil</th>
         <th class="col-frec" style="font-size:11px;color:#1a2e4a">Frecuencia</th>
         ${dayHeaders}
       </tr></thead><tbody>${rows}</tbody></table></div>
@@ -2801,10 +2842,14 @@ function render(){
   const pctActivos=totalClientes?Math.round(totalActivos/totalClientes*100):0;
   const pctInact=totalClientes?Math.round(totalInactivos/totalClientes*100):0;
 
+  const mesActualSeg=new Date().toISOString().slice(0,7);
+  const convertidosMesSeg=prospects.filter(p=>p.estado==='convertido'&&(p.fecha_conversion||'').startsWith(mesActualSeg)).length;
+
   document.getElementById('stats-bar').innerHTML=`
     <div class="stat ok"><div class="stat-n">${totalActivos}</div><div class="stat-l">Activos <span style="font-size:11px;color:#888">(${pctActivos}%)</span></div></div>
     <div class="stat ${totalInactivos?'warn':''}"><div class="stat-n">${totalInactivos}</div><div class="stat-l">Inactivos <span style="font-size:11px;color:#888">(${pctInact}%)</span></div></div>
     ${totalReflotados?`<div class="stat"><div class="stat-n" style="color:#f59e0b">${totalReflotados}</div><div class="stat-l">Reflotados</div></div>`:''}
+    ${convertidosMesSeg?`<div class="stat"><div class="stat-n" style="color:#2563eb">${convertidosMesSeg}</div><div class="stat-l">Convertidos este mes</div></div>`:''}
     <div class="stat ok"><div class="stat-n">${totalChecked}</div><div class="stat-l">Contactados este mes</div></div>
     <div class="stat ${totalPending?'warn':''}"><div class="stat-n">${totalPending}</div><div class="stat-l">Alertas pendientes</div></div>
     <div class="stat"><div class="stat-n">${workDays.length}</div><div class="stat-l">Días hábiles</div></div>`;
