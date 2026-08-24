@@ -27,7 +27,9 @@ select,input[type=text],input[type=number]{border:1px solid #ccd;border-radius:5
 .stat-l{font-size:11px;color:#666;margin-top:1px}
 .stat.warn .stat-n{color:#c0392b}
 .stat.ok .stat-n{color:#1a7a3f}
-.owner-section{margin:0 24px 16px;border-radius:12px;overflow:hidden;border:1px solid #dde;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.owner-section{margin:0 24px 10px;border-radius:12px;overflow:hidden;border:1px solid #dde;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.owner-header .toggle-arrow{display:inline-block;transition:transform .2s;font-size:10px;opacity:.6;margin-right:4px}
+.owner-header .toggle-arrow.open{transform:rotate(90deg)}
 .owner-header{background:linear-gradient(135deg,#1a2e4a 0%,#2a4a72 100%);color:#fff;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
 .owner-header h2{font-size:13px;font-weight:700;letter-spacing:.3px;margin:0}
 .owner-meta{font-size:11px;opacity:.8}
@@ -448,6 +450,8 @@ th.col-semanas{text-align:center;font-size:11px;min-width:90px}
       <option value="reflotado">Reflotados</option>
     </select>
   </label>
+  <button class="btn" onclick="toggleAllSections(true)" style="font-size:11px">▼ Expandir</button>
+  <button class="btn" onclick="toggleAllSections(false)" style="font-size:11px">▶ Colapsar</button>
   <button class="btn" onclick="openNuevoCliente()" style="background:#1a2e4a;color:#fff;border-color:#1a2e4a;font-weight:600">&#43; Nuevo cliente</button>
 </div>
 
@@ -2810,6 +2814,7 @@ function render(){
     return `<div class="owner-section">
       <div class="owner-header" onclick="toggleSection(this)">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span class="toggle-arrow">▶</span>
           <h2>${dueno}</h2>
           <span style="font-size:11px;opacity:.55;font-weight:400">${clientes.length} total</span>
           <span style="background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.35);padding:2px 10px;border-radius:10px;font-size:10px;color:#86efac">✓ ${nActivos} activos (${pctActivos}%)</span>
@@ -2819,7 +2824,7 @@ function render(){
         </div>
         <span class="owner-meta">${ownerPending?`<span style="background:rgba(255,255,255,.15);padding:2px 10px;border-radius:10px">&#9888; ${ownerPending} pendiente${ownerPending>1?'s':''}</span>`:''}</span>
       </div>
-      <div class="owner-body"><table><thead><tr>
+      <div class="owner-body" style="display:none"><table><thead><tr>
         <th class="col-cliente" style="font-size:11px;color:#1a2e4a">Cliente</th>
         <th class="col-grupo" style="font-size:11px;color:#1a2e4a">Grupo</th>
         <th class="col-actividad" style="font-size:11px;color:#1a2e4a">PF/PJ</th>
@@ -2894,7 +2899,21 @@ function render(){
   renderAlertasBanner();
 }
 
-function toggleSection(header){const body=header.nextElementSibling;body.style.display=body.style.display==='none'?'':'none';}
+function toggleAllSections(expand){
+  document.querySelectorAll('.owner-section').forEach(sec=>{
+    const body=sec.querySelector('.owner-body');
+    const arrow=sec.querySelector('.toggle-arrow');
+    if(body) body.style.display=expand?'':'none';
+    if(arrow){arrow.textContent=expand?'▼':'▶';arrow.classList.toggle('open',expand);}
+  });
+}
+function toggleSection(header){
+  const body=header.nextElementSibling;
+  const arrow=header.querySelector('.toggle-arrow');
+  const isOpen=body.style.display!=='none';
+  body.style.display=isOpen?'none':'';
+  if(arrow){arrow.textContent=isOpen?'▶':'▼';arrow.classList.toggle('open',!isOpen);}
+}
 function populateFilter(){
   const sel=document.getElementById('filtro-dueno');
   const cur=sel.value;
